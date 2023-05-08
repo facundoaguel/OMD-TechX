@@ -5,7 +5,7 @@ using OMD_TechX.Modelos;
 
 namespace OMD_TechX.Controladores
 {
-
+    
     [ApiController]
     [Route("api/[controller]")]
     public class UsuariosController : ControllerBase
