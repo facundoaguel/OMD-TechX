@@ -1,0 +1,65 @@
+﻿@page "/usuarios"
+@using System.Net.Http.Headers;
+@inject HttpClient http
+@attribute [Authorize(Roles = "Admin")]
+
+
+<h3>USUARIOS</h3>
+
+@if (usuarios == null)
+{
+    <text>Cargando...</text>
+}else if (usuarios.Length == 0)
+{
+    <text>No hay usuarios en la base de datos</text>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th> </th>
+                <th>DNI</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Email</th>
+                <th>Telefono</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in usuarios)
+            {
+                <tr>
+                    
+                    <td>@user.DNI</td>
+                    <td>@user.Nombre</td>
+                    <td>@user.Apellido</td>
+                    <td>@user.Email</td>
+                    <td>@user.Telefono</td>
+                    <td>
+                        <button class="btn btn-danger">Borrar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    Usuario[] usuarios { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await loadUsers();
+    }
+
+    async Task loadUsers()
+    {
+        //agrego a los headers de la peticion HTTP  el header ADMIN con el valor true
+        http.DefaultRequestHeaders.Add("ADMIN", "true");
+        //hago un GET al controlador de usuarios /api/usuarios
+        //esta definido en UsuariosController como ApiController
+        usuarios = await http.GetFromJsonAsync<Usuario[]>("https://localhost:7083/api/usuarios");
+    }
+}
+
