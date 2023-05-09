@@ -15,15 +15,46 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+            <NavLink class="nav-link" href="turnos">
+                <span class="oi oi-plus" aria-hidden="true"></span> Turnos
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+            <NavLink class="nav-link" href="adopciones">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Adopciones
             </NavLink>
         </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="perdidas">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Perdidas
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="hallazgos">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Hallazgos
+            </NavLink>
+        </div>
+        <AuthorizeView Roles="Admin,Normal">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="cruzas">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Cruzas
+                </NavLink>
+            </div>
+        </AuthorizeView>
+        <AuthorizeView Roles="Admin">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="atenciones">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Atenciones
+                </NavLink>
+            </div>
+        </AuthorizeView>
+        <AuthorizeView Roles="Admin">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="perros">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Perros
+                </NavLink>
+            </div>
+        </AuthorizeView>
         <AuthorizeView Roles="Admin">
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="usuarios">

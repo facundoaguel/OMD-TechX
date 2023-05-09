@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using OMD_TechX.Controladores;
 using OMD_TechX.Helpers;
 using OMD_TechX.Modelos;
 using static System.Net.WebRequestMethods;
@@ -26,6 +27,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IUserStore<IdentityUser> _userStore;
@@ -35,12 +37,14 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
         public HttpClient http;
 
         public RegisterModel(
+            RoleManager<IdentityRole> roleManager,
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
+            _roleManager = roleManager;
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
@@ -130,13 +134,14 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync(string Normal = null)
         {
-            returnUrl ??= Url.Content("~/");
+            Normal ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
+                _userManager.AddToRoleAsync(user, "Normal");
 
                 string password = crearPasswordAleatoria();
                 string password2 = password;
@@ -155,13 +160,13 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",
                         pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                        values: new { area = "Identity", userId = userId, code = code, returnUrl = Normal },
                         protocol: Request.Scheme);
                     registrarUsuario(userId, Input.Nombre, Input.Apellido, Input.DNI, Input.Email, Input.Telefono, password2);
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                    /*if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                     }
@@ -169,7 +174,8 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         return LocalRedirect(returnUrl);
-                    }
+                    }*/
+                    return LocalRedirect("/usuarios");
                 }
                 foreach (var error in result.Errors)
                 {

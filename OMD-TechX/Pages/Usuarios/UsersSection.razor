@@ -4,12 +4,23 @@
 @attribute [Authorize(Roles = "Admin")]
 
 
-<h3>USUARIOS</h3>
+
+
+<div class="d-flex">
+    <div class="p-2 w-100"><h1>Usuarios</h1></div>
+    <div class="p-2 flex-shrink-1">
+        <button type="button" class="btn btn-success" href="Identity/Account/Register">
+            Cargar Usuario
+        </button>
+    </div>
+</div>
+
 
 @if (usuarios == null)
 {
     <text>Cargando...</text>
-}else if (usuarios.Length == 0)
+}
+else if (usuarios.Length == 0)
 {
     <text>No hay usuarios en la base de datos</text>
 }
@@ -30,7 +41,7 @@ else
             @foreach (var user in usuarios)
             {
                 <tr>
-                    
+
                     <td>@user.DNI</td>
                     <td>@user.Nombre</td>
                     <td>@user.Apellido</td>
@@ -44,6 +55,7 @@ else
         </tbody>
     </table>
 }
+
 
 @code {
     Usuario[] usuarios { get; set; }
