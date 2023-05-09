@@ -13,11 +13,12 @@ namespace OMD_TechX.Modelos
         public string Telefono { get; set; }
         public List<Perro> Perros { get; set; }
 
-        public Usuario(string id, string nombre, string apellido, string email, string telefono)
+        public Usuario(string id, string nombre, string apellido, string DNI, string email, string telefono)
         {
             this.Id = id;
             this.Nombre = nombre; 
             this.Apellido = apellido;
+            this.DNI = DNI;
             this.Email = email;
             this.Telefono = telefono;
             this.Perros = new List<Perro>();

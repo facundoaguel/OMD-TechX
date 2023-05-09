@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using OMD_TechX.Helpers;
 using OMD_TechX.Modelos;
 using static System.Net.WebRequestMethods;
 
@@ -31,6 +32,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        public HttpClient http;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
@@ -45,6 +47,8 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            http = new HttpClient();
+            http.BaseAddress = new Uri("https://localhost:7083/");
         }
 
         /// <summary>
@@ -72,6 +76,20 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
+            //aca comienza la creacion
+
+            //nombre
+            [Required]
+            [StringLength(30)]
+            [Display(Name = "Nombre")]
+            public string Nombre { get; set; }
+
+            //apellido
+            [Required]
+            [StringLength(30)]
+            [Display(Name = "Apellido")]
+            public string Apellido { get; set; }
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -86,19 +104,23 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 3)]
-            [DataType(DataType.Password)]
-            [Display(Name = "Password")]
-            public string Password { get; set; }
+            [Display(Name = "DNI")]
+            public string DNI { get; set; }
+
+            [DataType(DataType.PhoneNumber)]
+            [Display(Name = "Telefono")]
+            public string Telefono { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [DataType(DataType.Password)]
+            /// 
+
+            /*[DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
+            public string ConfirmPassword { get; set; }*/
         }
 
 
@@ -116,9 +138,11 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
+                string password = crearPasswordAleatoria();
+
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                var result = await _userManager.CreateAsync(user, Input.Password);
+                var result = await _userManager.CreateAsync(user, password);
 
                 if (result.Succeeded)
                 {
@@ -132,7 +156,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
                         pageHandler: null,
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
-                    //registrarUsuario(userId, Input.Email);
+                    registrarUsuario(userId, Input.Nombre, Input.Apellido, Input.DNI, Input.Email, Input.Telefono, password);
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
@@ -178,12 +202,29 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             }
             return (IUserEmailStore<IdentityUser>)_userStore;
         }
-        async Task registrarUsuario(string id, string name)
+        async Task registrarUsuario(string id, string nombre, string apellido, string DNI, string email, string tel, string password)
         {
+            string name = nombre + " " + apellido;
+            Usuario usuario = new Usuario(id, nombre, apellido, DNI, email, tel);
+            CorreoElectronico.enviarCorreo(email, name, password);
+            HttpResponseMessage res = await http.PostAsJsonAsync("api/usuarios", usuario);
+            res.EnsureSuccessStatusCode();
+        }
 
-            //Usuario usuario = new Usuario();
-            //HttpResponseMessage res = await http.PostAsJsonAsync("api/users", user);
-            //res.EnsureSuccessStatusCode();
+        private string crearPasswordAleatoria()
+        {
+            Random rdn = new Random();
+            string caracteres = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890%$#@";
+            int longitud = caracteres.Length;
+            char letra;
+            int longitudContrasenia = 15;
+            string contraseniaAleatoria = string.Empty;
+            for (int i = 0; i < longitudContrasenia; i++)
+            {
+                letra = caracteres[rdn.Next(longitud)];
+                contraseniaAleatoria += letra.ToString();
+            }
+            return contraseniaAleatoria;
         }
     }
 }
