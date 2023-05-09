@@ -139,6 +139,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
                 var user = CreateUser();
 
                 string password = crearPasswordAleatoria();
+                string password2 = password;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -156,7 +157,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
                         pageHandler: null,
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
-                    registrarUsuario(userId, Input.Nombre, Input.Apellido, Input.DNI, Input.Email, Input.Telefono, password);
+                    registrarUsuario(userId, Input.Nombre, Input.Apellido, Input.DNI, Input.Email, Input.Telefono, password2);
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 

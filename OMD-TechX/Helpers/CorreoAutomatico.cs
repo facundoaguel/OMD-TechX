@@ -14,7 +14,7 @@ namespace OMD_TechX.Helpers
             string body = $"Hola {name}! Este es un correo automático de ¡Oh My Dog! " +
                 $"Su contraseña fue generada con éxito, para su primer inicio de sesión utilice" +
                 $"este correo y la contraseña: {password}" +
-                $"Al ingresar, se le solicitara cambiarla." +
+                $" Al ingresar, se le solicitara cambiarla." +
                 $"Muchas gracias por usar nuestros servicios!";
 
             var smtp = new SmtpClient
