@@ -2,26 +2,18 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
-using OMD_TechX.Controladores;
 using OMD_TechX.Helpers;
 using OMD_TechX.Modelos;
-using static System.Net.WebRequestMethods;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace OMD_TechX.Areas.Identity.Pages.Account
 {
@@ -140,47 +132,59 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = CreateUser();
-                await _userManager.AddToRoleAsync(user, "Normal");
-
-                string password = crearPasswordAleatoria();
-                string password2 = password;
-
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                var result = await _userManager.CreateAsync(user, password);
-
-                if (result.Succeeded)
+                http.DefaultRequestHeaders.Add("ADMIN", "true");
+                Usuario[] usuarios = await http.GetFromJsonAsync<Usuario[]>("https://localhost:7083/api/usuarios");
+                bool exists = usuarios.Any(x => x.DNI == Input.DNI);
+                if (!exists)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    var user = CreateUser();
+                    await _userManager.AddToRoleAsync(user, "Normal");
 
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = Normal },
-                        protocol: Request.Scheme);
-                    registrarUsuario(userId, Input.Nombre, Input.Apellido, Input.DNI, Input.Email, Input.Telefono, password2);
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    string password = crearPasswordAleatoria();
+                    string password2 = password;
 
-                    /*if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                    await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                    await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                    var result = await _userManager.CreateAsync(user, password);
+
+                    if (result.Succeeded)
                     {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                        _logger.LogInformation("User created a new account with password.");
+
+                        var userId = await _userManager.GetUserIdAsync(user);
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        var callbackUrl = Url.Page(
+                            "/Account/ConfirmEmail",
+                            pageHandler: null,
+                            values: new { area = "Identity", userId = userId, code = code, returnUrl = Normal },
+                            protocol: Request.Scheme);
+                        registrarUsuario(userId, Input.Nombre, Input.Apellido, Input.DNI, Input.Email, Input.Telefono, password2);
+                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                        /*if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                        {
+                            return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                        }
+                        else
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            return LocalRedirect(returnUrl);
+                        }*/
+                        return LocalRedirect("/usuarios");
                     }
-                    else
+                    foreach (var error in result.Errors)
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }*/
-                    return LocalRedirect("/usuarios");
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
                 }
-                foreach (var error in result.Errors)
+                else
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError("Input.DNI", "El DNI ya existe."); 
                 }
+
+
             }
 
             // If we got this far, something failed, redisplay form
@@ -210,11 +214,11 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             return (IUserEmailStore<IdentityUser>)_userStore;
         }
         async Task registrarUsuario(string id, string nombre, string apellido, string DNI, string email, string tel, string password)
-        {
-            string name = nombre + " " + apellido;
+        {     
             Usuario usuario = new Usuario(id, nombre, apellido, DNI, email, tel);
-            CorreoElectronico.enviarCorreo(email, name, password);
             HttpResponseMessage res = await http.PostAsJsonAsync("api/usuarios", usuario);
+            string name = nombre + " " + apellido;
+            CorreoElectronico.enviarCorreo(email, name, password);
             res.EnsureSuccessStatusCode();
         }
 

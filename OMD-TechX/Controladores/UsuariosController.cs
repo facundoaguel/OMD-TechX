@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OMD_TechX.Data;
+using OMD_TechX.Helpers;
 using OMD_TechX.Modelos;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OMD_TechX.Controladores
 {
@@ -56,9 +58,9 @@ namespace OMD_TechX.Controladores
         [HttpPost]
         public async Task<ActionResult> Post(Usuario user)
         {
-            context.Add(user);
-            await context.SaveChangesAsync();
-            return new CreatedAtRouteResult("https://localhost:7083/api/get-user", new { Id = user.Id, Nombre = user.Nombre });
+                context.Add(user);
+                await context.SaveChangesAsync();
+                return this.StatusCode(400);
         }
     }
 }
