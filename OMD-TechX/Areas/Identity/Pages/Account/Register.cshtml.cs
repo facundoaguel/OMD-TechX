@@ -141,7 +141,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
-                _userManager.AddToRoleAsync(user, "Normal");
+                await _userManager.AddToRoleAsync(user, "Normal");
 
                 string password = crearPasswordAleatoria();
                 string password2 = password;
