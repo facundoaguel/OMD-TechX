@@ -55,18 +55,18 @@
             @RenderBody()
         </main>
     </div>
-    <footer class="footer border-top pl-3 text-muted">
+    <!--<footer class="footer border-top pl-3 text-muted">
         <div class="container">
         &copy; 2023 - OMD-TechX
-            @{
+            if{
                 var foundPrivacy = Url.Page("/Privacy", new { area = "" });
             }
-            @if (foundPrivacy != null)
+            if (foundPrivacy != null)S
             {
                 <a asp-area="" asp-page="/Privacy">Privacy</a>
             }
         </div>
-    </footer>
+    </footer>-->
 
     <environment include="Development">
         <script src="~/Identity/lib/jquery/dist/jquery.js"></script>

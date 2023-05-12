@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OMD_TechX.Data;
 using OMD_TechX.Helpers;
 using OMD_TechX.Modelos;
+using Newtonsoft.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OMD_TechX.Controladores
@@ -49,18 +50,40 @@ namespace OMD_TechX.Controladores
             };*/
         }
 
-        /*[HttpGet("{id}", Name = "https://localhost:7083/api/get-user")]
-        public async Task<ActionResult<Usuario>> Get(string id)
+        [HttpGet("{DNI}", Name = "getUsuario")]
+        public async Task<ActionResult<bool>> Get(string dni)
         {
-            return await context.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
-        }*/
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Verificar si ya existe un usuario con este DNI en la base de datos
+            var usuarioDNI = VerificarDNI(dni);
+
+            if (usuarioDNI)
+            {
+                ModelState.AddModelError("DNI", "El DNI ya está en uso por otro usuario.");
+                return BadRequest(ModelState);
+            }
+
+            // el DNI no está en uso
+            return StatusCode(200);
+        }
 
         [HttpPost]
         public async Task<ActionResult> Post(Usuario user)
         {
                 context.Add(user);
                 await context.SaveChangesAsync();
-                return this.StatusCode(400);
+                return new CreatedAtRouteResult("getUsuario", new { DNI= user.DNI}, user);
         }
+        
+        public bool VerificarDNI(string dni)
+        {
+            return context.Usuarios.Any(u => u.DNI == dni);
+        }
+
+
     }
 }
