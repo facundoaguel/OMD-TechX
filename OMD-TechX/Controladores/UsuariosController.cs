@@ -76,7 +76,7 @@ namespace OMD_TechX.Controladores
         {
                 context.Add(user);
                 await context.SaveChangesAsync();
-                return new CreatedAtRouteResult("getUsuario", new { DNI= user.DNI}, user);
+                return new CreatedAtRouteResult("getUsuario", new { id= user.Id}, user);
         }
         
         public bool VerificarDNI(string dni)
