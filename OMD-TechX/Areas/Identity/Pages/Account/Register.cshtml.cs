@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using OMD_TechX.Controladores;
+using OMD_TechX.Controladores.Validaciones;
 using OMD_TechX.Helpers;
 using OMD_TechX.Modelos;
 using System.ComponentModel.DataAnnotations;
@@ -75,13 +78,13 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             //aca comienza la creacion
 
             //nombre
-            [Required]
+            [Required(ErrorMessage = "El campo Nombre es requerido.")]
             [StringLength(30)]
             [Display(Name = "Nombre")]
             public string Nombre { get; set; }
 
             //apellido
-            [Required]
+            [Required(ErrorMessage = "El campo Apellido es requerido.")]
             [StringLength(30)]
             [Display(Name = "Apellido")]
             public string Apellido { get; set; }
@@ -90,8 +93,9 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "El campo Email es requerido.")]
+            [EmailAddress(ErrorMessage = "Este formato no es válido")]
+            [EmailUnico]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
@@ -99,8 +103,10 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "El campo DNI es requerido.")]
             [Display(Name = "DNI")]
+            [DniUnico]
+            
             public string DNI { get; set; }
 
             [DataType(DataType.PhoneNumber)]
@@ -132,11 +138,10 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                http.DefaultRequestHeaders.Add("ADMIN", "true");
-                Usuario[] usuarios = await http.GetFromJsonAsync<Usuario[]>("https://localhost:7083/api/usuarios");
-                bool exists = usuarios.Any(x => x.DNI == Input.DNI);
-                if (!exists)
-                {
+                /*http.DefaultRequestHeaders.Add("ADMIN", "true");
+                var res = await http.GetAsync("https://localhost:7083/api/usuarios/" + Input.DNI);
+                if (res.IsSuccessStatusCode)
+                {*/
                     var user = CreateUser();
                     await _userManager.AddToRoleAsync(user, "Normal");
 
@@ -174,16 +179,18 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
                         }*/
                         return LocalRedirect("/usuarios");
                     }
+
                     foreach (var error in result.Errors)
                     {
                         ModelState.AddModelError(string.Empty, error.Description);
                     }
-                }
+
+                /*}
                 else
                 {
-                    ModelState.AddModelError("Input.DNI", "El DNI ya existe."); 
-                }
-
+                    ModelState.AddModelError(string.Empty, $"El DNI {Input.DNI} ya se encuentra registrado.");
+                }*/
+                
 
             }
 
