@@ -62,5 +62,20 @@ namespace OMD_TechX.Controladores
                 await context.SaveChangesAsync();
                 return this.StatusCode(400);
         }
+
+        [HttpDelete("Id")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var usuario = await context.Usuarios.FindAsync(id);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+            context.Usuarios.Remove(usuario);
+
+            await context.SaveChangesAsync(true);
+
+            return NoContent();
+        }
     }
 }
