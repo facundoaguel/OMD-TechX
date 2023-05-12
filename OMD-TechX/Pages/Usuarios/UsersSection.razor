@@ -1,6 +1,7 @@
 ﻿@page "/usuarios"
 @using System.Net.Http.Headers;
 @inject HttpClient http
+@inject IJSRuntime JS
 @attribute [Authorize(Roles = "Admin")]
 
 
@@ -46,7 +47,7 @@ else
                     <td>@user.Email</td>
                     <td>@user.Telefono</td>
                     <td>
-                        <button class="btn btn-danger">Borrar</button>
+                        <button class="btn btn-danger" @onclick="@(()=>BorrarUsuario(user.Id))"><i class="oi oi-trash"></i> Borrar</button>
                     </td>
                 </tr>
             }
@@ -70,6 +71,17 @@ else
         //hago un GET al controlador de usuarios /api/usuarios
         //esta definido en UsuariosController como ApiController
         usuarios = await http.GetFromJsonAsync<Usuario[]>("https://localhost:7083/api/usuarios");
+    }
+
+    async Task BorrarUsuario(string id)
+    {
+        var usuario = usuarios.First(u => u.Id == id);
+        string mensajeconfirmacion = $"¿Desea borrar este usuario: {usuario.Email}?";
+        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        {
+            await http.DeleteAsync($"/api/usuarios/{id}");
+            await loadUsers();
+        }
     }
 }
 
