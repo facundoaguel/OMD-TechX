@@ -55,6 +55,7 @@ namespace OMD_TechX.Controladores
             return await context.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
         }*/
 
+
         [HttpPost]
         public async Task<ActionResult> Post(Usuario user)
         {
