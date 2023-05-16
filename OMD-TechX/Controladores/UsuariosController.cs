@@ -31,22 +31,15 @@ namespace OMD_TechX.Controladores
 
             //me fijo desde donde fue llamado si desde la seccion de usuarios
             //o desde la URL /api/users
-            if (isAdmin || ((User.Identity.Name != null) && User.Identity.Name.Equals("pedro@omd.com")))
-            {
+            //if (isAdmin || ((User.Identity.Name != null) && User.Identity.Name.Equals("pedro@omd.com")))
+            //{
                 //devuelvo la lista de usuarios sacada del context de la DB
                 return await context.Usuarios.ToListAsync();
-            }
+            /*}
             else
             {
                 return this.Redirect("/");
-            }
-
-            //lista creada para probar si funcionaba la llamada GET
-            /*return new List<User>()
-            {
-                 new User(){Id="1", Name="Facundo"},
-                 new User(){Id="2", Name="Juana"}
-            };*/
+            }*/
         }
 
         /*[HttpGet("{id}", Name = "https://localhost:7083/api/get-user")]
@@ -61,10 +54,10 @@ namespace OMD_TechX.Controladores
         {
                 context.Add(user);
                 await context.SaveChangesAsync();
-                return this.StatusCode(400);
+                return new CreatedAtRouteResult("https://localhost:7083/api/get-user", new { Id = user.Id, Nombre = user.Nombre });
         }
 
-        [HttpDelete("Id")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
             var usuario = await context.Usuarios.FindAsync(id);
@@ -73,8 +66,9 @@ namespace OMD_TechX.Controladores
                 return NotFound();
             }
             context.Usuarios.Remove(usuario);
+            context.Users.Remove(await context.Users.FindAsync(id));
 
-            await context.SaveChangesAsync(true);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }

@@ -76,12 +76,12 @@ else
     async Task BorrarUsuario(string id)
     {
         var usuario = usuarios.First(u => u.Id == id);
+
         string mensajeconfirmacion = $"¿Desea borrar este usuario: {usuario.Email}?";
         if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
         {
-            await http.DeleteAsync($"/api/usuarios/{id}");
+            await http.DeleteAsync($"https://localhost:7083/api/usuarios/{id}");
             await loadUsers();
         }
     }
 }
-
