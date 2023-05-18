@@ -5,8 +5,15 @@ namespace OMD_TechX.Modelos
     public class Atencion
     {
         [Key]
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Nombre { get; set; }
+        public double Precio { get; set; }
+
+        public Atencion(string nombre, double precio)
+        {
+            this.Nombre = nombre;
+            this.Precio = precio;
+        }
 
     }
 }

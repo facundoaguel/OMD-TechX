@@ -1,6 +1,70 @@
 ﻿@page "/atenciones"
-<h1>Atenciones</h1>
+@using System.Net.Http.Headers;
+@inject HttpClient http
+@inject IJSRuntime JS
+@attribute [Authorize(Roles = "Admin")]
+
+<div class="d-flex">
+    <div class="p-2 w-100"><h1>Atenciones</h1></div>
+    <div class="p-2 flex-shrink-1">
+        <input type="button" class="btn btn-success" value="Cargar Atencion" onclick="window.location.href='Identity/Atenciones/CrearAtencion'">
+    </div>
+</div>
+
+@if (atenciones == null)
+{
+    <text>Cargando...</text>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var atencion in atenciones)
+            {
+                <tr>
+
+                    <td>@atencion.Nombre</td>
+                    <td>@atencion.Precio</td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="@(()=>BorrarAtencion(atencion.Id))"><i class="oi oi-trash"></i> Borrar</button>
+                        <input type="button" class="btn btn-success" value="Editar" onclick="window.location.href='">
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
+    Atencion[] atenciones { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await cargarAtenciones();
+    }
+
+    async Task cargarAtenciones()
+    {
+        atenciones = await http.GetFromJsonAsync<Atencion[]>("https://localhost:7083/api/atenciones");
+    }
+
+    async Task BorrarAtencion(int id)
+    {
+        var atencion = atenciones.First(a => a.Id == id);
+
+        string mensajeconfirmacion = $"¿Desea borrar este usuario: {atencion.Nombre}?";
+        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        {
+            await http.DeleteAsync($"https://localhost:7083/api/atenciones/{id}");
+            await cargarAtenciones();
+        }
+    }
 
 }

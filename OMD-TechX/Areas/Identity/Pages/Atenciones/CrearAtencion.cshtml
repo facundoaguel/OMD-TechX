@@ -1,0 +1,38 @@
+﻿@page
+@using OMD_TechX.Areas.Identity.Pages.Account;
+@model CrearAtencionModel
+@{
+    ViewData["Title"] = "Crear Atencion";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h2>Crear una nueva atencion.</h2>
+            <hr />
+
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Nombre" class="form-control" aria-required="true" placeholder="Nombre" />
+                <label asp-for="Input.Nombre">Nombre</label>
+                <span asp-validation-for="Input.Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Precio" class="form-control" aria-required="true" placeholder="Nombre" />
+                <label asp-for="Input.Precio">Precio</label>
+                <span asp-validation-for="Input.Precio" class="text-danger"></span>
+            </div>
+            <button id="atencionSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Crear Atencion</button>
+        </form>
+    </div>
+    <div class="col-md-6 col-md-offset-2">
+        <section>
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        </section>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

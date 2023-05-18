@@ -66,8 +66,6 @@ else
 
     async Task loadUsers()
     {
-        //agrego a los headers de la peticion HTTP  el header ADMIN con el valor true
-        http.DefaultRequestHeaders.Add("ADMIN", "true");
         //hago un GET al controlador de usuarios /api/usuarios
         //esta definido en UsuariosController como ApiController
         usuarios = await http.GetFromJsonAsync<Usuario[]>("https://localhost:7083/api/usuarios");
@@ -79,7 +77,7 @@ else
         string mensajeconfirmacion = $"¿Desea borrar este usuario: {usuario.Email}?";
         if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
         {
-            await http.DeleteAsync($"/api/usuarios/{id}");
+            await http.DeleteAsync($"https://localhost:7083/api/usuarios/{id}");
             await loadUsers();
         }
     }

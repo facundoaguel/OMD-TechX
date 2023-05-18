@@ -108,7 +108,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             [DniUnico]
             
             public string DNI { get; set; }
-
+            [Required]
             [DataType(DataType.PhoneNumber)]
             [Display(Name = "Telefono")]
             public string Telefono { get; set; }

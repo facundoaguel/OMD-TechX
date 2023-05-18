@@ -1,0 +1,94 @@
+﻿@page "/perros/cargarPerro"
+@using OMD_TechX.Modelos;
+@model OMD_TechX.Pages.Perros.CargarPerroModel
+@{
+    ViewData["Title"] = "Cargar perro :)";
+}
+<head>
+    <link rel="stylesheet" href="~/css/omd.css">
+</head>
+<form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+    <div class="row">
+        <div class="col-md-4">
+        
+            <h2>Registrar la carga de un nuevo perro.</h2>
+            <hr />
+
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Nombre" class="form-control" aria-required="true" placeholder="Nombre" />
+                <label asp-for="Input.Nombre">Nombre</label>
+                <span asp-validation-for="Input.Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Edad" class="form-control" aria-required="true" placeholder="Edad" />
+                <label asp-for="Input.Edad">Edad</label>
+                <span asp-validation-for="Input.Edad" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Raza" class="form-control" aria-required="true" placeholder="Raza" />
+                <label asp-for="Input.Raza">Raza</label>
+                <span asp-validation-for="Input.Raza" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Tamanio" class="form-control" aria-required="true" placeholder="Tamanio" />
+                <label asp-for="Input.Tamanio">Tamaño</label>
+                <span asp-validation-for="Input.Tamanio" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Color" class="form-control" aria-required="true" placeholder="Color" />
+                <label asp-for="Input.Color">Color</label>
+                <span asp-validation-for="Input.Color" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Input.Sexo" class="form-select">
+                    <option value="M">Masculino</option>
+                    <option value="F">Femenino</option>
+                </select>
+                <label asp-for="Input.Sexo">Sexo</label>
+                <span asp-validation-for="Input.Sexo" class="text-danger"></span>
+            </div>
+           
+        
+            <button id="perroSubmit" type="submit" class="w-100 btn btn-lg omd-azul">Cargar perro</button>
+            <div class="col-md-6 col-md-offset-2">
+                <div class="form-floating mb-3">
+                    <select asp-for="Input.UsuarioId" class="form-select">
+                        @{
+                            if (Model.usuarios.Count > 0)
+                            {
+                                foreach (var user in Model.usuarios)
+                                {
+                                    <option value="@user.Id">@user.Nombre @user.Apellido</option>
+                                }
+                            }
+                            else
+                            {
+                                <option>No hay usuarios cargados</option>
+                            }
+                        }
+                    </select>
+                    <label asp-for="Input.UsuarioId">Dueño</label>
+                    <span asp-validation-for="Input.UsuarioId" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Comentarios" class="form-control" aria-required="true" placeholder="" />
+                    <label asp-for="Input.Comentarios">Observaciones</label>
+                    <span asp-validation-for="Input.Comentarios" class="text-danger"></span>
+                </div>
+                <section>
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                </section>
+            </div>
+
+        
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+@{
+    Usuario[] usuarios;
+}
