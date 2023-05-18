@@ -221,7 +221,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             return (IUserEmailStore<IdentityUser>)_userStore;
         }
         async Task registrarUsuario(string id, string nombre, string apellido, string DNI, string email, string tel, string password)
-        {     
+        {
             Usuario usuario = new Usuario(id, nombre, apellido, DNI, email, tel);
             HttpResponseMessage res = await http.PostAsJsonAsync("api/usuarios", usuario);
             string name = nombre + " " + apellido;
