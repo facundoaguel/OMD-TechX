@@ -78,8 +78,7 @@ namespace OMD_TechX.Pages.Perros
         {
             Normal ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            Console.WriteLine("Comentarios: ",Input.Comentarios);
-            Console.WriteLine("Usuario: ",Input.UsuarioId);
+
             if (ModelState.IsValid)
             {
                 

@@ -15,10 +15,10 @@ namespace OMD_TechX.Modelos
         public string Sexo { get; set; }
         public string Color { get; set; }
         public string Comentarios { get; set; }
-        public byte[]? Foto { get; set; }
+        //public byte[]? Foto { get; set; }
 
-        public List<Turno> Turnos {get; set; }
-        public List<PerroAtencion> PerroAtencion { get; set; }  
+        //public List<Turno> Turnos {get; set; }
+        //public List<PerroAtencion> PerroAtencion { get; set; }  
 
         public Perro(string nombre, int edad, string raza,string tamanio, string sexo, string color, string com, string usuarioId)
         {
@@ -30,9 +30,9 @@ namespace OMD_TechX.Modelos
             this.Color = color;
             this.Comentarios = com;
             this.UsuarioId = usuarioId;
-            this.Turnos = new List<Turno>();
-            this.PerroAtencion = new List<PerroAtencion>();
-            this.Foto = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
+            //this.Turnos = new List<Turno>();
+            //this.PerroAtencion = new List<PerroAtencion>();
+            //this.Foto = new byte[] { };
             this.Usuario = new Usuario();
         }
         public Perro()

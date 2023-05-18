@@ -28,7 +28,7 @@ namespace OMD_TechX.Controladores
         public async Task<ActionResult> Post(Perro perro)
         {
             context.Add(perro);
-            context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return this.StatusCode(200);
         }
     }

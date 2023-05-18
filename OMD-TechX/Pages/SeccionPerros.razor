@@ -1,11 +1,84 @@
 ﻿@page "/perros"
-<h1>Perros</h1>
-<RadzenButton Text="@text" Click="@botonClick"></RadzenButton>
+@using System.Net.Http.Headers;
+@inject HttpClient http
+@inject IJSRuntime JS
+@attribute [Authorize(Roles = "Admin")]
+
+<div class="d-flex">
+    <div class="p-2 w-100"><h1>Perros</h1></div>
+    <div class="p-2 flex-shrink-1">
+        <input type="button" class="btn btn-success" value="Cargar Perro" onclick="window.location.href='/Perros/CargarPerro'">
+    </div>
+</div>
+
+@if (perros == null)
+{
+    <text>Cargando...</text>
+}
+else if(perros.Length == 0)
+{
+    <text>No hay perros en la base de datos.</text>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Edad</th>
+                <th>Raza</th>
+                <th>Sexo</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var perro in perros)
+            {
+                <tr>
+
+                    <td>@perro.Nombre</td>
+                    <td>@perro.Edad</td>
+                    <td>@perro.Raza</td>
+                    <td>@perro.Sexo</td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="@(()=>BorrarPerro(perro.Id))"><i class="oi oi-trash"></i> Borrar</button>
+                        <input type="button" class="btn btn-success" value="Editar" onclick="window.location.href='">
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<!--<RadzenButton Text="@text" Click="@botonClick"></RadzenButton>-->
 @code {
-    string text = "hola";
+    /*string text = "hola";
 
     void botonClick()
     {
         
+    }*/
+    Perro[] perros { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await cargarPerros();
+    }
+
+    async Task cargarPerros()
+    {
+        perros = await http.GetFromJsonAsync<Perro[]>("https://localhost:7083/api/perros");
+    }
+
+    async Task BorrarPerro(int id)
+    {
+        var perro = perros.First(a => a.Id == id);
+
+        string mensajeconfirmacion = $"¿Desea borrar este perro: {perro.Nombre}?";
+        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        {
+            await http.DeleteAsync($"https://localhost:7083/api/perros/{id}");
+            await cargarPerros();
+        }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OMD_TechX.Data;
 
@@ -11,9 +12,11 @@ using OMD_TechX.Data;
 namespace OMD_TechX.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230518181450_inicial")]
+    partial class inicial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -286,6 +289,9 @@ namespace OMD_TechX.Migrations
                     b.Property<int>("Edad")
                         .HasColumnType("int");
 
+                    b.Property<byte[]>("Foto")
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -354,7 +360,12 @@ namespace OMD_TechX.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PerroId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PerroId");
 
                     b.ToTable("Turnos");
                 });
@@ -460,7 +471,7 @@ namespace OMD_TechX.Migrations
                         .IsRequired();
 
                     b.HasOne("OMD_TechX.Modelos.Perro", "perro")
-                        .WithMany()
+                        .WithMany("PerroAtencion")
                         .HasForeignKey("PerroId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -468,6 +479,20 @@ namespace OMD_TechX.Migrations
                     b.Navigation("Atencion");
 
                     b.Navigation("perro");
+                });
+
+            modelBuilder.Entity("OMD_TechX.Modelos.Turno", b =>
+                {
+                    b.HasOne("OMD_TechX.Modelos.Perro", null)
+                        .WithMany("Turnos")
+                        .HasForeignKey("PerroId");
+                });
+
+            modelBuilder.Entity("OMD_TechX.Modelos.Perro", b =>
+                {
+                    b.Navigation("PerroAtencion");
+
+                    b.Navigation("Turnos");
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Usuario", b =>
