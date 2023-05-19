@@ -24,12 +24,28 @@ namespace OMD_TechX.Controladores
             return await context.Perros.ToListAsync();
 
         }
+        [HttpGet("{id}", Name = "getPerro")]
+        public async Task<ActionResult<Perro>> Get(int id)
+        {
+            return await context.Perros.FirstOrDefaultAsync(p => p.Id == id);
+        }
         [HttpPost]
         public async Task<ActionResult> Post(Perro perro)
         {
             context.Add(perro);
             await context.SaveChangesAsync();
-            return this.StatusCode(200);
+            return new CreatedAtRouteResult("getPerro", new { id = perro.Id }, perro); ;
+
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+
+            context.Perros.Remove(await context.Perros.FirstOrDefaultAsync(p => p.Id == id));
+
+            await context.SaveChangesAsync();
+
+            return NoContent();
         }
 
 

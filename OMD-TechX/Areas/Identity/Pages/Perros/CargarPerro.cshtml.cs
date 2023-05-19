@@ -100,6 +100,16 @@ namespace OMD_TechX.Pages.Perros
                 Console.WriteLine(content);
             }
             res.EnsureSuccessStatusCode();
+
+            usuario.Perros.Add(perro);
+            HttpResponseMessage res2 = await http.PutAsJsonAsync("api/usuarios", usuario);
+            if (res2.StatusCode == System.Net.HttpStatusCode.BadRequest || res2.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+            {
+                var content2 = await res2.Content.ReadAsStringAsync();
+                Console.WriteLine(content2);
+            
+            }
+            res2.EnsureSuccessStatusCode();
         }
     }
 }

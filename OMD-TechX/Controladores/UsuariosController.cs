@@ -31,7 +31,7 @@ namespace OMD_TechX.Controladores
         [HttpGet]
         public async Task<ActionResult<List<Usuario>>> Get()
         {
-            return await context.Usuarios.ToListAsync();
+            return await context.Usuarios.Include(u => u.Perros).ToListAsync();
         }
 
         [HttpPost]
@@ -40,6 +40,13 @@ namespace OMD_TechX.Controladores
             context.Add(user);
             await context.SaveChangesAsync();
             return new CreatedAtRouteResult("getUsuario", new { id = user.Id }, user);
+        }
+        [HttpPut]
+        public async Task<ActionResult> Put(Usuario user)
+        {
+            context.Entry(user).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+            return NoContent();
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
