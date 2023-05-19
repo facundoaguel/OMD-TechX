@@ -11,7 +11,7 @@ namespace OMD_TechX.Modelos
         public string Apellido { get; set; }
         public string Email { get; set; }
         public string Telefono { get; set; }
-        public List<Perro> Perros { get; set; }
+        public List<Perro> Perros { get; set; } = new List<Perro>();
 
         public Usuario(string id, string nombre, string apellido, string DNI, string email, string telefono)
         {
@@ -21,7 +21,6 @@ namespace OMD_TechX.Modelos
             this.DNI = DNI;
             this.Email = email;
             this.Telefono = telefono;
-            this.Perros = new List<Perro>();
         }
 
         public Usuario()

@@ -8,6 +8,7 @@ using OMD_TechX;
 using OMD_TechX.Areas.Identity;
 using OMD_TechX.Data;
 using Radzen;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 

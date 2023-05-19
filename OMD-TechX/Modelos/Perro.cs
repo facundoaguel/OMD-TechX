@@ -6,7 +6,6 @@ namespace OMD_TechX.Modelos
     {
 
         public int Id { get; set; }
-        public Usuario Usuario { get; set; }
         public string UsuarioId { get; set; }
         public string Nombre { get; set; }
         public int Edad { get; set; }
@@ -32,8 +31,7 @@ namespace OMD_TechX.Modelos
             this.UsuarioId = usuarioId;
             this.Turnos = new List<Turno>();
             this.PerroAtencion = new List<PerroAtencion>();
-            this.Foto = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
-            this.Usuario = new Usuario();
+
         }
         public Perro()
         {
