@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using OMD_TechX.Controladores.Validaciones;
 using OMD_TechX.Modelos;
 using System.ComponentModel.DataAnnotations;
 
@@ -30,6 +31,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             [Required(ErrorMessage = "El campo Nombre es requerido.")]
             [StringLength(30)]
             [Display(Name = "Nombre")]
+            [NombreUnico]
             public string Nombre { get; set; }
 
             [Required(ErrorMessage = "El campo Precio es requerido.")]

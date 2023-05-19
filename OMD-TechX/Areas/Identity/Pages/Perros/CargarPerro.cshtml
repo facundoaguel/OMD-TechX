@@ -7,13 +7,12 @@
 <head>
     <link rel="stylesheet" href="~/css/omd.css">
 </head>
-<form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-    <div class="row">
-        <div class="col-md-4">
-        
-            <h2>Registrar la carga de un nuevo perro.</h2>
-            <hr />
 
+<h2>Registrar la carga de un nuevo perro.</h2>
+<hr />
+<form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+    <div class="row g-3">
+        <div class="col-md-5">
 
             <div class="form-floating mb-3">
                 <input asp-for="Input.Nombre" class="form-control" aria-required="true" placeholder="Nombre" />
@@ -48,47 +47,41 @@
                 <label asp-for="Input.Sexo">Sexo</label>
                 <span asp-validation-for="Input.Sexo" class="text-danger"></span>
             </div>
-           
-        
             <button id="perroSubmit" type="submit" class="w-100 btn btn-lg omd-azul">Cargar perro</button>
-            <div class="col-md-6 col-md-offset-2">
-                <div class="form-floating mb-3">
-                    <select asp-for="Input.UsuarioId" class="form-select">
-                        @{
-                            if (Model.usuarios.Count > 0)
+        </div>
+        <div class ="col-md-2"></div>
+        <div class="col-md-5">
+        <div class="form-floating mb-3">
+                <select asp-for="Input.UsuarioId" class="form-select">
+                    @{
+                        if (Model.usuarios.Count > 0)
+                        {
+                            foreach (var user in Model.usuarios)
                             {
-                                foreach (var user in Model.usuarios)
-                                {
-                                    <option value="@user.Id">@user.Nombre @user.Apellido</option>
-                                }
-                            }
-                            else
-                            {
-                                <option>No hay usuarios cargados</option>
+                                <option value="@user.Id">@user.Nombre @user.Apellido</option>
                             }
                         }
-                    </select>
-                    <label asp-for="Input.UsuarioId">Dueño</label>
-                    <span asp-validation-for="Input.UsuarioId" class="text-danger"></span>
-                </div>
-                <div class="form-floating mb-3">
+                        else
+                        {
+                            <option>No hay usuarios cargados</option>
+                        }
+                    }
+                </select>
+                <label asp-for="Input.UsuarioId">Dueño</label>
+                <span asp-validation-for="Input.UsuarioId" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
                     <input asp-for="Input.Comentarios" class="form-control" aria-required="true" placeholder="" />
                     <label asp-for="Input.Comentarios">Observaciones</label>
                     <span asp-validation-for="Input.Comentarios" class="text-danger"></span>
-                </div>
-                <section>
-                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                </section>
             </div>
-
-        
+            <section>
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            </section>
         </div>
     </div>
 </form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-}
-@{
-    Usuario[] usuarios;
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OMD_TechX.Data;
 
@@ -11,9 +12,11 @@ using OMD_TechX.Data;
 namespace OMD_TechX.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230518181450_inicial")]
+    partial class inicial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -286,6 +289,9 @@ namespace OMD_TechX.Migrations
                     b.Property<int>("Edad")
                         .HasColumnType("int");
 
+                    b.Property<byte[]>("Foto")
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -447,11 +453,13 @@ namespace OMD_TechX.Migrations
 
             modelBuilder.Entity("OMD_TechX.Modelos.Perro", b =>
                 {
-                    b.HasOne("OMD_TechX.Modelos.Usuario", null)
+                    b.HasOne("OMD_TechX.Modelos.Usuario", "Usuario")
                         .WithMany("Perros")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.PerroAtencion", b =>

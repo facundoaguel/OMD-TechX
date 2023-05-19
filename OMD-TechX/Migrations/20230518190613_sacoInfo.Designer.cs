@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OMD_TechX.Data;
 
@@ -11,9 +12,11 @@ using OMD_TechX.Data;
 namespace OMD_TechX.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230518190613_sacoInfo")]
+    partial class sacoInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -354,12 +357,7 @@ namespace OMD_TechX.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PerroId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("PerroId");
 
                     b.ToTable("Turnos");
                 });
@@ -447,11 +445,13 @@ namespace OMD_TechX.Migrations
 
             modelBuilder.Entity("OMD_TechX.Modelos.Perro", b =>
                 {
-                    b.HasOne("OMD_TechX.Modelos.Usuario", null)
+                    b.HasOne("OMD_TechX.Modelos.Usuario", "Usuario")
                         .WithMany("Perros")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.PerroAtencion", b =>
@@ -463,7 +463,7 @@ namespace OMD_TechX.Migrations
                         .IsRequired();
 
                     b.HasOne("OMD_TechX.Modelos.Perro", "perro")
-                        .WithMany("PerroAtencion")
+                        .WithMany()
                         .HasForeignKey("PerroId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -471,20 +471,6 @@ namespace OMD_TechX.Migrations
                     b.Navigation("Atencion");
 
                     b.Navigation("perro");
-                });
-
-            modelBuilder.Entity("OMD_TechX.Modelos.Turno", b =>
-                {
-                    b.HasOne("OMD_TechX.Modelos.Perro", null)
-                        .WithMany("Turnos")
-                        .HasForeignKey("PerroId");
-                });
-
-            modelBuilder.Entity("OMD_TechX.Modelos.Perro", b =>
-                {
-                    b.Navigation("PerroAtencion");
-
-                    b.Navigation("Turnos");
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Usuario", b =>

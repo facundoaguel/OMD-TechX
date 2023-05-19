@@ -14,6 +14,11 @@ namespace OMD_TechX.Modelos
             this.Nombre = nombre;
             this.Precio = precio;
         }
+        public Atencion() { }
 
+        public Boolean EsOriginal()
+        {
+            return (this.Nombre.Equals("Vacuna Antirrabica") || this.Nombre.Equals("Operacion"));
+        }
     }
 }
