@@ -1,7 +1,8 @@
 ﻿@page
+@using OMD_TechX.Modelos;
 @model IndexModel
 @{
-    ViewData["Title"] = "Profile";
+    ViewData["Title"] = "Perfil";
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
 
@@ -12,15 +13,49 @@
         <form id="profile-form" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
-                <label asp-for="Username" class="form-label"></label>
+                <input asp-for="Nombre" class="form-control" placeholder="Por favor elija su nombre." disabled />
+                <label asp-for="Nombre" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
+                <input asp-for="Apellido" class="form-control" placeholder="Please choose your email." disabled />
+                <label asp-for="Apellido" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Email" class="form-control" placeholder="Please choose your email." disabled />
+                <label asp-for="Email" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="DNI" class="form-control" placeholder="Please choose your email." disabled />
+                <label asp-for="DNI" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Telefono" class="form-control" placeholder="Please choose your email." disabled />
+                <label asp-for="Telefono" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Perros" class="form-select">
+                    @{
+                        /*if (Perros.Lenght > 0)
+                        {
+                            foreach (var perro Perros)
+                            {
+                                <option value="@user.Id">@user.Nombre @user.Apellido</option>
+                            }
+                        }
+                        else
+                        {
+                            <option>No hay perros cargados</option>
+                        }*/
+                    }
+                </select>
+                <label asp-for="Perros">Perros</label>
+            </div>
+            <!--<div class="form-floating mb-3">
                 <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
                 <label asp-for="Input.PhoneNumber" class="form-label"></label>
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
             </div>
-            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>-->
         </form>
     </div>
 </div>
@@ -28,3 +63,4 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+
