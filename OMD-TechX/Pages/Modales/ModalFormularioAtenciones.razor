@@ -1,0 +1,97 @@
+﻿@inject HttpClient http;
+<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow:auto;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: darkorange">
+                <h5 class="modal-title">@Titulo</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @onclick="Close"></button>
+            </div>
+            <div class="modal-body">
+                <EditForm Model="@Atencion" OnValidSubmit="OnValidSubmit">
+
+                    <div class="col">
+                        <div class="d-flex align-items-center">
+                            <h2>¡Oh My Dog!</h2>
+                            <div class="ms-auto">
+                                <img src="/imagenes/Logo2.png" class="rounded float-end img-fluid" width="50px" height="50px" alt="omd-logo">
+                            </div>
+                        </div>
+                        <hr />
+                        
+
+                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+
+                            <ValidationMessage For="@(() => Atencion.Nombre)" class=""></ValidationMessage>
+                        </label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
+                            <InputText  @bind-Value="@Atencion.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Vacunación" />
+                        </div>
+                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                            <ValidationMessage For="@(() => Atencion.Precio)"></ValidationMessage>
+                        </label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">$</span>
+                            <InputNumber @bind-Value="@Atencion.Precio" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="500" ParsingErrorMessage="El campo precio es requerido." />
+
+                        </div>
+                        <button type="submit" style="background-color:#21618C" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
+                    </div>
+                    <DataAnnotationsValidator> </DataAnnotationsValidator>
+
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter]
+    public string Titulo { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public Atencion Atencion { get; set; }
+    [Parameter]
+    public string TextoBoton { get; set; } = "Salvar cambios";
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    private string modalDisplay = "none";
+    private string modalClass = string.Empty;
+    private bool showBackdrop = false;
+
+    public async Task Open(int id)
+    {
+        modalDisplay = "block";
+        modalClass = "show";
+        showBackdrop = true;
+        var atencionFromApi = await http.GetFromJsonAsync<Atencion>($"https://localhost:7083/api/atenciones/{id}");
+        Atencion.Nombre = atencionFromApi.Nombre;
+        Atencion.Precio = atencionFromApi.Precio;
+        Atencion.Id = atencionFromApi.Id;
+
+
+    }
+    public void Open()
+    {
+        modalDisplay = "block";
+        modalClass = "show";
+        showBackdrop = true;
+        Atencion.Nombre = "";
+        Atencion.Precio = 0;
+
+    }
+    public void Close()
+    {
+        modalDisplay = "none";
+        modalClass = string.Empty;
+        showBackdrop = false;
+    }
+
+}

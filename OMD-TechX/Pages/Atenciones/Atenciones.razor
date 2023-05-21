@@ -1,5 +1,6 @@
 ﻿@page "/atenciones"
 @using System.Net.Http.Headers;
+@using Microsoft.AspNetCore.Mvc;
 @inject HttpClient http
 @inject IJSRuntime JS
 @attribute [Authorize(Roles = "Admin")]
@@ -7,9 +8,15 @@
 <div class="d-flex">
     <div class="p-2 w-100"><h1>Atenciones</h1></div>
     <div class="p-2 flex-shrink-1">
-        <input type="button" class="btn btn-success" value="Cargar Atencion" onclick="window.location.href='Identity/Atenciones/CrearAtencion'">
+        <input type="button" class="btn btn-success" value="Cargar Atencion" @onclick="() => ModalCrearAtencion.Open()">
     </div>
 </div>
+
+<ModalFormularioAtenciones @ref="@ModalCrearAtencion" TextoBoton="Crear atención" Titulo="Crear atencion" OnValidSubmit="(() => crearAtencion())" Atencion="@atencion">
+</ModalFormularioAtenciones>
+<ModalFormularioAtenciones @ref="@ModalEditarAtencion" TextoBoton="Editar atención" Titulo="Editar atencion" OnValidSubmit="(() => editarAtencion())" Atencion="@atencion">
+
+</ModalFormularioAtenciones>
 
 @if (atenciones == null)
 {
@@ -36,12 +43,12 @@ else
 
                     <td>@atencion.Nombre</td>
                     <td>@atencion.Precio</td>
-                    <td>
+                    <td style="text-align:right; ">
                         @if (!atencion.EsOriginal())
                         {
-                            <button class="btn btn-danger" @onclick="@(()=>BorrarAtencion(atencion.Id))"><i class="oi oi-trash"></i> Borrar</button>
+                            <button class="btn btn-danger" @onclick="@(()=>BorrarAtencion(atencion.Id))" style="margin:5px"><i class="oi oi-trash"></i> Borrar</button>
                         }
-                        <input type="button" class="btn btn-success" value="Editar" onclick="window.location.href='">
+                        <input type="button" class="btn btn-success" value="Editar" @onclick="() => ModalEditarAtencion.Open(atencion.Id)">
                     </td>
                 </tr>
             }
@@ -51,15 +58,35 @@ else
 
 @code {
     Atencion[] atenciones { get; set; }
+    Atencion atencion { get; set; } = new Atencion();
+    private ModalFormularioAtenciones ModalCrearAtencion { get; set; }
+    private ModalFormularioAtenciones ModalEditarAtencion { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
+        http.BaseAddress = new Uri("https://localhost:7083/");
         await cargarAtenciones();
     }
+
 
     async Task cargarAtenciones()
     {
         atenciones = await http.GetFromJsonAsync<Atencion[]>("https://localhost:7083/api/atenciones");
+    }
+
+    async Task editarAtencion()
+    {
+        await http.PutAsJsonAsync($"api/atenciones", atencion);
+        ModalEditarAtencion.Close();
+        await cargarAtenciones();
+    }
+
+    async Task crearAtencion()
+    {
+        await http.PostAsJsonAsync("api/atenciones", atencion);
+        ModalCrearAtencion.Close();
+        await cargarAtenciones();
     }
 
     async Task BorrarAtencion(int id)

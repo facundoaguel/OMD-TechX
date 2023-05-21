@@ -21,13 +21,19 @@ namespace OMD_TechX.Controladores
         {
             return await context.Atenciones.ToListAsync();
         }
+        [HttpGet("{id}", Name = "getAtencion")]
+        public async Task<ActionResult<Atencion>> Get(int id)
+        {
+            return await context.Atenciones.FirstOrDefaultAsync(a => a.Id == id);
+        }
+
 
         [HttpPost]
         public async Task<ActionResult> Post(Atencion atencion)
         {
             context.Add(atencion);
             await context.SaveChangesAsync();
-            return new CreatedAtRouteResult("https://localhost:7083/api/get-atencion", new { Id = atencion.Id, Nombre = atencion.Nombre });
+            return new CreatedAtRouteResult("getAtencion", new { Id = atencion.Id}, atencion);
         }
 
         [HttpDelete("{id}")]
@@ -42,6 +48,14 @@ namespace OMD_TechX.Controladores
 
             await context.SaveChangesAsync();
 
+            return NoContent();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> Put(Atencion atencion)
+        {
+            context.Entry(atencion).State = EntityState.Modified;
+            await context.SaveChangesAsync();
             return NoContent();
         }
     }
