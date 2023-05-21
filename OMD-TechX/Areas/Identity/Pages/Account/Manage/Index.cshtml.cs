@@ -4,11 +4,16 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Net.NetworkInformation;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using OMD_TechX.Modelos;
+using static System.Net.WebRequestMethods;
+using System.Net.Http;
+using OMD_TechX.Modelos;
 
 namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
 {
@@ -16,6 +21,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        public HttpClient http;
 
         public IndexModel(
             UserManager<IdentityUser> userManager,
@@ -23,6 +29,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            http = new HttpClient();
         }
 
         /// <summary>
@@ -30,6 +37,15 @@ namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public string Username { get; set; }
+
+        public string Nombre { get; set; }
+
+        public string Email { get; set; }
+        public string Apellido { get; set; }
+
+        public string DNI { get; set; }
+        public string Telefono { get; set; }
+        public List<Perro> Perros { get; set; } = new List<Perro>();
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -55,22 +71,33 @@ namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Phone]
+            /*[Phone]
             [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
+            public string PhoneNumber { get; set; }*/
+
         }
 
         private async Task LoadAsync(IdentityUser user)
         {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var usuarios = await http.GetFromJsonAsync<Usuario[]>("https://localhost:7083/api/usuarios");
+            var usuario = usuarios.FirstOrDefault(u => u.Id == user.Id);
 
-            Username = userName;
+            //var userName = usuario.Nombre;
+            //var phoneNumber = usuario.Telefono;
 
-            Input = new InputModel
+            //Username = userName;
+            Nombre = usuario.Nombre;
+            Apellido = usuario.Apellido;
+            Email = usuario.Email;
+            DNI = usuario.DNI;
+            Telefono = usuario.Telefono;
+            Perros = usuario.Perros;
+
+
+            /*Input = new InputModel
             {
-                PhoneNumber = phoneNumber
-            };
+                PhoneNumber = phoneNumber,
+            };*/
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -99,7 +126,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            /*var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
@@ -108,10 +135,10 @@ namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
                     StatusMessage = "Unexpected error when trying to set phone number.";
                     return RedirectToPage();
                 }
-            }
+            }*/
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "Tu perfil ha sido actualizado.";
             return RedirectToPage();
         }
     }
