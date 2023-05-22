@@ -78,19 +78,33 @@ namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(IdentityUser user)
         {
-            var usuarios = await http.GetFromJsonAsync<Usuario[]>("https://localhost:7083/api/usuarios");
-            var usuario = usuarios.FirstOrDefault(u => u.Id == user.Id);
+            
 
             //var userName = usuario.Nombre;
             //var phoneNumber = usuario.Telefono;
 
             //Username = userName;
-            Nombre = usuario.Nombre;
-            Apellido = usuario.Apellido;
-            Email = usuario.Email;
-            DNI = usuario.DNI;
-            Telefono = usuario.Telefono;
-            Perros = usuario.Perros;
+            if (!user.Email.Equals("pedro@omd.com"))
+            {
+                var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{user.Id}");
+                Nombre = usuario.Nombre;
+                Apellido = usuario.Apellido;
+                Email = usuario.Email;
+                DNI = usuario.DNI;
+                Telefono = usuario.Telefono;
+                Perros = usuario.Perros;
+            }
+            else
+            {
+                Nombre = "Pedro";
+                Apellido = "Oh My Dog";
+                Email = user.Email;
+                DNI = "";
+                Telefono = "";
+                Perros = new List<Perro>();
+            }
+
+           
 
 
             /*Input = new InputModel

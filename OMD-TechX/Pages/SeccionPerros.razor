@@ -22,7 +22,7 @@
 }
 else if (perros.Length == 0)
 {
-    <text>No hay perro cargados.</text>
+    <text>No hay perros cargados.</text>
 }
 else
 {
@@ -40,22 +40,21 @@ else
         <tbody>
             @foreach (var perro in perros)
             {
-                @buscarUsuario(perro.UsuarioId);
                 <tr>
                     <td>@perro.Nombre</td>
-                    <td>@usuario.Nombre</td>
                     <td>@perro.Nombre</td>
                     <td>@perro.FechaN</td>
                     <td>@perro.Raza</td>
                     <td>@perro.Sexo</td>
-                    <td>
-                        <button class="btn btn-danger" @onclick="@(()=>BorrarPerro(perro.Id))"><i class="oi oi-trash"></i> Borrar</button>
-                        <input type="button" class="btn btn-success" value="Editar" onclick="window.location.href='">
+                    <td style="text-align:right;">
+                        <button class="btn btn-danger" @onclick="@(()=>BorrarPerro(perro.Id))"><i class="oi oi-trash"></i> </button>
+                        <button class ="btn btn-success" value="Editar" onclick="window.location.href='"><i class="oi oi-pencil"></i></button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+    <SurveyPrompt/>
 }
 
 <!--<RadzenButton Text="@text" Click="@botonClick"></RadzenButton>-->

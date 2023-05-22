@@ -24,7 +24,7 @@ namespace OMD_TechX.Controladores
         [HttpGet("{id}", Name = "getUsuario")]
         public async Task<ActionResult<Usuario>> Get(string id)
         {
-            return await context.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
+            return await context.Usuarios.Include(u => u.Perros).FirstOrDefaultAsync(u => u.Id == id);
         }
 
         //las peticiones GET a /api/users van a responder a este metodo

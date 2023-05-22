@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OMD_TechX.Migrations
 {
     /// <inheritdoc />
-    public partial class Inicial : Migration
+    public partial class cambiosFacu : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -214,8 +214,8 @@ namespace OMD_TechX.Migrations
                     Tamanio = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Sexo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Comentarios = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Foto = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
+                    Comentarios = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Foto = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>
                 {

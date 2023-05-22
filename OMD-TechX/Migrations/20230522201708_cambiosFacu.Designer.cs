@@ -12,8 +12,8 @@ using OMD_TechX.Data;
 namespace OMD_TechX.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230522142235_Inicial")]
-    partial class Inicial
+    [Migration("20230522201708_cambiosFacu")]
+    partial class cambiosFacu
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -283,14 +283,13 @@ namespace OMD_TechX.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Comentarios")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("FechaN")
+                    b.Property<DateTime?>("FechaN")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<byte[]>("Foto")
-                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Nombre")

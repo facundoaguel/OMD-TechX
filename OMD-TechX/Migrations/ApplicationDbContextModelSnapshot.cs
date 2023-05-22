@@ -241,7 +241,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Atenciones", (string)null);
+                    b.ToTable("Atenciones");
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Disponibilidad", b =>
@@ -264,7 +264,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Disponibilidades", (string)null);
+                    b.ToTable("Disponibilidades");
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Perro", b =>
@@ -313,7 +313,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("Perros", (string)null);
+                    b.ToTable("Perros");
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.PerroAtencion", b =>
@@ -339,7 +339,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasIndex("PerroId");
 
-                    b.ToTable("PerroAtenciones", (string)null);
+                    b.ToTable("PerroAtenciones");
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Turno", b =>
@@ -364,7 +364,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasIndex("PerroId");
 
-                    b.ToTable("Turnos", (string)null);
+                    b.ToTable("Turnos");
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Usuario", b =>
@@ -394,7 +394,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Usuarios", (string)null);
+                    b.ToTable("Usuarios");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
