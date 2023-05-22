@@ -1,5 +1,6 @@
 ﻿@page "/perros"
 @using System.Net.Http.Headers;
+@using Microsoft.AspNetCore.Mvc;
 @inject HttpClient http
 @inject IJSRuntime JS
 @attribute [Authorize(Roles = "Admin")]
@@ -7,15 +8,19 @@
 <div class="d-flex">
     <div class="p-2 w-100"><h1>Perros</h1></div>
     <div class="p-2 flex-shrink-1">
-        <input type="button" class="btn btn-success" value="Cargar Perro" onclick="window.location.href='/Perros/CargarPerro'">
+        <input type="button" class="btn btn-success" value="Cargar Perro" @onclick="() => ModalCrearPerro.Open()">
     </div>
 </div>
+
+<ModalFormularioPerros @ref="@ModalCrearPerro" TextoBoton="Cargar perro" Titulo="Cargar perro" OnValidSubmit="(() => crearPerro())" Perro="@perro">
+</ModalFormularioPerros>
+
 
 @if (perros == null)
 {
     <text>Cargando...</text>
 }
-else if(perros.Length == 0)
+else if (perros.Length == 0)
 {
     <text>No hay perro cargados.</text>
 }
@@ -25,7 +30,8 @@ else
         <thead>
             <tr>
                 <th>Nombre</th>
-                <th>Edad</th>
+                <th>Dueño/a</th>
+                <th>Fecha de nacimiento</th>
                 <th>Raza</th>
                 <th>Sexo</th>
                 <th></th>
@@ -34,10 +40,12 @@ else
         <tbody>
             @foreach (var perro in perros)
             {
+                @buscarUsuario(perro.UsuarioId);
                 <tr>
-
                     <td>@perro.Nombre</td>
-                    <td>@perro.Edad</td>
+                    <td>@usuario.Nombre</td>
+                    <td>@perro.Nombre</td>
+                    <td>@perro.FechaN</td>
                     <td>@perro.Raza</td>
                     <td>@perro.Sexo</td>
                     <td>
@@ -53,21 +61,37 @@ else
 <!--<RadzenButton Text="@text" Click="@botonClick"></RadzenButton>-->
 @code {
     /*string text = "hola";
-
+    * 
     void botonClick()
     {
-        
+
     }*/
     Perro[] perros { get; set; }
+    Perro perro { get; set; } = new Perro();
+    Usuario usuario { get; set; } = new Usuario();
+    private ModalFormularioPerros ModalCrearPerro { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        http.BaseAddress = new Uri("https://localhost:7083/");
+        await cargarPerros();
+    }
+
+    async Task crearPerro()
+    {
+        await http.PostAsJsonAsync("https://localhost:7083/api/perros", perro);
+        ModalCrearPerro.Close();
         await cargarPerros();
     }
 
     async Task cargarPerros()
     {
         perros = await http.GetFromJsonAsync<Perro[]>("https://localhost:7083/api/perros");
+
+    }
+    async Task buscarUsuario(string id)
+    {
+        usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{id}");
     }
 
     async Task BorrarPerro(int id)

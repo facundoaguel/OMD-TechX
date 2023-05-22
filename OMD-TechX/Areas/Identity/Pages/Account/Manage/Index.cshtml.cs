@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using OMD_TechX.Modelos;
 using static System.Net.WebRequestMethods;
 using System.Net.Http;
-using OMD_TechX.Modelos;
 
 namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
 {

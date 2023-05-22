@@ -8,5 +8,6 @@ namespace OMD_TechX.Modelos
         public int Id { get; set; }
         public DateTime Fecha { get; set; }
         public string Franja { get; set; }
+        public int PerroId { get; set; }
     }
 }

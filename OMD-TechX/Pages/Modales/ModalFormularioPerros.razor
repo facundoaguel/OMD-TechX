@@ -1,0 +1,198 @@
+﻿@inject HttpClient http;
+<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow:auto;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: darkorange">
+                <h5 class="modal-title">@Titulo</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @onclick="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- comienzo del formulario-->
+                <EditForm Model="@Perro" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="error">
+                    <!-- header -->
+                    <div class="col">
+                        <div class="d-flex align-items-center">
+                            <h2>¡Oh My Dog!</h2>
+                            <div class="ms-auto">
+                                <img src="/imagenes/Logo2.png" class="rounded float-end img-fluid" width="50px" height="50px" alt="omd-logo">
+                            </div>
+                        </div>
+                        <hr />
+
+                        <!-- campos -->
+                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                            <ValidationMessage For="@(() => Perro.Nombre)" class=""></ValidationMessage>
+                        </label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
+                            <InputText @bind-Value="@Perro.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Jack" />
+                        </div>
+
+                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                            <ValidationMessage For="@(() => Perro.FechaN)"></ValidationMessage>
+                        </label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Fecha de nacimiento</span>
+                            <InputDate @bind-Value="@Perro.FechaN" id="floatingInputInvalid" class="form-control rounded" aria-required="true"  />
+                        </div>
+
+                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                            <ValidationMessage For="@(() => Perro.Raza)"></ValidationMessage>
+                        </label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Raza</span>
+                            <InputText @bind-Value="@Perro.Raza" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Golden" />
+                        </div>
+
+                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                            <ValidationMessage For="@(() => Perro.Tamanio)"></ValidationMessage>
+                        </label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Tamaño</span>
+                            <InputText @bind-Value="@Perro.Tamanio" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Chico" />
+                        </div>
+
+                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                            <ValidationMessage For="@(() => Perro.Sexo)"></ValidationMessage>
+                        </label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Sexo</span>
+
+                            <InputSelect @bind-Value="@Perro.Sexo" class="form-select">
+                                <option style="opacity:70%" value="">Seleccione el sexo</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                            </InputSelect>
+                        </div>
+
+                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                            <ValidationMessage For="@(() => Perro.Color)"></ValidationMessage>
+                        </label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Color</span>
+                            <InputText @bind-Value="@Perro.Color" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Negro" />
+                        </div>
+
+                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                            <ValidationMessage For="@(() => Perro.UsuarioId)"></ValidationMessage>
+                        </label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Dueño/a</span>
+                            <InputSelect @bind-Value="@Perro.UsuarioId" class="form-select rounded">
+                                <option style="opacity:70%" value="">Seleccione dueño/a</option>
+                                @foreach (var usuario in usuarios)
+                                {
+                                    <option value="@usuario.Id">@usuario.DNI - @usuario.Nombre @usuario.Apellido</option>
+                                }
+                            </InputSelect>
+                        </div>
+                        
+                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                            <ValidationMessage For="@(() => Perro.Comentarios)"></ValidationMessage>
+                        </label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Observaciones</span>
+                            <InputText @bind-Value="@Perro.Comentarios" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder=""  />
+                        </div>
+
+                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                            <ValidationMessage For="@(() => Perro.Foto)"></ValidationMessage>
+                        </label>
+                        <div class="input-group mb-3">
+                            <img src="@imagenBase64" alt="Foto" class="img-thumbnail" style="max-width: 100px; margin-right: 10px;" />
+                            <InputFile OnChange="HandleFileSelected" class="form-control rounded">
+
+                            </InputFile>-
+                        </div>
+                        
+
+                        <button type="submit" style="background-color:#21618C" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
+                    </div>
+                    <DataAnnotationsValidator> </DataAnnotationsValidator>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter]
+    public string Titulo { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public Perro Perro { get; set; }
+    [Parameter]
+    public string TextoBoton { get; set; } = "Salvar cambios";
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    private string modalDisplay = "none";
+    private string modalClass = string.Empty;
+    private bool showBackdrop = false;
+    private IBrowserFile? selectedFile;
+    private string imagenBase64 = "";
+    private List<Usuario> usuarios = new List<Usuario>();
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        var buffer = new byte[selectedFile.Size];
+        await selectedFile.OpenReadStream().ReadAsync(buffer, 0, (int)selectedFile.Size);
+        // Guardar la ruta para mostrarla en el img
+        imagenBase64 = $"data:{selectedFile.ContentType};base64,{Convert.ToBase64String(buffer)}";
+
+
+        // Lee el contenido del archivo
+        var stream = selectedFile.OpenReadStream();
+        using (var memoryStream = new MemoryStream())
+        {
+            await stream.CopyToAsync(memoryStream);
+            byte[] fileBytes = memoryStream.ToArray();
+
+            // Puedes hacer algo con los bytes del archivo, como enviarlos al backend para guardarlos en la base de datos
+            Perro.Foto = fileBytes;
+        }
+    }
+
+    public async Task Open(int id) //cuando es abre para editar tengo que traerme los datos para editar
+    {
+        modalDisplay = "block";
+        modalClass = "show";
+        showBackdrop = true;
+        //var atencionFromApi = await http.GetFromJsonAsync<Atencion>($"https://localhost:7083/api/atenciones/{id}");
+        /*Atencion.Nombre = atencionFromApi.Nombre;
+        Atencion.Precio = atencionFromApi.Precio;
+        Atencion.Id = atencionFromApi.Id;*/
+
+
+    }
+    public async Task Open() //cuando se abre para crear la idea es que los campos esten vacios
+    {
+        modalClass = "modal-open show";
+        modalDisplay = "block";
+        showBackdrop = true;
+        usuarios = await http.GetFromJsonAsync<List<Usuario>>("https://localhost:7083/api/usuarios");
+        //restear campos vacios
+        //Atencion.Nombre = "";
+        //Atencion.Precio = 0;
+
+    }
+    public async Task Close()
+    {
+        modalDisplay = "none";
+        modalClass = "modal-fadeout";
+        await Task.Delay(300); // Espera la duración de la animación antes de ocultar el modal
+        showBackdrop = false;
+    }
+    public void error()
+    {
+        Console.WriteLine("Invalid submit");
+    }
+}

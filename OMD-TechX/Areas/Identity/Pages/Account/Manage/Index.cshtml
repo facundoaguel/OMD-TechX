@@ -9,7 +9,7 @@
 <h3>@ViewData["Title"]</h3>
 <partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <form id="profile-form" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
@@ -32,23 +32,61 @@
                 <input asp-for="Telefono" class="form-control" placeholder="Please choose your email." disabled />
                 <label asp-for="Telefono" class="form-label"></label>
             </div>
+            <label asp-for="Perros">Perros</label>
+            <hr />
             <div class="form-floating mb-3">
-                <select asp-for="Perros" class="form-select">
-                    @{
-                        /*if (Perros.Lenght > 0)
-                        {
-                            foreach (var perro Perros)
+                
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Raza</th>
+                            <th scope="col">Sexo</th>
+                            <th scope="col">Fecha de nacimiento</th>
+                            <th scope="col">Tamaño</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model.Perros.Count > 0)
                             {
-                                <option value="@user.Id">@user.Nombre @user.Apellido</option>
+                                int cont = 0;
+                                foreach (var perro in Model.Perros)
+                                {
+                                    cont++;
+                                    <tr>
+                                        <th scope="row">
+                                            @cont
+                                        </th>
+                                        <th scope="row">
+                                            @perro.Nombre
+                                        </th>
+                                        <th scope="row">
+                                            @perro.Raza
+                                        </th>
+                                        <th scope="row">
+                                            @perro.Sexo
+                                        </th>
+                                        <th scope="row">
+                                            @perro.FechaN
+                                        </th>
+                                        <th scope="row">
+                                            @perro.Tamanio
+                                        </th>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                No tenes perros asociados :c
+                                </tr>
                             }
                         }
-                        else
-                        {
-                            <option>No hay perros cargados</option>
-                        }*/
-                    }
-                </select>
-                <label asp-for="Perros">Perros</label>
+                    
+                    </tbody>
+                </table>
             </div>
             <!--<div class="form-floating mb-3">
                 <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>

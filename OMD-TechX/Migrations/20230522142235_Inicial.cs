@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OMD_TechX.Migrations
 {
     /// <inheritdoc />
-    public partial class nuevaMigracion : Migration
+    public partial class Inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -56,7 +56,8 @@ namespace OMD_TechX.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Precio = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -76,20 +77,6 @@ namespace OMD_TechX.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Disponibilidades", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Turnos",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Franja = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Turnos", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -222,12 +209,13 @@ namespace OMD_TechX.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UsuarioId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Edad = table.Column<int>(type: "int", nullable: false),
+                    FechaN = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Raza = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Tamanio = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Sexo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Comentarios = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Foto = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
+                    Foto = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -261,6 +249,27 @@ namespace OMD_TechX.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_PerroAtenciones_Perros_PerroId",
+                        column: x => x.PerroId,
+                        principalTable: "Perros",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Turnos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Franja = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PerroId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Turnos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Turnos_Perros_PerroId",
                         column: x => x.PerroId,
                         principalTable: "Perros",
                         principalColumn: "Id",
@@ -320,6 +329,11 @@ namespace OMD_TechX.Migrations
                 name: "IX_Perros_UsuarioId",
                 table: "Perros",
                 column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Turnos_PerroId",
+                table: "Turnos",
+                column: "PerroId");
         }
 
         /// <inheritdoc />

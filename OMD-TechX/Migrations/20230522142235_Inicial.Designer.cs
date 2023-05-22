@@ -12,8 +12,8 @@ using OMD_TechX.Data;
 namespace OMD_TechX.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230519025337_arreglos")]
-    partial class arreglos
+    [Migration("20230522142235_Inicial")]
+    partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -286,10 +286,11 @@ namespace OMD_TechX.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Edad")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("FechaN")
+                        .HasColumnType("datetime2");
 
                     b.Property<byte[]>("Foto")
+                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Nombre")
@@ -360,7 +361,7 @@ namespace OMD_TechX.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PerroId")
+                    b.Property<int>("PerroId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -483,7 +484,9 @@ namespace OMD_TechX.Migrations
                 {
                     b.HasOne("OMD_TechX.Modelos.Perro", null)
                         .WithMany("Turnos")
-                        .HasForeignKey("PerroId");
+                        .HasForeignKey("PerroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Perro", b =>

@@ -12,8 +12,8 @@ using OMD_TechX.Data;
 namespace OMD_TechX.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230518131918_nuevaMigracion")]
-    partial class nuevaMigracion
+    [Migration("20230522155147_comentariosNull")]
+    partial class comentariosNull
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -239,6 +239,9 @@ namespace OMD_TechX.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double>("Precio")
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
 
                     b.ToTable("Atenciones");
@@ -280,11 +283,11 @@ namespace OMD_TechX.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Comentarios")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Edad")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("FechaN")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
 
                     b.Property<byte[]>("Foto")
                         .HasColumnType("varbinary(max)");
@@ -298,6 +301,10 @@ namespace OMD_TechX.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Sexo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Tamanio")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -353,7 +360,12 @@ namespace OMD_TechX.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PerroId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PerroId");
 
                     b.ToTable("Turnos");
                 });
@@ -441,13 +453,11 @@ namespace OMD_TechX.Migrations
 
             modelBuilder.Entity("OMD_TechX.Modelos.Perro", b =>
                 {
-                    b.HasOne("OMD_TechX.Modelos.Usuario", "Usuario")
+                    b.HasOne("OMD_TechX.Modelos.Usuario", null)
                         .WithMany("Perros")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.PerroAtencion", b =>
@@ -459,7 +469,7 @@ namespace OMD_TechX.Migrations
                         .IsRequired();
 
                     b.HasOne("OMD_TechX.Modelos.Perro", "perro")
-                        .WithMany()
+                        .WithMany("PerroAtencion")
                         .HasForeignKey("PerroId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -467,6 +477,22 @@ namespace OMD_TechX.Migrations
                     b.Navigation("Atencion");
 
                     b.Navigation("perro");
+                });
+
+            modelBuilder.Entity("OMD_TechX.Modelos.Turno", b =>
+                {
+                    b.HasOne("OMD_TechX.Modelos.Perro", null)
+                        .WithMany("Turnos")
+                        .HasForeignKey("PerroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("OMD_TechX.Modelos.Perro", b =>
+                {
+                    b.Navigation("PerroAtencion");
+
+                    b.Navigation("Turnos");
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Usuario", b =>

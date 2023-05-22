@@ -5,10 +5,10 @@
     ViewData["Title"] = "Log in";
 }
 
-<div class="row">
+<!--<div class="row">
     <div class="col-md-4">
         <section>
-            <form id="account" method="post">
+            <form id="account" method="post" class="form-signin">
                 <h2>Iniciar sesión</h2>
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
@@ -39,7 +39,42 @@
             </form>
         </section>
     </div>
-</div>
+</div>-->
+<head>
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/sign-in/">
+
+    <!-- Bootstrap core CSS -->
+    <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="~/css/signin.css" rel="stylesheet">
+</head>
+<body class="text-center">
+    <form id="account" method="post" class="form-signin">
+        <img class="mb-4" src="~/imagenes/Logo1-removebg-preview.png" alt="" width="300" height="300">
+        <h1 class="h3 mb-3 font-weight-normal">Por favor, inicie sesión</h1>
+
+        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="nombre@mail.com" />
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+
+        <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Contraseña" autofocus />
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+
+
+        <!--<label for="inputEmail" class="sr-only">Email</label>
+        <input type="email" id="inputEmail" class="form-control" placeholder="ejemplo@mail.com" required autofocus>
+        <label for="inputPassword" class="sr-only">Contraseña</label>
+        <input type="password" id="inputPassword" class="form-control" placeholder="Contaseña" required>-->
+        <div class="checkbox mb-3">
+            <label asp-for="Input.RememberMe" class="form-label">
+                <input class="form-check-input" asp-for="Input.RememberMe" />
+                @Html.DisplayNameFor(m => m.Input.RememberMe)
+            </label>
+        </div>
+        <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Iniciar sesión </button>
+        <p class="mt-5 mb-3 text-muted">&copy; ¡Oh My Dog! 2023</p>
+    </form>
+</body>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

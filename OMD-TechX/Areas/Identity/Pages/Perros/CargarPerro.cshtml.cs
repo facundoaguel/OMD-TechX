@@ -82,17 +82,17 @@ namespace OMD_TechX.Pages.Perros
             {
                 string uId = Input.UsuarioId;
                 Usuario usuario = await http.GetFromJsonAsync<Usuario>($"api/usuarios/{uId}");   
-                await cargarPerro(Input.Nombre, Input.Edad, Input.Raza, Input.Tamanio, Input.Sexo,
+                await cargarPerro(Input.Nombre, new DateTime(), Input.Raza, Input.Tamanio, Input.Sexo,
                                     Input.Color, Input.Comentarios, Input.UsuarioId, usuario);
                 return LocalRedirect("/perros");
             }
             return Page();
         }
 
-        async Task cargarPerro(string nombre,int edad, string raza, string tamanio,
+        async Task cargarPerro(string nombre,DateTime fechaN, string raza, string tamanio,
                                 string sexo, string color, string coms, string uId, Usuario usuario)
         {
-            Perro perro = new Perro(nombre, edad, raza, tamanio, sexo, color, coms, uId);
+            Perro perro = new Perro(nombre, fechaN, raza, tamanio, sexo, color, coms, uId);
             HttpResponseMessage res = await http.PostAsJsonAsync("api/perros", perro);
             if (res.StatusCode == System.Net.HttpStatusCode.BadRequest || res.StatusCode == System.Net.HttpStatusCode.InternalServerError)
             {

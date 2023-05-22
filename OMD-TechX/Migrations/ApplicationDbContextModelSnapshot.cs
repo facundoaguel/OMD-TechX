@@ -241,7 +241,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Atenciones");
+                    b.ToTable("Atenciones", (string)null);
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Disponibilidad", b =>
@@ -264,7 +264,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Disponibilidades");
+                    b.ToTable("Disponibilidades", (string)null);
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Perro", b =>
@@ -280,11 +280,11 @@ namespace OMD_TechX.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Comentarios")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Edad")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("FechaN")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
 
                     b.Property<byte[]>("Foto")
                         .HasColumnType("varbinary(max)");
@@ -313,7 +313,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("Perros");
+                    b.ToTable("Perros", (string)null);
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.PerroAtencion", b =>
@@ -339,7 +339,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasIndex("PerroId");
 
-                    b.ToTable("PerroAtenciones");
+                    b.ToTable("PerroAtenciones", (string)null);
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Turno", b =>
@@ -357,14 +357,14 @@ namespace OMD_TechX.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PerroId")
+                    b.Property<int>("PerroId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PerroId");
 
-                    b.ToTable("Turnos");
+                    b.ToTable("Turnos", (string)null);
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Usuario", b =>
@@ -394,7 +394,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Usuarios");
+                    b.ToTable("Usuarios", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -480,7 +480,9 @@ namespace OMD_TechX.Migrations
                 {
                     b.HasOne("OMD_TechX.Modelos.Perro", null)
                         .WithMany("Turnos")
-                        .HasForeignKey("PerroId");
+                        .HasForeignKey("PerroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Perro", b =>
