@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using OMD_TechX.Modelos;
 
 namespace OMD_TechX.Areas.Identity.Pages.Account
 {
@@ -21,11 +22,14 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly HttpClient http;
 
         public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
             _logger = logger;
+            http = new HttpClient();
+            http.BaseAddress = new Uri("https://localhost:7083/");
         }
 
         /// <summary>
@@ -112,10 +116,21 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                var usuarios = await http.GetFromJsonAsync<List<Usuario>>($"api/usuarios");
+                Usuario usuario = usuarios.FirstOrDefault( u => u.Email == Input.Email);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("El usuario se encuentra logueado");
-                    return LocalRedirect(returnUrl);
+                    if (usuario != null && usuario.primerInicio)
+                    {
+                        usuario.primerInicio = false;
+                        http.PutAsJsonAsync("api/usuarios", usuario);
+                        return RedirectToPage("./Manage/ChangePassword");
+                    }
+                    else
+                    {
+                        return LocalRedirect(returnUrl);
+                    }
                 }
                 if (result.RequiresTwoFactor)
                 {

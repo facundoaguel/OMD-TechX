@@ -6,12 +6,14 @@
                 <h5 class="modal-title">@Titulo</h5>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @onclick="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" >
 
                 <!-- comienzo del formulario-->
                 <EditForm Model="@Perro" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="error">
                     <!-- header -->
-                    <div class="col">
+
+
+                    <div class="row">
                         <div class="d-flex align-items-center">
                             <h2>¡Oh My Dog!</h2>
                             <div class="ms-auto">
@@ -19,94 +21,154 @@
                             </div>
                         </div>
                         <hr />
+                    </div>
 
-                        <!-- campos -->
-                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
-                            <ValidationMessage For="@(() => Perro.Nombre)" class=""></ValidationMessage>
-                        </label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
-                            <InputText @bind-Value="@Perro.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Jack" />
+                    <!-- campos -->
+                    
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                        <ValidationMessage For="@(() => Perro.Nombre)" class=""></ValidationMessage>
+                                    </label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
+                                        <InputText @bind-Value="@Perro.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Jack" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                        <ValidationMessage For="@(() => Perro.Foto)"></ValidationMessage>
+                                    </label>
+                                    <div class="input-group mb-3">
+                                        @if(!limpiarInputFile){
+                                            <InputFile OnChange="HandleFileSelected" class="form-control rounded" accept="image/jpeg"></InputFile>
+                                        }
+                                        
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
-                            <ValidationMessage For="@(() => Perro.FechaN)"></ValidationMessage>
-                        </label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">Fecha de nacimiento</span>
-                            <InputDate @bind-Value="@Perro.FechaN" id="floatingInputInvalid" class="form-control rounded" aria-required="true"  />
+                        <div class="col-6">
+                            <div class="row justify-content-center">
+                                <div class="col" style="display: flex;justify-content:center;align-items:center;">
+                                    <div style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden;">
+                                        <img src="@imagenBase64" alt="Foto" class="rounded-circle" style="width: 100%; height: 100%; object-fit: cover; object-position: center;" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    </div>
 
-                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
-                            <ValidationMessage For="@(() => Perro.Raza)"></ValidationMessage>
-                        </label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">Raza</span>
-                            <InputText @bind-Value="@Perro.Raza" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Golden" />
-                        </div>
-
-                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
-                            <ValidationMessage For="@(() => Perro.Tamanio)"></ValidationMessage>
-                        </label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">Tamaño</span>
-                            <InputText @bind-Value="@Perro.Tamanio" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Chico" />
-                        </div>
-
-                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
-                            <ValidationMessage For="@(() => Perro.Sexo)"></ValidationMessage>
-                        </label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">Sexo</span>
-
-                            <InputSelect @bind-Value="@Perro.Sexo" class="form-select">
-                                <option style="opacity:70%" value="">Seleccione el sexo</option>
-                                <option value="Masculino">Masculino</option>
-                                <option value="Femenino">Femenino</option>
-                            </InputSelect>
-                        </div>
-
-                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
-                            <ValidationMessage For="@(() => Perro.Color)"></ValidationMessage>
-                        </label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">Color</span>
-                            <InputText @bind-Value="@Perro.Color" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Negro" />
-                        </div>
-
-                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
-                            <ValidationMessage For="@(() => Perro.UsuarioId)"></ValidationMessage>
-                        </label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">Dueño/a</span>
-                            <InputSelect @bind-Value="@Perro.UsuarioId" class="form-select rounded">
-                                <option style="opacity:70%" value="">Seleccione dueño/a</option>
-                                @foreach (var usuario in usuarios)
-                                {
-                                    <option value="@usuario.Id">@usuario.DNI - @usuario.Nombre @usuario.Apellido</option>
-                                }
-                            </InputSelect>
-                        </div>
                         
-                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
-                            <ValidationMessage For="@(() => Perro.Comentarios)"></ValidationMessage>
-                        </label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">Observaciones</span>
-                            <InputText @bind-Value="@Perro.Comentarios" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder=""  />
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Perro.Raza)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Raza</span>
+                                <InputText @bind-Value="@Perro.Raza" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Golden" />
+                            </div>
                         </div>
 
-                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
-                            <ValidationMessage For="@(() => Perro.Foto)"></ValidationMessage>
-                        </label>
-                        <div class="input-group mb-3">
-                            <img src="@imagenBase64" alt="Foto" class="img-thumbnail" style="max-width: 100px; margin-right: 10px;" />
-                            <InputFile OnChange="HandleFileSelected" class="form-control rounded">
-
-                            </InputFile>-
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Perro.Tamanio)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Tamaño</span>
+                                <InputText @bind-Value="@Perro.Tamanio" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Chico" />
+                            </div>
                         </div>
-                        
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Perro.Sexo)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Sexo</span>
 
+                                <InputSelect @bind-Value="@Perro.Sexo" class="form-select">
+                                    <option style="opacity:70%" value="">Seleccione el sexo</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                </InputSelect>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Perro.Color)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Color</span>
+                                <InputText @bind-Value="@Perro.Color" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Negro" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Perro.UsuarioId)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Dueño/a</span>
+                                <InputSelect @bind-Value="@Perro.UsuarioId" class="form-select rounded">
+                                    @if (modoEdicion)
+                                    {
+                                        <option value="">Seleccione dueño/a</option>
+                                        @foreach (var usuario in usuarios)
+                                        {
+                                            <option selected="@usuario.Id == Perro.UsuarioId" value="@usuario.Id">@usuario.DNI - @usuario.Nombre @usuario.Apellido</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option value="" selected>Seleccione dueño/a</option>
+                                        @foreach (var usuario in usuarios)
+                                        {
+                                            <option value="@usuario.Id">@usuario.DNI - @usuario.Nombre @usuario.Apellido</option>
+                                        }
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Perro.FechaN)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Fecha de nacimiento</span>
+                                <InputDate @bind-Value="@Perro.FechaN" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Perro.Comentarios)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Observaciones</span>
+                                <InputText @bind-Value="@Perro.Comentarios" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="" />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
                         <button type="submit" style="background-color:#21618C" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
                     </div>
                     <DataAnnotationsValidator> </DataAnnotationsValidator>
@@ -133,12 +195,16 @@
     [Parameter]
     public EventCallback OnValidSubmit { get; set; }
 
+    private EditForm formRef;
+
     private string modalDisplay = "none";
     private string modalClass = string.Empty;
     private bool showBackdrop = false;
     private IBrowserFile? selectedFile;
-    private string imagenBase64 = "";
+    private string imagenBase64;
     private List<Usuario> usuarios = new List<Usuario>();
+    private bool modoEdicion { get; set; }
+    private bool limpiarInputFile { get; set; }
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
@@ -161,38 +227,66 @@
         }
     }
 
+
+
+    private void ClearInputFile()
+    {
+        limpiarInputFile = true;
+        StateHasChanged();
+        limpiarInputFile = false;
+        StateHasChanged();
+    }
+
     public async Task Open(int id) //cuando es abre para editar tengo que traerme los datos para editar
     {
+        modoEdicion = true;
         modalDisplay = "block";
         modalClass = "show";
         showBackdrop = true;
-        //var atencionFromApi = await http.GetFromJsonAsync<Atencion>($"https://localhost:7083/api/atenciones/{id}");
-        /*Atencion.Nombre = atencionFromApi.Nombre;
-        Atencion.Precio = atencionFromApi.Precio;
-        Atencion.Id = atencionFromApi.Id;*/
-
+        usuarios = await http.GetFromJsonAsync<List<Usuario>>("https://localhost:7083/api/usuarios");
+        var perroFromApi = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{id}");
+        Perro.Id = perroFromApi.Id;
+        Perro.Nombre = perroFromApi.Nombre;
+        Perro.FechaN = perroFromApi.FechaN;
+        Perro.Raza = perroFromApi.Raza;
+        Perro.Tamanio = perroFromApi.Tamanio;
+        Perro.Color = perroFromApi.Color;
+        Perro.Comentarios = perroFromApi.Comentarios;
+        Perro.Sexo = perroFromApi.Sexo;
+        Perro.Foto = perroFromApi.Foto;
+        imagenBase64 = "data:image/jpeg;base64," + Convert.ToBase64String(perroFromApi.Foto);
+        Perro.UsuarioId = perroFromApi.UsuarioId;
+        ClearInputFile();
 
     }
     public async Task Open() //cuando se abre para crear la idea es que los campos esten vacios
     {
-        modalClass = string.Empty;
+        modoEdicion = false;
+        modalClass = "show";
         modalDisplay = "block";
         showBackdrop = true;
         usuarios = await http.GetFromJsonAsync<List<Usuario>>("https://localhost:7083/api/usuarios");
-        //restear campos vacios
-        //Atencion.Nombre = "";
-        //Atencion.Precio = 0;
+        Perro.Nombre = "";
+        Perro.FechaN = null;
+        Perro.Raza = "";
+        Perro.Tamanio = "";
+        Perro.Color = "";
+        Perro.Comentarios = "";
+        Perro.Sexo = "";  
+        imagenBase64 = "/imagenes/perrito.jpg";
+        Perro.UsuarioId = "";
+        ClearInputFile();
 
     }
     public async Task Close()
     {
         modalDisplay = "none";
-        modalClass = "modal-fadeout";
-        await Task.Delay(300); // Espera la duración de la animación antes de ocultar el modal
+        modalClass = string.Empty;
         showBackdrop = false;
     }
     public void error()
     {
         Console.WriteLine("Invalid submit");
     }
+
 }

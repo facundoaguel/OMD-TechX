@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using OMD_TechX.Controladores.Validaciones;
+using System.ComponentModel.DataAnnotations;
 
 namespace OMD_TechX.Modelos
 {
@@ -9,6 +10,7 @@ namespace OMD_TechX.Modelos
         [Required (ErrorMessage = "El campo dueño/a es requerido.")]
         public string UsuarioId { get; set; }
         [Required(ErrorMessage = "El campo nombre es requerido.")]
+        [PerroNombreUnico]
         public string Nombre { get; set; }
         [Required(ErrorMessage = "El campo fecha es requerido.")]
         public DateTime? FechaN { get; set; }

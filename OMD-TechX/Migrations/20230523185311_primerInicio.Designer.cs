@@ -12,8 +12,8 @@ using OMD_TechX.Data;
 namespace OMD_TechX.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230522201708_cambiosFacu")]
-    partial class cambiosFacu
+    [Migration("20230523185311_primerInicio")]
+    partial class primerInicio
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -394,6 +394,9 @@ namespace OMD_TechX.Migrations
                     b.Property<string>("Telefono")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("primerInicio")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

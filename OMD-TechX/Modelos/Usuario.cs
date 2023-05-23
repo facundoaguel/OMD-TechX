@@ -11,6 +11,7 @@ namespace OMD_TechX.Modelos
         public string Apellido { get; set; }
         public string Email { get; set; }
         public string Telefono { get; set; }
+        public bool primerInicio { get; set; } = true;
         public List<Perro> Perros { get; set; } = new List<Perro>();
 
         public Usuario(string id, string nombre, string apellido, string DNI, string email, string telefono)

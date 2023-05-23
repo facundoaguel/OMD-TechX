@@ -47,7 +47,13 @@ namespace OMD_TechX.Controladores
 
             return NoContent();
         }
-
+        [HttpPut]
+        public async Task<ActionResult> Put(Perro perro)
+        {
+            context.Entry(perro).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
 
     }
 }

@@ -5,6 +5,7 @@
 @inject IJSRuntime JS
 @attribute [Authorize(Roles = "Admin")]
 
+
 <div class="d-flex">
     <div class="p-2 w-100"><h1>Perros</h1></div>
     <div class="p-2 flex-shrink-1">
@@ -13,6 +14,8 @@
 </div>
 
 <ModalFormularioPerros @ref="@ModalCrearPerro" TextoBoton="Cargar perro" Titulo="Cargar perro" OnValidSubmit="(() => crearPerro())" Perro="@perro">
+</ModalFormularioPerros>
+<ModalFormularioPerros @ref="@ModalEditarPerro" TextoBoton="Editar perro" Titulo="Editar perro" OnValidSubmit="(() => editarPerro())" Perro="@perro">
 </ModalFormularioPerros>
 
 
@@ -28,27 +31,34 @@ else
 {
     <table class="table">
         <thead>
-            <tr>
+            <tr style="text-align:center; vertical-align: middle">
+                <th></th>
                 <th>Nombre</th>
                 <th>Dueño/a</th>
-                <th>Fecha de nacimiento</th>
                 <th>Raza</th>
                 <th>Sexo</th>
-                <th></th>
+                <th>Fecha de nacimiento</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var perro in perros)
             {
-                <tr>
+                usuario = usuarios.FirstOrDefault(u => u.Id == perro.UsuarioId);
+                imagenBase64 = "data:image/jpeg;base64," + Convert.ToBase64String(perro.Foto);
+                <tr style="text-align:center; vertical-align: middle;">
+                    <td>
+                        <div style="margin-left:30px; margin-right:-40px;width: 60px; height: 60px; border-radius: 50%; overflow: hidden;">
+                            <img src="@imagenBase64" alt="Foto" class="rounded-circle" style="width: 100%; height: 100%; object-fit: cover; object-position: center;" />
+                        </div>
+                    </td>
                     <td>@perro.Nombre</td>
-                    <td>@perro.Nombre</td>
-                    <td>@perro.FechaN</td>
+                    <td>@usuario.Nombre @usuario.Apellido</td>
                     <td>@perro.Raza</td>
                     <td>@perro.Sexo</td>
+                    <td>@perro.FechaN</td>
                     <td style="text-align:right;">
                         <button class="btn btn-danger" @onclick="@(()=>BorrarPerro(perro.Id))"><i class="oi oi-trash"></i> </button>
-                        <button class ="btn btn-success" value="Editar" onclick="window.location.href='"><i class="oi oi-pencil"></i></button>
+                        <button class="btn btn-success" value="Editar" @onclick="@(()=>ModalEditarPerro.Open(perro.Id))"><i class="oi oi-pencil"></i></button>
                     </td>
                 </tr>
             }
@@ -67,8 +77,11 @@ else
     }*/
     Perro[] perros { get; set; }
     Perro perro { get; set; } = new Perro();
+    List<Usuario> usuarios { get; set; } = new List<Usuario>();
     Usuario usuario { get; set; } = new Usuario();
+    private string imagenBase64 { get; set; }
     private ModalFormularioPerros ModalCrearPerro { get; set; }
+    private ModalFormularioPerros ModalEditarPerro { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -85,12 +98,19 @@ else
 
     async Task cargarPerros()
     {
+        await cargarUsuarios();
         perros = await http.GetFromJsonAsync<Perro[]>("https://localhost:7083/api/perros");
 
     }
-    async Task buscarUsuario(string id)
+    async Task cargarUsuarios()
     {
-        usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{id}");
+        usuarios = await http.GetFromJsonAsync<List<Usuario>>($"https://localhost:7083/api/usuarios");
+    }
+    async Task editarPerro()
+    {
+        await http.PutAsJsonAsync($"api/perros", perro);
+        ModalEditarPerro.Close();
+        await cargarPerros();
     }
 
     async Task BorrarPerro(int id)

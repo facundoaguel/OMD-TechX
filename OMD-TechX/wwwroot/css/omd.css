@@ -1,6 +1,27 @@
 ﻿.omd-azul {
     background-color: #21618C;
 }
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+}
+
+    .loader img {
+        animation: spin 2s linear infinite;
+    }
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 * {
     box-sizing: border-box;
 }

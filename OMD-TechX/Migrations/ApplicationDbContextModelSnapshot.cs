@@ -392,6 +392,9 @@ namespace OMD_TechX.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("primerInicio")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");

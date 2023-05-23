@@ -3,6 +3,11 @@
 @inject HttpClient http
 @inject IJSRuntime JS
 
+<style>
+    body{
+        background-color: #E9E7E4;
+    }
+</style>
 
 <div class="d-flex">
     <div class="p-2 w-100"><h1>Usuarios</h1></div>
@@ -43,7 +48,7 @@ else
                     <td>@user.Apellido</td>
                     <td>@user.Email</td>
                     <td>@user.Telefono</td>
-                    <td>
+                    <td style="text-align: right">
                         <button class="btn btn-danger" @onclick="@(()=>BorrarUsuario(user.Id))"><i class="oi oi-trash"></i> Borrar</button>
                     </td>
                 </tr>
