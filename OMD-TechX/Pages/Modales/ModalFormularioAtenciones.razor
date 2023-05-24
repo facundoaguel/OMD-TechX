@@ -31,6 +31,10 @@
                         {
                             <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
                                 <ValidationMessage For="@(() => Atencion.Nombre)" class=""></ValidationMessage>
+                                @if (!string.IsNullOrEmpty(MensajeError))
+                                {
+                                    <span class="text-danger">@MensajeError</span>
+                                }
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
@@ -48,6 +52,7 @@
                         <button type="submit" style="background-color:#21618C" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
                     </div>
                     <DataAnnotationsValidator> </DataAnnotationsValidator>
+                    <ValidationSummary/>
 
                 </EditForm>
             </div>
@@ -61,7 +66,8 @@
 }
 
 @code {
-
+    [Parameter]
+    public string MensajeError { get; set; }
 
     [Parameter]
     public string Titulo { get; set; }
@@ -99,6 +105,7 @@
         showBackdrop = true;
         Atencion.Nombre = "";
         Atencion.Precio = 0;
+        Atencion.Id = 0;
 
     }
     public void Close()
