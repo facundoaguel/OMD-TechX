@@ -1,4 +1,5 @@
-﻿using OMD_TechX.Controladores.Validaciones;
+﻿using Microsoft.VisualStudio.TextTemplating;
+using OMD_TechX.Controladores.Validaciones;
 using System.ComponentModel.DataAnnotations;
 
 namespace OMD_TechX.Modelos
@@ -10,7 +11,7 @@ namespace OMD_TechX.Modelos
         [Required (ErrorMessage = "El campo dueño/a es requerido.")]
         public string UsuarioId { get; set; }
         [Required(ErrorMessage = "El campo nombre es requerido.")]
-        [PerroNombreUnico]
+        [PerroNombreUnico("UsuarioId")]
         public string Nombre { get; set; }
         [Required(ErrorMessage = "El campo fecha es requerido.")]
         public DateTime? FechaN { get; set; }
@@ -46,6 +47,14 @@ namespace OMD_TechX.Modelos
             this.Turnos = new List<Turno>();
             this.PerroAtencion = new List<PerroAtencion>();
             this.Foto = new byte []{ };
+        }
+
+       public string ToString()
+        {
+            return ("Perro: " + Id + "\r\n" +
+                "Nombre: " + Nombre + "\r\n" +
+                "Usuario: " + UsuarioId + "\r\n"
+                ) ;
         }
 
 

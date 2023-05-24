@@ -9,7 +9,7 @@
             <div class="modal-body" >
 
                 <!-- comienzo del formulario-->
-                <EditForm Model="@Perro" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="error">
+                <EditForm @ref="MyEditForm" Model="@Perro" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="error">
                     <!-- header -->
 
 
@@ -31,8 +31,9 @@
                             <div class="row">
                                 <div class="col">
                                     <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                        <text class="text-danger">@mensajeNombre</text>
                                         <ValidationMessage For="@(() => Perro.Nombre)" class=""></ValidationMessage>
-                                    </label>
+                                   </label>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
                                         <InputText @bind-Value="@Perro.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Jack" />
@@ -123,7 +124,7 @@
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Dueño/a</span>
-                                <InputSelect @bind-Value="@Perro.UsuarioId" class="form-select rounded">
+                                <InputSelect @bind-Value="@Perro.UsuarioId" @onselect="() => StateHasChanged()" class="form-select rounded">
                                     @if (modoEdicion)
                                     {
                                         <option value="">Seleccione dueño/a</option>
@@ -171,7 +172,9 @@
                     <div class="row">
                         <button type="submit" style="background-color:#21618C" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
                     </div>
+
                     <DataAnnotationsValidator> </DataAnnotationsValidator>
+                    <ValidationSummary></ValidationSummary>
                 </EditForm>
             </div>
         </div>
@@ -205,6 +208,9 @@
     private List<Usuario> usuarios = new List<Usuario>();
     private bool modoEdicion { get; set; }
     private bool limpiarInputFile { get; set; }
+
+    private EditForm MyEditForm;
+    private string mensajeNombre;
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
@@ -274,6 +280,7 @@
         Perro.Comentarios = "";
         Perro.Sexo = "";  
         imagenBase64 = "/imagenes/perrito.jpg";
+        Perro.Foto = convertirImagen("C:/Users/aguel/source/repos/OMD-TechX/OMD-TechX/wwwroot/imagenes/perrito.jpg");
         Perro.UsuarioId = "";
         ClearInputFile();
 
@@ -282,11 +289,38 @@
     {
         modalDisplay = "none";
         modalClass = string.Empty;
-        showBackdrop = false;
+        showBackdrop = false;   
     }
     public void error()
     {
-        Console.WriteLine("Invalid submit");
-    }
+        Console.WriteLine("SUMARIO DE VALIDACION");
+        foreach (var message in MyEditForm.EditContext.GetValidationMessages())
+        {
+            if (message.Equals("El cliente ya tiene un perro asociado con ese nombre. Por favor, ingrese otro."))
+            {
+                mensajeNombre = message;
+            }
+            else
+            {
+                mensajeNombre = "";
+            }
+            Console.WriteLine(message);
 
+        }
+        Console.WriteLine("/////////////// PERRO ////////////");
+        Console.WriteLine(Perro.ToString());
+        Console.WriteLine("Invalid submit");
+    } 
+    private byte[] convertirImagen(string path)
+    {
+        byte[] imageBytes;
+        using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+        {
+            using (BinaryReader br = new BinaryReader(fs))
+            {
+                imageBytes = br.ReadBytes((int)fs.Length);
+            }
+        }
+        return imageBytes;
+    }
 }

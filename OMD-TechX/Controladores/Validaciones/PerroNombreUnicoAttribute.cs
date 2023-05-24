@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using OMD_TechX.Data;
 using OMD_TechX.Modelos;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,14 @@ namespace OMD_TechX.Controladores.Validaciones
 {
     public class PerroNombreUnicoAttribute : ValidationAttribute
     {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+
+        private readonly string usuarioId;
+
+        public PerroNombreUnicoAttribute(string usuarioId)
+        {
+            this.usuarioId = usuarioId;
+        }
+        /*protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             var dbContext = validationContext.GetService<ApplicationDbContext>();
             var perro = validationContext.ObjectInstance as Perro;
@@ -23,6 +31,31 @@ namespace OMD_TechX.Controladores.Validaciones
                 }
             }
 
+            return ValidationResult.Success;
+        }*/
+
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            var dbContext = validationContext.GetService<ApplicationDbContext>();
+            var usuarioIdInfo = validationContext.ObjectType.GetProperty(usuarioId);
+            if (usuarioIdInfo == null)
+            {
+                return new ValidationResult($"La propiedad {usuarioId} no fue encontrada.");
+            }
+
+            var usuarioIdValue = usuarioIdInfo.GetValue(validationContext.ObjectInstance, null);
+            Usuario usuario = dbContext.Usuarios.Include(u => u.Perros).FirstOrDefault(u => u.Id == usuarioIdValue);
+            if (usuario != null) {
+                var encontre = usuario.Perros.Any(p => {Console.WriteLine("Nombre del perro: " + p.Nombre); return p.Nombre.Equals((string)value); });
+                if (encontre)
+                {
+                    return new ValidationResult("El cliente ya tiene un perro asociado con ese nombre. Por favor, ingrese otro.");
+                }
+                else
+                {
+                    return ValidationResult.Success;
+                }   
+            }
             return ValidationResult.Success;
         }
     }
