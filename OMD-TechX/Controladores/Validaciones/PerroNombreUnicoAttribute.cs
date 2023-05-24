@@ -9,17 +9,22 @@ namespace OMD_TechX.Controladores.Validaciones
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var dbContext = validationContext.GetService<ApplicationDbContext>();
-            var perro = validationContext.ObjectInstance as Perro;
-
-            if (perro != null)
+            if (value != null)
             {
-                // Verificar si ya existe un perro con el mismo nombre para el mismo usuario
-                var existingPerro = dbContext.Perros.FirstOrDefault(p => p.Nombre == perro.Nombre && p.UsuarioId == perro.UsuarioId);
+                // Verificar si ya existe un usuario con este DNI en la base de datos
+                var dbContext = (ApplicationDbContext)validationContext.GetService(typeof(ApplicationDbContext)); // Reemplaza "TuDbContext" con el nombre de tu DbContext
+                var perro = dbContext.Perros.FirstOrDefault(p => p.Nombre == (string)value);
 
-                if (existingPerro != null)
+                Usuario usuario = dbContext.Usuarios.FirstOrDefault(u => u.Id == perro.UsuarioId);
+                var encontre = false;
+
+                if(usuario  != null)
                 {
-                    return new ValidationResult("El nombre del perro ya está en uso.");
+                    encontre = usuario.Perros.Any(p => p.Nombre.Equals(perro.Nombre));
+                }
+                if (encontre)
+                {
+                    return new ValidationResult("El nombre ya está en uso.");
                 }
             }
 

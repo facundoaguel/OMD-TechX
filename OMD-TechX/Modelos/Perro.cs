@@ -8,8 +8,10 @@ namespace OMD_TechX.Modelos
         [Key]
         public int Id { get; set; }
         [Required (ErrorMessage = "El campo dueño/a es requerido.")]
+
         public string UsuarioId { get; set; }
         [Required(ErrorMessage = "El campo nombre es requerido.")]
+
         [PerroNombreUnico]
         public string Nombre { get; set; }
         [Required(ErrorMessage = "El campo fecha es requerido.")]

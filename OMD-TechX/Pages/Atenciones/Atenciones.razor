@@ -15,7 +15,6 @@
 <ModalFormularioAtenciones @ref="@ModalCrearAtencion" TextoBoton="Crear atención" Titulo="Crear atencion" OnValidSubmit="(() => crearAtencion())" Atencion="@atencion">
 </ModalFormularioAtenciones>
 <ModalFormularioAtenciones @ref="@ModalEditarAtencion" TextoBoton="Editar atención" Titulo="Editar atencion" OnValidSubmit="(() => editarAtencion())" Atencion="@atencion">
-
 </ModalFormularioAtenciones>
 
 @if (atenciones == null)
@@ -77,7 +76,7 @@ else
 
     async Task editarAtencion()
     {
-        await http.PutAsJsonAsync($"api/atenciones", atencion);
+        await http.PutAsJsonAsync("api/atenciones", atencion);
         ModalEditarAtencion.Close();
         await cargarAtenciones();
     }
