@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using OMD_TechX.Modelos;
 using OMD_TechX.Controladores.Validaciones;
+using OMD_TechX.Data;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OMD_TechX.Areas.Identity.Pages.Account
 {
@@ -24,9 +26,11 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
         private readonly HttpClient http;
+        private readonly ApplicationDbContext context;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, ApplicationDbContext context)
         {
+            this.context = context;
             _signInManager = signInManager;
             _logger = logger;
             http = new HttpClient();
@@ -80,6 +84,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             /// </summary>
             [Required (ErrorMessage ="El campo contraseña es requerido")]
             [DataType(DataType.Password)]
+            //[Remote(action: "VerificarContra", controller:"Usuarios", HttpMethod = "POST", AdditionalFields = nameof(Email))]
             public string Password { get; set; }
 
             /// <summary>
@@ -119,7 +124,9 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 var usuarios = await http.GetFromJsonAsync<List<Usuario>>($"api/usuarios");
+
                 Usuario usuario = usuarios.FirstOrDefault( u => u.Email == Input.Email);
+
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("El usuario se encuentra logueado");
@@ -134,7 +141,16 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
                         return LocalRedirect(returnUrl);
                     }
                 }
-                if (result.RequiresTwoFactor)
+                else
+                {
+                    //si llego hasta aca y el mail no es inexistente entonces la contrasenia es incorrecta
+                    if(usuario != null )
+                    {
+                        ModelState.AddModelError(Input.Password, "Contraseña incorrecta.");
+                    }
+                    return Page();
+                }
+                /*if (result.RequiresTwoFactor)
                 {
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
                 }
@@ -147,7 +163,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
                 {
                     ModelState.AddModelError(string.Empty, "Intento fallido de iniciar sesion.");
                     return Page();
-                }
+                }*/
             }
 
             // If we got this far, something failed, redisplay form

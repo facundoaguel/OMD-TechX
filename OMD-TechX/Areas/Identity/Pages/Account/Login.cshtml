@@ -59,8 +59,23 @@
 
         <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Contraseña" autofocus />
         <span asp-validation-for="Input.Password" class="text-danger"></span>
-
-
+        @if(!ModelState.IsValid)
+        {
+            var errores = ModelState.Values.SelectMany(v => v.Errors);
+            var contraIncorrecta = errores.Any(e => e.ErrorMessage.Equals("Contraseña incorrecta."));
+            if (contraIncorrecta)
+            {
+                <span class="text-danger">Contraseña incorrecta</span>
+            }
+            else
+            {
+                <span class="text-danger" hidden style="display:none">Contraseña incorrecta.</span>
+            }
+        }
+        else
+        {
+            <span class="text-danger" hidden style="display:none">Contraseña incorrecta.</span>
+        }
         <!--<label for="inputEmail" class="sr-only">Email</label>
         <input type="email" id="inputEmail" class="form-control" placeholder="ejemplo@mail.com" required autofocus>
         <label for="inputPassword" class="sr-only">Contraseña</label>
