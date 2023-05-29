@@ -31,7 +31,7 @@
                             <div class="row">
                                 <div class="col">
                                     <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
-                                        <text class="text-danger">@mensajeNombre</text>
+                                        <text class="text-danger">@labelNombreEnUso</text>
                                         <ValidationMessage For="@(() => Perro.Nombre)" class=""></ValidationMessage>
                                    </label>
                                     <div class="input-group mb-3">
@@ -209,6 +209,7 @@
     private bool modoEdicion { get; set; }
     private bool limpiarInputFile { get; set; }
 
+    public string labelNombreEnUso { get; set; }
     private EditForm MyEditForm;
     private string mensajeNombre;
 
@@ -245,28 +246,35 @@
 
     public async Task Open(int id) //cuando es abre para editar tengo que traerme los datos para editar
     {
+        labelNombreEnUso = "";
         modoEdicion = true;
         modalDisplay = "block";
         modalClass = "show";
         showBackdrop = true;
         usuarios = await http.GetFromJsonAsync<List<Usuario>>("https://localhost:7083/api/usuarios");
         var perroFromApi = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{id}");
-        Perro.Id = perroFromApi.Id;
-        Perro.Nombre = perroFromApi.Nombre;
-        Perro.FechaN = perroFromApi.FechaN;
-        Perro.Raza = perroFromApi.Raza;
-        Perro.Tamanio = perroFromApi.Tamanio;
-        Perro.Color = perroFromApi.Color;
-        Perro.Comentarios = perroFromApi.Comentarios;
-        Perro.Sexo = perroFromApi.Sexo;
-        Perro.Foto = perroFromApi.Foto;
-        imagenBase64 = "data:image/jpeg;base64," + Convert.ToBase64String(perroFromApi.Foto);
-        Perro.UsuarioId = perroFromApi.UsuarioId;
+        actualizarCampos(Perro, perroFromApi);
         ClearInputFile();
 
     }
+
+    private void actualizarCampos(Perro perro, Perro perroFromApi)
+    {
+        perro.Id = perroFromApi.Id;
+        perro.Nombre = perroFromApi.Nombre;
+        perro.FechaN = perroFromApi.FechaN;
+        perro.Raza = perroFromApi.Raza;
+        perro.Tamanio = perroFromApi.Tamanio;
+        perro.Color = perroFromApi.Color;
+        perro.Comentarios = perroFromApi.Comentarios;
+        perro.Sexo = perroFromApi.Sexo;
+        perro.Foto = perroFromApi.Foto;
+        imagenBase64 = "data:image/jpeg;base64," + Convert.ToBase64String(perroFromApi.Foto);
+        perro.UsuarioId = perroFromApi.UsuarioId;
+    }
     public async Task Open() //cuando se abre para crear la idea es que los campos esten vacios
     {
+        labelNombreEnUso = "";
         modoEdicion = false;
         modalClass = "show";
         modalDisplay = "block";
@@ -282,6 +290,7 @@
         imagenBase64 = "/imagenes/perrito.jpg";
         Perro.Foto = convertirImagen("C:/Users/aguel/source/repos/OMD-TechX/OMD-TechX/wwwroot/imagenes/perrito.jpg");
         Perro.UsuarioId = "";
+        Perro.Id = 0;
         ClearInputFile();
 
     }
@@ -296,14 +305,6 @@
         Console.WriteLine("SUMARIO DE VALIDACION");
         foreach (var message in MyEditForm.EditContext.GetValidationMessages())
         {
-            if (message.Equals("El cliente ya tiene un perro asociado con ese nombre. Por favor, ingrese otro."))
-            {
-                mensajeNombre = message;
-            }
-            else
-            {
-                mensajeNombre = "";
-            }
             Console.WriteLine(message);
 
         }

@@ -27,6 +27,11 @@ namespace OMD_TechX.Controladores
             return await context.Atenciones.FirstOrDefaultAsync(a => a.Id == id);
         }
 
+        [HttpGet("getNombre/{nombre}")]
+        public async Task<ActionResult<bool>> Get(string nombre)
+        {
+            return context.Atenciones.Any(a => a.Nombre.Equals(nombre));
+        }
 
         [HttpPost]
         public async Task<ActionResult> Post(Atencion atencion)

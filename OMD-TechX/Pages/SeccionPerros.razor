@@ -64,8 +64,8 @@ else
             }
         </tbody>
     </table>
-    <SurveyPrompt/>
 }
+<SurveyPrompt />
 
 <!--<RadzenButton Text="@text" Click="@botonClick"></RadzenButton>-->
 @code {
@@ -91,9 +91,21 @@ else
 
     async Task crearPerro()
     {
-        await http.PostAsJsonAsync("https://localhost:7083/api/perros", perro);
-        ModalCrearPerro.Close();
-        await cargarPerros();
+
+        var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{perro.UsuarioId}");
+        bool nombreEnUso = usuario.Perros.Any(p => p.Nombre.Equals(perro.Nombre));
+        if (!nombreEnUso)
+        {
+            ModalCrearPerro.labelNombreEnUso = "";
+            await http.PostAsJsonAsync("https://localhost:7083/api/perros", perro);
+            ModalCrearPerro.Close();
+            await cargarPerros();
+        }
+        else
+        {
+            ModalCrearPerro.labelNombreEnUso = "El dueño ya tiene un perro asociado con ese nombre. Por favor, ingrese otro";
+        }
+      
     }
 
     async Task cargarPerros()
@@ -108,9 +120,31 @@ else
     }
     async Task editarPerro()
     {
-        await http.PutAsJsonAsync($"api/perros", perro);
-        ModalEditarPerro.Close();
-        await cargarPerros();
+        var perroFromApi = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{perro.Id}");
+        string nombreActual = perroFromApi.Nombre;
+        if (nombreActual.Equals(perro.Nombre))
+        {
+            await http.PutAsJsonAsync($"api/perros", perro);
+            ModalEditarPerro.Close();
+            await cargarPerros();
+        }
+        else
+        {
+            var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{perro.UsuarioId}");
+            bool nombreEnUso = usuario.Perros.Any(p => p.Nombre.Equals(perro.Nombre));
+            if (!nombreEnUso)
+            {
+                ModalEditarPerro.labelNombreEnUso = "";
+                await http.PutAsJsonAsync($"api/perros", perro);
+                ModalEditarPerro.Close();
+                await cargarPerros();
+            }
+            else
+            {
+                ModalEditarPerro.labelNombreEnUso = "El dueño ya tiene un perro asociado con ese nombre. Por favor, ingrese otro";
+            }
+        }
+        
     }
 
     async Task BorrarPerro(int id)

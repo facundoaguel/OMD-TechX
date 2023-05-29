@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using OMD_TechX.Modelos;
+using OMD_TechX.Controladores.Validaciones;
 
 namespace OMD_TechX.Areas.Identity.Pages.Account
 {
@@ -70,6 +71,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             /// </summary>
             [Required(ErrorMessage ="El campo email es requerido")]
             [EmailAddress (ErrorMessage ="La dirección ingresada no es válida")]
+            [EmailExistente]
             public string Email { get; set; }
 
             /// <summary>

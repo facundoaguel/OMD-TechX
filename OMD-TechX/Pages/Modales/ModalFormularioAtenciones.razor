@@ -19,14 +19,28 @@
                         <hr />
                         
 
-                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
-
-                            <ValidationMessage For="@(() => Atencion.Nombre)" class=""></ValidationMessage>
-                        </label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
-                            <InputText  @bind-Value="@Atencion.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Vacunación" />
-                        </div>
+                        @if (this.EsEdicion)
+                        {
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
+                                <span class="form-control rounded float-end">@Atencion.Nombre</span>
+                            </div>
+                            <input type="hidden" @bind="@Atencion.Nombre" />
+                        }
+                        else
+                        {
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Atencion.Nombre)" class=""></ValidationMessage>
+                                @if (!string.IsNullOrEmpty(MensajeError))
+                                {
+                                    <span class="text-danger">@MensajeError</span>
+                                }
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
+                                <InputText @bind-Value="@Atencion.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Vacunación" />
+                            </div>
+                        }
                         <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
                             <ValidationMessage For="@(() => Atencion.Precio)"></ValidationMessage>
                         </label>
@@ -38,6 +52,7 @@
                         <button type="submit" style="background-color:#21618C" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
                     </div>
                     <DataAnnotationsValidator> </DataAnnotationsValidator>
+                    <ValidationSummary/>
 
                 </EditForm>
             </div>
@@ -52,6 +67,9 @@
 
 @code {
     [Parameter]
+    public string MensajeError { get; set; }
+
+    [Parameter]
     public string Titulo { get; set; }
     [Parameter]
     public RenderFragment ChildContent { get; set; }
@@ -65,9 +83,12 @@
     private string modalDisplay = "none";
     private string modalClass = string.Empty;
     private bool showBackdrop = false;
+    private bool EsEdicion { get; set; } = false;
+
 
     public async Task Open(int id)
     {
+        EsEdicion = true;
         modalDisplay = "block";
         modalClass = "show";
         showBackdrop = true;
@@ -75,7 +96,6 @@
         Atencion.Nombre = atencionFromApi.Nombre;
         Atencion.Precio = atencionFromApi.Precio;
         Atencion.Id = atencionFromApi.Id;
-
 
     }
     public void Open()
@@ -85,10 +105,12 @@
         showBackdrop = true;
         Atencion.Nombre = "";
         Atencion.Precio = 0;
+        Atencion.Id = 0;
 
     }
     public void Close()
     {
+        MensajeError = "";
         modalDisplay = "none";
         modalClass = string.Empty;
         showBackdrop = false;

@@ -15,7 +15,6 @@
 <ModalFormularioAtenciones @ref="@ModalCrearAtencion" TextoBoton="Crear atención" Titulo="Crear atencion" OnValidSubmit="(() => crearAtencion())" Atencion="@atencion">
 </ModalFormularioAtenciones>
 <ModalFormularioAtenciones @ref="@ModalEditarAtencion" TextoBoton="Editar atención" Titulo="Editar atencion" OnValidSubmit="(() => editarAtencion())" Atencion="@atencion">
-
 </ModalFormularioAtenciones>
 
 @if (atenciones == null)
@@ -55,7 +54,7 @@ else
         </tbody>
     </table>
 }
-
+<SurveyPrompt />
 @code {
     Atencion[] atenciones { get; set; }
     Atencion atencion { get; set; } = new Atencion();
@@ -77,16 +76,26 @@ else
 
     async Task editarAtencion()
     {
-        await http.PutAsJsonAsync($"api/atenciones", atencion);
+        await http.PutAsJsonAsync("api/atenciones", atencion);
         ModalEditarAtencion.Close();
         await cargarAtenciones();
     }
 
     async Task crearAtencion()
     {
-        await http.PostAsJsonAsync("api/atenciones", atencion);
-        ModalCrearAtencion.Close();
-        await cargarAtenciones();
+        var atenciones = await http.GetFromJsonAsync<Atencion[]>("https://localhost:7083/api/atenciones");
+        var existe = atenciones.Any(a => a.Nombre.Equals(atencion.Nombre));
+
+        if (!existe)
+        {
+            await http.PostAsJsonAsync("api/atenciones", atencion);
+            ModalCrearAtencion.Close();
+            await cargarAtenciones();
+        }
+        else
+        {
+            ModalCrearAtencion.MensajeError = "El nombre esta en uso";
+        }
     }
 
     async Task BorrarAtencion(int id)

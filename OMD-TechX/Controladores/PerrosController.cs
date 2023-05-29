@@ -50,9 +50,29 @@ namespace OMD_TechX.Controladores
         [HttpPut]
         public async Task<ActionResult> Put(Perro perro)
         {
-            context.Entry(perro).State = EntityState.Modified;
-            await context.SaveChangesAsync();
-            return NoContent();
+            var existingPerro = await context.Perros.FirstOrDefaultAsync(p => p.Id == perro.Id);
+
+            if (existingPerro != null)
+            {
+                // Actualizar las propiedades del perro existente con los valores del objeto perro
+                existingPerro.Nombre = perro.Nombre;
+                existingPerro.FechaN = perro.FechaN;
+                existingPerro.Foto = perro.Foto;
+                existingPerro.Raza = perro.Raza;
+                existingPerro.Tamanio = perro.Tamanio;
+                existingPerro.Color = perro.Color;
+                existingPerro.UsuarioId = perro.UsuarioId;
+                existingPerro.Comentarios = perro.Comentarios;
+                existingPerro.Sexo = perro.Sexo;
+                //context.Entry(perro).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+                return NoContent();
+            }
+            else
+            {
+                // La entidad no existe en el contexto
+                return NotFound();
+            }
         }
 
     }
