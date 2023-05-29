@@ -55,7 +55,7 @@ else
                     <td>@usuario.Nombre @usuario.Apellido</td>
                     <td>@perro.Raza</td>
                     <td>@perro.Sexo</td>
-                    <td>@perro.FechaN</td>
+                    <td>@perro.FechaN.ToShortDateString()</td>
                     <td style="text-align:right;">
                         <button class="btn btn-danger" @onclick="@(()=>BorrarPerro(perro.Id))"><i class="oi oi-trash"></i> </button>
                         <button class="btn btn-success" value="Editar" @onclick="@(()=>ModalEditarPerro.Open(perro.Id))"><i class="oi oi-pencil"></i></button>

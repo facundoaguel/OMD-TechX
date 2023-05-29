@@ -281,7 +281,7 @@
         showBackdrop = true;
         usuarios = await http.GetFromJsonAsync<List<Usuario>>("https://localhost:7083/api/usuarios");
         Perro.Nombre = "";
-        Perro.FechaN = null;
+        Perro.FechaN = DateTime.Today;
         Perro.Raza = "";
         Perro.Tamanio = "";
         Perro.Color = "";

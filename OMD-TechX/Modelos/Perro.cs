@@ -15,7 +15,7 @@ namespace OMD_TechX.Modelos
         
         public string Nombre { get; set; }
         [Required(ErrorMessage = "El campo fecha es requerido.")]
-        public DateTime? FechaN { get; set; }
+        public DateTime FechaN { get; set; }
         [Required(ErrorMessage = "El campo raza es requerido.")]
         public string Raza { get; set; }
         [Required(ErrorMessage = "El campo tamaño es requerido.")]
