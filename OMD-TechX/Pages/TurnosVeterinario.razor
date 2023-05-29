@@ -1,6 +1,59 @@
 ﻿@page "/turnosVet"
+@inject HttpClient http
+@inject IJSRuntime JS
 <h3>TurnosVeterinario</h3>
+@if (turnos == null)
+{
+    <text>Cargando...</text>
+}
+else if (turnos.Length == 0)
+{
+    <text>No hay turnos.</text>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Franja</th>
+                <th>Motivo</th>
+                <th>Perro</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var turno in turnos)
+            {
+                <tr>
+
+                    <td>@turno.Fecha.ToShortDateString()</td>
+                    <td>@turno.Franja</td>
+                    <td>@turno.motivo</td>
+                    <td>@turno.Perro</td>
+                    <td>@turno.estado</td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<SurveyPrompt />
+
 
 @code {
+    Turno[] turnos { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        http.BaseAddress = new Uri("https://localhost:7083/");
+        await cargarTurnos();
+    }
+
+
+    async Task cargarTurnos()
+    {
+            turnos = await http.GetFromJsonAsync<Turno[]>($"https://localhost:7083/api/turnos");
+    }
 }
