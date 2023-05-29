@@ -1,7 +1,99 @@
 ﻿@page "/turnos"
+@using System.Net.Http.Headers;
+@using Microsoft.AspNetCore.Mvc;
+@using OMD_TechX.Pages.Modales;
+@inject HttpClient http
+@inject IJSRuntime JS
+@attribute [Authorize(Roles = "Normal")]
 
-<h1>Turnos</h1>
+<div class="d-flex">
+    <div class="p-2 w-100"><h1>Turnos</h1></div>
+    <div class="p-2 flex-shrink-1">
+        <input type="button" class="btn btn-success" value="Sacar Turno" @onclick="() => ModalCrearTurno.Open()">
+    </div>
+</div>
 
+<ModalFormularioTurnos @ref="@ModalCrearTurno" TextoBoton="Sacar turno" Titulo="Crear turno" OnValidSubmit="(() => crearTurno())" Turno="@turno">
+</ModalFormularioTurnos>
+
+
+@if (turnos == null)
+{
+    <text>Cargando...</text>
+}
+else if (turnos.Length == 0)
+{
+    <text>No hay turnos.</text>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Franja</th>
+                <th>Motivo</th>
+                <th>Perro</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var turno in turnos)
+            {
+                <tr>
+
+                    <td>@turno.Fecha</td>
+                    <td>@turno.Franja</td>
+                    <td>@turno.motivo</td>
+                    <td>@turno.Perro</td>
+                    <td>@turno.estado</td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<SurveyPrompt />
 @code {
+    Turno[] turnos { get; set; }
+    Turno turno { get; set; } = new Turno();
+    private ModalFormularioTurnos ModalCrearTurno { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        http.BaseAddress = new Uri("https://localhost:7083/");
+        await cargarTurno();
+    }
+
+
+    async Task cargarTurno()
+    {
+        turnos = await http.GetFromJsonAsync<Turno[]>("https://localhost:7083/api/turnos");
+    }
+
+    async Task crearTurno()
+    {
+        //var turnos = await http.GetFromJsonAsync<Turno[]>("https://localhost:7083/api/turnos");
+        //await turno.EstablecerEstadoPorIdAsync(turno.PerroId, turno.motivoId);
+        Turno turnoPost = new Turno(turno.Fecha, turno.Franja, turno.PerroId, turno.motivoId, turno.usuarioId);
+        var res = await http.PostAsJsonAsync("api/turnos", turnoPost);
+        ModalCrearTurno.Close();
+        await cargarTurno();
+
+    }
+
+    async Task CancelarTurno(int id)
+    {
+        var turno = turnos.First(a => a.Id == id);
+
+        string mensajeconfirmacion = $"¿Desea cancelar el turno?";
+        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        {
+            await http.DeleteAsync($"https://localhost:7083/api/turnos/{id}");
+            await cargarTurno();
+        }
+    }
 
 }

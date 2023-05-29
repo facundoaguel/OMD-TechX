@@ -10,16 +10,18 @@ namespace OMD_TechX.Modelos
     {
         [Key]
         public int Id { get; set; }
-        public DateTime? Fecha { get; set; }
+        public DateTime Fecha { get; set; }
         public string Franja { get; set; }
         public int PerroId { get; set; }
         public string Perro { get; set; }
         public string estado { get; set; }
         public int motivoId { get; set; }
         public string motivo { get; set; }
-        public int usuarioId { get; set; }
+        public string usuarioId { get; set; }
 
-        public Turno() { }
+        public Turno() {
+            this.estado = "Pendiente";
+        }
 
         public static async Task<string> ObtenerPerro(int Id)
         {
@@ -27,7 +29,7 @@ namespace OMD_TechX.Modelos
             {
                 try
                 {
-                    HttpResponseMessage response = await client.GetAsync("https://localhost:7083/api/perros/{Id}");
+                    HttpResponseMessage response = await client.GetAsync($"https://localhost:7083/api/perros/{Id}");
                     response.EnsureSuccessStatusCode(); // Verificar que la respuesta sea exitosa
                     var perro = await response.Content.ReadFromJsonAsync<Perro>();
                     return perro.Nombre.ToString();
@@ -46,7 +48,7 @@ namespace OMD_TechX.Modelos
             {
                 try
                 {
-                    HttpResponseMessage response = await client.GetAsync("https://localhost:7083/api/atenciones/{Id}");
+                    HttpResponseMessage response = await client.GetAsync($"https://localhost:7083/api/atenciones/{Id}");
                     response.EnsureSuccessStatusCode(); // Verificar que la respuesta sea exitosa
                     var atencion = await response.Content.ReadFromJsonAsync<Atencion>();
                     return atencion.Nombre.ToString();
@@ -61,11 +63,11 @@ namespace OMD_TechX.Modelos
 
         public async Task EstablecerEstadoPorIdAsync(int perroId, int motivoId)
         {
-            Perro = await ObtenerPerro(perroId);
-            motivo = await ObtenerMotivo(motivoId);
+            this.Perro = await ObtenerPerro(perroId);
+            this.motivo = await ObtenerMotivo(motivoId);
         }
 
-        public Turno(DateTime fecha, String franja, int perroId, int motivoId, int usuarioId)
+        public Turno(DateTime fecha, String franja, int perroId, int motivoId, string usuarioId)
         {
             this.usuarioId = usuarioId;
             this.Fecha = fecha;

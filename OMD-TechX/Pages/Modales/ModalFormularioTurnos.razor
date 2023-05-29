@@ -1,5 +1,164 @@
-﻿<h3>ModalFormularioTurnos</h3>
+﻿@inject HttpClient http;
+@using Microsoft.AspNetCore.Components.Forms;
+@using OMD_TechX.Modelos;
+<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow:auto;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: darkorange">
+                <h5 class="modal-title">@Titulo</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @onclick="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- comienzo del formulario-->
+                <EditForm Model="@Turno" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="error">
+                    <!-- header -->
+
+
+                    <div class="row">
+                        <div class="d-flex align-items-center">
+                            <h2>¡Oh My Dog!</h2>
+                            <div class="ms-auto">
+                                <img src="/imagenes/Logo2.png" class="rounded float-end img-fluid" width="50px" height="50px" alt="omd-logo">
+                            </div>
+                        </div>
+                        <hr />
+                    </div>
+
+                    <!-- campos -->
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                        <ValidationMessage For="@(() => Turno.Fecha)"></ValidationMessage>
+                                    </label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">Fecha de atencion</span>
+                                        <InputDate @bind-Value="@Turno.Fecha" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                        <ValidationMessage For="@(() => Turno.Franja)"></ValidationMessage>
+                                    </label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">Franja horaria</span>
+                                        <InputSelect @bind-Value="@Turno.Franja" class="form-select">
+                                            <option style="opacity:70%" value="">Seleccione la franja horaria</option>
+                                            <option value="Mañana">Mañana</option>
+                                            <option value="Tarde">Tarde</option>
+                                        </InputSelect>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                        <ValidationMessage For="@(() => Turno.PerroId)"></ValidationMessage>
+                                    </label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">Perro</span>
+                                        <InputSelect @bind-Value="@Turno.PerroId" class="form-select rounded">
+                                                <option value="" selected>Seleccione perro/a</option>
+                                                @foreach (var perro in perros)
+                                                {
+                                                    <option value="@perro.Id">@perro.Nombre</option>
+                                                }
+                                        </InputSelect>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                        <ValidationMessage For="@(() => Turno.motivoId)"></ValidationMessage>
+                                    </label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">Motivo</span>
+                                        <InputSelect @bind-Value="@Turno.motivoId" class="form-select rounded">
+                                                <option value="" selected>Seleccione tipo de atencion</option>
+                                                @foreach (var atencion in atenciones)
+                                                {
+                                                    <option value="@atencion.Id">@atencion.Nombre $@atencion.Precio</option>
+                                                }
+                                        </InputSelect>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <button type="submit" style="background-color:#21618C" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
+                    </div>
+                    <DataAnnotationsValidator> </DataAnnotationsValidator>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
 
 @code {
+    [Parameter]
+    public string Titulo { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public Turno Turno { get; set; }
+    [Parameter]
+    public string TextoBoton { get; set; } = "Listo";
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    private EditForm formRef;
+
+    private string modalDisplay = "none";
+    private string modalClass = string.Empty;
+    private bool showBackdrop = false;
+    private List<Perro> perros = new List<Perro>();
+    private List<Atencion> atenciones = new List<Atencion>();
+
+    private HttpContext context { get; set; }
+
+
+    public async Task Open() //cuando se abre para crear la idea es que los campos esten vacios
+    {
+        modalClass = "show";
+        modalDisplay = "block";
+        showBackdrop = true;
+        //var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{user.Id}");
+        perros = await http.GetFromJsonAsync<List<Perro>>("https://localhost:7083/api/perros");
+        atenciones = await http.GetFromJsonAsync<List<Atencion>>("https://localhost:7083/api/atenciones");
+        Turno.Franja = "";
+        Turno.Fecha = DateTime.Today;
+        Turno.motivoId = 0;
+        Turno.PerroId = 0;
+        Turno.usuarioId = "";
+        Turno.Id = 0;
+
+    }
+    public async Task Close()
+    {
+        modalDisplay = "none";
+        modalClass = string.Empty;
+        showBackdrop = false;
+    }
+    public void error()
+    {
+        Console.WriteLine("Invalid submit");
+    }
 
 }
