@@ -10,12 +10,17 @@ namespace OMD_TechX.Modelos
     {
         [Key]
         public int Id { get; set; }
+        [Required(ErrorMessage = "La fecha es requerida")]
         public DateTime Fecha { get; set; }
+        [Required(ErrorMessage = "La franja horaria es requerida")]
         public string Franja { get; set; }
+        [Required(ErrorMessage = "El campo perro es requerido")]
         public int PerroId { get; set; }
         public string Perro { get; set; }
         public string estado { get; set; }
+        [Required(ErrorMessage = "El campo motivo es requerido")]
         public int motivoId { get; set; }
+
         public string motivo { get; set; }
         public string usuarioId { get; set; }
 

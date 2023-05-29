@@ -21,6 +21,18 @@ namespace OMD_TechX.Controladores
         {
             return await context.Turnos.ToListAsync();
         }
+        [HttpGet("byUser/{userId}")]
+        public async Task<ActionResult<List<Turno>>> Get(string userId)
+        {
+            if (userId != null)
+            {
+                return await context.Turnos.Where(t => t.usuarioId == userId).ToListAsync();
+            }
+            else
+            {
+                return new List<Turno>();
+            }
+        }
         [HttpGet("{id}", Name = "getTurno")]
         public async Task<ActionResult<Turno>> Get(int id)
         {

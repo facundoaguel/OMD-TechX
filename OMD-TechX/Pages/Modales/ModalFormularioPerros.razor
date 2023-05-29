@@ -151,7 +151,7 @@
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Fecha de nacimiento</span>
-                                <InputDate @bind-Value="@Perro.FechaN" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
+                                <InputDate max="@DateTime.Now.ToString("yyyy-MM-dd")" @bind-Value="@Perro.FechaN" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
                             </div>
                         </div>
                     </div>

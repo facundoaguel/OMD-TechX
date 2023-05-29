@@ -1,15 +1,17 @@
 ﻿@page "/turnos"
 @using System.Net.Http.Headers;
+@using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.Mvc;
 @using OMD_TechX.Pages.Modales;
 @inject HttpClient http
 @inject IJSRuntime JS
-@attribute [Authorize(Roles = "Normal")]
-
+@inject UserManager<IdentityUser> UserManager
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 <div class="d-flex">
     <div class="p-2 w-100"><h1>Turnos</h1></div>
     <div class="p-2 flex-shrink-1">
-        <input type="button" class="btn btn-success" value="Sacar Turno" @onclick="() => ModalCrearTurno.Open()">
+        <input type="button" class="btn btn-success" value="Sacar Turno" @onclick="() => ModalCrearTurno.Open(userId)">
     </div>
 </div>
 
@@ -59,10 +61,11 @@ else
     Turno[] turnos { get; set; }
     Turno turno { get; set; } = new Turno();
     private ModalFormularioTurnos ModalCrearTurno { get; set; }
-
+    private string userId;
 
     protected override async Task OnInitializedAsync()
     {
+        userId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
         http.BaseAddress = new Uri("https://localhost:7083/");
         await cargarTurno();
     }
@@ -70,14 +73,21 @@ else
 
     async Task cargarTurno()
     {
-        turnos = await http.GetFromJsonAsync<Turno[]>("https://localhost:7083/api/turnos");
+        if (userId != null && !userId.Equals(""))
+        {
+            turnos = await http.GetFromJsonAsync<Turno[]>($"https://localhost:7083/api/turnos/byUser/{userId}");
+        }
+        else
+        {
+            turnos =  new List<Turno>().ToArray();
+        }
     }
 
     async Task crearTurno()
     {
         //var turnos = await http.GetFromJsonAsync<Turno[]>("https://localhost:7083/api/turnos");
         //await turno.EstablecerEstadoPorIdAsync(turno.PerroId, turno.motivoId);
-        Turno turnoPost = new Turno(turno.Fecha, turno.Franja, turno.PerroId, turno.motivoId, turno.usuarioId);
+        Turno turnoPost = new Turno(turno.Fecha, turno.Franja, turno.PerroId, turno.motivoId, userId);
         var res = await http.PostAsJsonAsync("api/turnos", turnoPost);
         ModalCrearTurno.Close();
         await cargarTurno();
@@ -95,5 +105,19 @@ else
             await cargarTurno();
         }
     }
+
+    /*private void verificarId()
+    {
+        //var userId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
+        if (userId == null || userId.Equals(""))
+        {
+            //JS.InvokeVoidAsync("window.location.href", "/Identity/Account/Login");
+            NavigationManager.NavigateTo("/Identity/Account/Login", forceLoad: true);
+        }
+        else
+        {
+            ModalCrearTurno.Open(userId);
+        }
+    }*/
 
 }

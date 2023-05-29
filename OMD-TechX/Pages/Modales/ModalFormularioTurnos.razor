@@ -1,5 +1,9 @@
 ﻿@inject HttpClient http;
+@inject UserManager<IdentityUser> UserManager
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 @using Microsoft.AspNetCore.Components.Forms;
+@using Microsoft.AspNetCore.Identity;
 @using OMD_TechX.Modelos;
 <div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow:auto;">
     <div class="modal-dialog modal-lg" role="document">
@@ -36,7 +40,7 @@
                                     </label>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text">Fecha de atencion</span>
-                                        <InputDate @bind-Value="@Turno.Fecha" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
+                                        <InputDate min="@DateTime.Now.ToString("yyyy-MM-dd")" @bind-Value="@Turno.Fecha" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
                                     </div>
                                 </div>
                             </div>
@@ -49,7 +53,7 @@
                                     <div class="input-group mb-3">
                                         <span class="input-group-text">Franja horaria</span>
                                         <InputSelect @bind-Value="@Turno.Franja" class="form-select">
-                                            <option style="opacity:70%" value="">Seleccione la franja horaria</option>
+                                            <option style="opacity:70%" selected value="">Seleccione la franja horaria</option>
                                             <option value="Mañana">Mañana</option>
                                             <option value="Tarde">Tarde</option>
                                         </InputSelect>
@@ -83,7 +87,7 @@
                                     <div class="input-group mb-3">
                                         <span class="input-group-text">Motivo</span>
                                         <InputSelect @bind-Value="@Turno.motivoId" class="form-select rounded">
-                                                <option value="" selected>Seleccione tipo de atencion</option>
+                                                <option value="">Seleccione tipo de atencion</option>
                                                 @foreach (var atencion in atenciones)
                                                 {
                                                     <option value="@atencion.Id">@atencion.Nombre $@atencion.Precio</option>
@@ -100,6 +104,7 @@
                         <button type="submit" style="background-color:#21618C" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
                     </div>
                     <DataAnnotationsValidator> </DataAnnotationsValidator>
+                    <ValidationSummary></ValidationSummary>
                 </EditForm>
             </div>
         </div>
@@ -134,20 +139,32 @@
     private HttpContext context { get; set; }
 
 
-    public async Task Open() //cuando se abre para crear la idea es que los campos esten vacios
+
+    public async Task Open(string userId) //cuando se abre para crear la idea es que los campos esten vacios
     {
-        modalClass = "show";
-        modalDisplay = "block";
-        showBackdrop = true;
-        //var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{user.Id}");
-        perros = await http.GetFromJsonAsync<List<Perro>>("https://localhost:7083/api/perros");
-        atenciones = await http.GetFromJsonAsync<List<Atencion>>("https://localhost:7083/api/atenciones");
-        Turno.Franja = "";
-        Turno.Fecha = DateTime.Today;
-        Turno.motivoId = 0;
-        Turno.PerroId = 0;
-        Turno.usuarioId = "";
-        Turno.Id = 0;
+
+        if (userId == null || userId.Equals(""))
+        {
+            //JS.InvokeVoidAsync("window.location.href", "/Identity/Account/Login");
+            NavigationManager.NavigateTo("/Identity/Account/Login", forceLoad: true);
+        }
+        else
+        {
+            modalClass = "show";
+            modalDisplay = "block";
+            showBackdrop = true;
+
+            var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{userId}");
+            perros = usuario.Perros;
+            atenciones = await http.GetFromJsonAsync<List<Atencion>>("https://localhost:7083/api/atenciones");
+            Turno.Franja = "";
+            Turno.Fecha = DateTime.Today;
+            Turno.motivoId = 0;
+            Turno.PerroId = 0;
+            Turno.usuarioId = "";
+            Turno.Id = 0;
+        }
+       
 
     }
     public async Task Close()
