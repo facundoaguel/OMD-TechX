@@ -1,44 +1,62 @@
 ﻿@page "/turnosVet"
 @inject HttpClient http
 @inject IJSRuntime JS
-<h3>TurnosVeterinario</h3>
-@if (turnos == null)
-{
-    <text>Cargando...</text>
-}
-else if (turnos.Length == 0)
-{
-    <text>No hay turnos.</text>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Franja</th>
-                <th>Motivo</th>
-                <th>Perro</th>
-                <th>Estado</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var turno in turnos)
+<h2 style="text-align:center">Turnos</h2>
+<hr />
+<div class="container">
+    <div class="row">
+        <div style="margin-right: 10px" class="col-sm">
+            <h4 style="text-align: center">Pendientes</h4>
+            <hr />
+            @if (turnos == null)
             {
-                <tr>
-
-                    <td>@turno.Fecha.ToShortDateString()</td>
-                    <td>@turno.Franja</td>
-                    <td>@turno.motivo</td>
-                    <td>@turno.Perro</td>
-                    <td>@turno.estado</td>
-
-                </tr>
+                <text>Cargando...</text>
             }
-        </tbody>
-    </table>
-}
+            else if (turnos.Length == 0)
+            {
+                <text>No hay turnos.</text>
+            }
+            else
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Franja</th>
+                            <th>Motivo</th>
+                            <th>Perro</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var turno in turnos)
+                        {
+                            <tr>
+
+                                <td>@turno.Fecha.ToShortDateString()</td>
+                                <td>@turno.Franja</td>
+                                <td>@turno.motivo</td>
+                                <td>@turno.Perro</td>
+                                <td style="text-align: right">
+                                    <button class="btn btn-danger" @onclick="@(()=>CancelarTurno(turno.Id))"><i class="oi oi-x"></i></button>
+                                    <button class="btn btn-success" @onclick="@(()=>AceptarTurno(turno.Id))"><i class="oi oi-check"></i></button>
+                                </td>
+                                <td style="text-align: right">
+                                    
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                }
+        </div>
+        <div style="margin-left: 10px" class="col-sm">
+            <h4 style="text-align:center">Aceptados</h4>
+            <hr />
+        </div>
+    </div>
+</div>
 <SurveyPrompt />
 
 
@@ -54,6 +72,15 @@ else
 
     async Task cargarTurnos()
     {
-            turnos = await http.GetFromJsonAsync<Turno[]>($"https://localhost:7083/api/turnos");
+        turnos = await http.GetFromJsonAsync<Turno[]>($"https://localhost:7083/api/turnos");
+    }
+
+    async Task CancelarTurno(int turnoId)
+    {
+        
+    }
+    async Task AceptarTurno(int turnoId)
+    {
+
     }
 }
