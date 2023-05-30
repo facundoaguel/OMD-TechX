@@ -50,7 +50,9 @@ else
                     <td>@turno.motivo</td>
                     <td>@turno.Perro</td>
                     <td>@turno.estado</td>
-
+                    <td style="text-align:right; ">
+                        <button class="btn btn-danger" @onclick="@(()=>CancelarTurno(turno.Id))" style="margin:5px"><i class="oi oi-x"></i> Cancelar</button>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -99,10 +101,22 @@ else
         var turno = turnos.First(a => a.Id == id);
 
         string mensajeconfirmacion = $"¿Desea cancelar el turno?";
-        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+
+        DateTime maniana = DateTime.Now.AddDays(1);
+
+        if (DateTime.Compare(maniana,turno.Fecha) <= 0)
         {
-            await http.DeleteAsync($"https://localhost:7083/api/turnos/{id}");
-            await cargarTurno();
+            if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+            {
+
+                await http.DeleteAsync($"https://localhost:7083/api/turnos/{id}");
+                await cargarTurno();
+            }
+        }
+        else
+        {
+            string mensajeAlerta = $"No se puede cancelar un turno con menos de 24 horas de anticipacion";
+            await JS.InvokeVoidAsync("alert", mensajeAlerta);
         }
     }
 
