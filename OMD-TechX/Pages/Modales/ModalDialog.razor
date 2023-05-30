@@ -1,12 +1,27 @@
 ﻿<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow:auto;">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@Titulo</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @onclick="Close"></button>
+            <div class="modal-header" style="background-color: #28567A">
+                    <div class="d-flex align-items-center">
+                        <div class="ms-auto">
+                            <img src="/imagenes/Logo2-removebg-preview.png" class="rounded float-end img-fluid" width="70px" height="70px" alt="omd-logo">
+                        </div>
+                        <h2 style="color:darkorange; text-align: center; margin-left: 10px">@Titulo</h2>
+                    </div>
+                    <hr />
+                
             </div>
             <div class="modal-body">
                 @ChildContent
+                <div class="row" style="margin-top: 30px">
+                    <div class="col-sm-10">
+                    </div>
+                    <div class="col-sm-2">
+                        <button @onclick="(() => Close())" style="background-color:darkorange;" class="w-100 btn">Aceptar</button>
+                    </div>
+                </div>
+                
+               
             </div>
         </div>
     </div>

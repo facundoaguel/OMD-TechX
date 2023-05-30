@@ -8,7 +8,7 @@
 <div class="d-flex">
     <div class="p-2 w-100"><h1>Atenciones</h1></div>
     <div class="p-2 flex-shrink-1">
-        <input type="button" class="btn btn-success" value="Cargar Atencion" @onclick="() => ModalCrearAtencion.Open()">
+        <input type="button" class="btn btn-success" style="background-color:#28567A" value="Cargar atención" @onclick="() => ModalCrearAtencion.Open()">
     </div>
 </div>
 
@@ -45,9 +45,9 @@ else
                     <td style="text-align:right; ">
                         @if (!atencion.EsOriginal())
                         {
-                            <button class="btn btn-danger" @onclick="@(()=>BorrarAtencion(atencion.Id))" style="margin:5px"><i class="oi oi-trash"></i> Borrar</button>
+                            <button class="btn btn-danger" @onclick="@(()=>BorrarAtencion(atencion.Id))" style="margin:5px"><i class="oi oi-trash"></i></button>
                         }
-                        <input type="button" class="btn btn-success" value="Editar" @onclick="() => ModalEditarAtencion.Open(atencion.Id)">
+                        <button type="button" style="background-color:4BA9E7" class="btn btn-primary" value="Editar" @onclick="() => ModalEditarAtencion.Open(atencion.Id)"> <i class="oi oi-pencil"></i> </button>
                     </td>
                 </tr>
             }

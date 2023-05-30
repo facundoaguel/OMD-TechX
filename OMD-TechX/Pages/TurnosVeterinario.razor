@@ -26,7 +26,6 @@
                             <th>Motivo</th>
                             <th>Perro</th>
                             <th></th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -42,9 +41,6 @@
                                     <button class="btn btn-danger" @onclick="@(()=>CancelarTurno(turno.Id))"><i class="oi oi-x"></i></button>
                                     <button class="btn btn-success" @onclick="@(()=>AceptarTurno(turno.Id))"><i class="oi oi-check"></i></button>
                                 </td>
-                                <td style="text-align: right">
-                                    
-                                </td>
                             </tr>
                         }
                     </tbody>
@@ -59,10 +55,14 @@
 </div>
 <SurveyPrompt />
 
+<ModalDialog @ref="@notificacion" Titulo="Proximamente">
+    <h4>Estamos trabajando para brindar esta funcionalidad mas adelante, gracias.</h4>
+</ModalDialog>
+
 
 @code {
     Turno[] turnos { get; set; }
-
+    private ModalDialog notificacion { get; set; }
     protected override async Task OnInitializedAsync()
     {
         http.BaseAddress = new Uri("https://localhost:7083/");
@@ -77,10 +77,10 @@
 
     async Task CancelarTurno(int turnoId)
     {
-        
+        notificacion.Open();
     }
     async Task AceptarTurno(int turnoId)
     {
-
+        notificacion.Open();
     }
 }

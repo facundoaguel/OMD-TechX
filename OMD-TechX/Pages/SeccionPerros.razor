@@ -9,7 +9,7 @@
 <div class="d-flex">
     <div class="p-2 w-100"><h1>Perros</h1></div>
     <div class="p-2 flex-shrink-1">
-        <input type="button" class="btn btn-success" value="Cargar Perro" @onclick="() => ModalCrearPerro.Open()">
+        <input type="button" class="btn btn-success" style="background-color: #28567A" value="Cargar perro" @onclick="() => ModalCrearPerro.Open()">
     </div>
 </div>
 
@@ -58,7 +58,7 @@ else
                     <td>@perro.FechaN.ToShortDateString()</td>
                     <td style="text-align:right;">
                         <button class="btn btn-danger" @onclick="@(()=>BorrarPerro(perro.Id))"><i class="oi oi-trash"></i> </button>
-                        <button class="btn btn-success" value="Editar" @onclick="@(()=>ModalEditarPerro.Open(perro.Id))"><i class="oi oi-pencil"></i></button>
+                        <button class="btn btn-primary" style="background-color: 4BA9E7" value="Editar" @onclick="@(()=>ModalEditarPerro.Open(perro.Id))"><i class="oi oi-pencil"></i></button>
                     </td>
                 </tr>
             }

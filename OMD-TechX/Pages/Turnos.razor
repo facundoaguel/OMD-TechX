@@ -11,12 +11,15 @@
 <div class="d-flex">
     <div class="p-2 w-100"><h1>Turnos</h1></div>
     <div class="p-2 flex-shrink-1">
-        <input type="button" class="btn btn-success" value="Sacar Turno" @onclick="() => ModalCrearTurno.Open(userId)">
+        <input type="button" class="btn btn-success" style="background-color: #28567A" value="Sacar Turno" @onclick="() => ModalCrearTurno.Open(userId)">
     </div>
 </div>
 
 <ModalFormularioTurnos @ref="@ModalCrearTurno" TextoBoton="Sacar turno" Titulo="Crear turno" OnValidSubmit="(() => crearTurno())" Turno="@turno">
 </ModalFormularioTurnos>
+<ModalDialog @ref="@ModalAvisarRespuesta" Titulo="Turno pendiente">
+    <h4>Tu turno esta pendiente a la respuesta de los veterinarios.</h4>
+</ModalDialog>
 
 
 @if (turnos == null)
@@ -51,7 +54,7 @@ else
                     <td>@turno.Perro</td>
                     <td>@turno.estado</td>
                     <td style="text-align:right; ">
-                        <button class="btn btn-danger" @onclick="@(()=>CancelarTurno(turno.Id))" style="margin:5px"><i class="oi oi-x"></i> Cancelar</button>
+                        <button class="btn btn-danger" @onclick="@(()=>CancelarTurno(turno.Id))" style="margin:5px"><i class="oi oi-x"></i></button>
                     </td>
                 </tr>
             }
@@ -63,6 +66,7 @@ else
     Turno[] turnos { get; set; }
     Turno turno { get; set; } = new Turno();
     private ModalFormularioTurnos ModalCrearTurno { get; set; }
+    private ModalDialog ModalAvisarRespuesta { get; set; }
     private string userId;
 
     protected override async Task OnInitializedAsync()
@@ -92,6 +96,7 @@ else
         Turno turnoPost = new Turno(turno.Fecha, turno.Franja, turno.PerroId, turno.motivoId, userId);
         var res = await http.PostAsJsonAsync("api/turnos", turnoPost);
         ModalCrearTurno.Close();
+        ModalAvisarRespuesta.Open();
         await cargarTurno();
 
     }

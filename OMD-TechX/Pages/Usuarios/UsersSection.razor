@@ -12,7 +12,7 @@
 <div class="d-flex">
     <div class="p-2 w-100"><h1>Usuarios</h1></div>
     <div class="p-2 flex-shrink-1">
-        <input type="button" class="btn btn-success" value="Cargar Usuario" onclick="window.location.href='Identity/Account/Register'">
+        <input type="button" class="btn btn-success" style="background-color: #28567A" value="Registrar cliente" onclick="window.location.href='Identity/Account/Register'">
     </div>
 </div>
 
@@ -49,7 +49,7 @@ else
                     <td>@user.Email</td>
                     <td>@user.Telefono</td>
                     <td style="text-align: right">
-                        <button class="btn btn-danger" @onclick="@(()=>BorrarUsuario(user.Id))"><i class="oi oi-trash"></i> Borrar</button>
+                        <button class="btn btn-danger" @onclick="@(()=>BorrarUsuario(user.Id))"><i class="oi oi-trash"></i></button>
                     </td>
                 </tr>
             }
