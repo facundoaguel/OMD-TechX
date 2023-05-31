@@ -105,7 +105,7 @@ else
         {
             ModalCrearPerro.labelNombreEnUso = "El dueño ya tiene un perro asociado con ese nombre. Por favor, ingrese otro";
         }
-      
+
     }
 
     async Task cargarPerros()
@@ -122,7 +122,11 @@ else
     {
         var perroFromApi = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{perro.Id}");
         string nombreActual = perroFromApi.Nombre;
-        if (nombreActual.Equals(perro.Nombre))
+        var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{perro.UsuarioId}");
+        
+
+
+        if (nombreActual.Equals(perro.Nombre) && perroFromApi.UsuarioId == perro.UsuarioId)
         {
             await http.PutAsJsonAsync($"api/perros", perro);
             ModalEditarPerro.Close();
@@ -130,7 +134,6 @@ else
         }
         else
         {
-            var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{perro.UsuarioId}");
             bool nombreEnUso = usuario.Perros.Any(p => p.Nombre.Equals(perro.Nombre));
             if (!nombreEnUso)
             {
