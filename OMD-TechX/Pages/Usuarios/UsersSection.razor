@@ -58,8 +58,13 @@ else
 }
 <SurveyPrompt />
 
+<ModalDialog @ref="@notificacion" Titulo="Error">
+    <h3>El usuario tiene perros asociados, para borrarlo, tendras que eliminar sus perros.</h3>
+</ModalDialog>
+
 @code {
     Usuario[] usuarios { get; set; }
+    private ModalDialog notificacion { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -76,12 +81,19 @@ else
     async Task BorrarUsuario(string id)
     {
         var usuario = usuarios.First(u => u.Id == id);
-
-        string mensajeconfirmacion = $"¿Desea borrar este usuario: {usuario.Email}?";
-        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        if (usuario.Perros.Count > 0)
         {
-            await http.DeleteAsync($"https://localhost:7083/api/usuarios/{id}");
-            await loadUsers();
+            notificacion.Open();
         }
+        else
+        {
+            string mensajeconfirmacion = $"¿Desea borrar este usuario: {usuario.Email}?";
+            if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+            {
+                await http.DeleteAsync($"https://localhost:7083/api/usuarios/{id}");
+                await loadUsers();
+            }
+        }
+        
     }
 }
