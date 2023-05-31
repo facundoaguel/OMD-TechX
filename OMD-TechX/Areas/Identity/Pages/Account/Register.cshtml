@@ -11,12 +11,12 @@
             <hr />
             
                 <div class="form-floating mb-3">
-                    <input asp-for="Input.Nombre" class="form-control" aria-required="true" placeholder="Nombre" />
+                <input asp-for="Input.Nombre" pattern="[A-Za-z]+" class="form-control" aria-required="true" placeholder="Nombre" />
                     <label asp-for="Input.Nombre">Nombre</label>
                     <span asp-validation-for="Input.Nombre" class="text-danger"></span>
                 </div>
                 <div class="form-floating mb-3">
-                    <input asp-for="Input.Apellido" class="form-control" aria-required="true" placeholder="Nombre" />
+                <input asp-for="Input.Apellido" type="text" class="form-control" aria-required="true" placeholder="Nombre" />
                     <label asp-for="Input.Apellido">Apellido</label>
                     <span asp-validation-for="Input.Apellido" class="text-danger"></span>
                 </div>

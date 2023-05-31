@@ -15,6 +15,16 @@ namespace OMD_TechX.Controladores
         {
             this.context = context;
         }
+        [HttpGet("pendientes")]
+        public async Task<ActionResult<List<Turno>>> GetPendientes()
+        {
+            return await context.Turnos.Where(t => t.estado.Equals("Pendiente")).ToListAsync();
+        }
+        [HttpGet("aceptados")]
+        public async Task<ActionResult<List<Turno>>> GetAceptados()
+        {
+            return await context.Turnos.Where(t => t.estado.Equals("Aceptado")).ToListAsync();
+        }
 
         [HttpGet]
         public async Task<ActionResult<List<Turno>>> Get()

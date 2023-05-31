@@ -8,13 +8,13 @@
         <div style="margin-right: 10px" class="col-sm">
             <h4 style="text-align: center">Pendientes</h4>
             <hr />
-            @if (turnos == null)
+            @if (turnosPendientes == null)
             {
                 <text>Cargando...</text>
             }
-            else if (turnos.Length == 0)
+            else if (turnosPendientes.Length == 0)
             {
-                <text>No hay turnos.</text>
+                <text>No hay turnos pendientes.</text>
             }
             else
             {
@@ -29,7 +29,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var turno in turnos)
+                        @foreach (var turno in turnosPendientes)
                         {
                             <tr>
 
@@ -50,6 +50,39 @@
         <div style="margin-left: 10px" class="col-sm">
             <h4 style="text-align:center">Aceptados</h4>
             <hr />
+            @if (turnosAceptados == null)
+            {
+                <text>Cargando...</text>
+            }
+            else if (turnosAceptados.Length == 0)
+            {
+                <text>No hay turnos aceptados.</text>
+            }
+            else
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Franja</th>
+                            <th>Motivo</th>
+                            <th>Perro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var turno in turnosAceptados)
+                        {
+                            <tr>
+
+                                <td>@turno.Fecha.ToShortDateString()</td>
+                                <td>@turno.Franja</td>
+                                <td>@turno.motivo</td>
+                                <td>@turno.Perro</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         </div>
     </div>
 </div>
@@ -61,18 +94,25 @@
 
 
 @code {
-    Turno[] turnos { get; set; }
+    Turno[] turnosPendientes { get; set; }
+    Turno[] turnosAceptados { get; set; }
     private ModalDialog notificacion { get; set; }
     protected override async Task OnInitializedAsync()
     {
         http.BaseAddress = new Uri("https://localhost:7083/");
-        await cargarTurnos();
+        await cargarTurnosPendientes();
+        await cargarTurnosAceptados();
     }
 
 
-    async Task cargarTurnos()
+    async Task cargarTurnosPendientes()
     {
-        turnos = await http.GetFromJsonAsync<Turno[]>($"https://localhost:7083/api/turnos");
+        turnosPendientes = await http.GetFromJsonAsync<Turno[]>($"https://localhost:7083/api/turnos/pendientes");
+    }
+
+    async Task cargarTurnosAceptados()
+    {
+        turnosAceptados = await http.GetFromJsonAsync<Turno[]>($"https://localhost:7083/api/turnos/aceptados");
     }
 
     async Task CancelarTurno(int turnoId)

@@ -38,6 +38,7 @@ else
                 <th>Raza</th>
                 <th>Sexo</th>
                 <th>Fecha de nacimiento</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -57,6 +58,7 @@ else
                     <td>@perro.Sexo</td>
                     <td>@perro.FechaN.ToShortDateString()</td>
                     <td style="text-align:right;">
+                        <button class="btn" style="background-color:cadetblue" @onclick="@(()=>libretaSanitaria())"><i class="oi oi-heart"></i> </button>
                         <button class="btn btn-danger" @onclick="@(()=>BorrarPerro(perro.Id))"><i class="oi oi-trash"></i> </button>
                         <button class="btn btn-primary" style="background-color: 4BA9E7" value="Editar" @onclick="@(()=>ModalEditarPerro.Open(perro.Id))"><i class="oi oi-pencil"></i></button>
                     </td>
@@ -66,7 +68,9 @@ else
     </table>
 }
 <SurveyPrompt />
-
+<ModalDialog @ref="@notificacion" Titulo="Libreta sanitaria">
+    <h4>Proximamente. Esta funcion no esta disponible actualmente.</h4>
+</ModalDialog>
 <!--<RadzenButton Text="@text" Click="@botonClick"></RadzenButton>-->
 @code {
     /*string text = "hola";
@@ -82,6 +86,7 @@ else
     private string imagenBase64 { get; set; }
     private ModalFormularioPerros ModalCrearPerro { get; set; }
     private ModalFormularioPerros ModalEditarPerro { get; set; }
+    private ModalDialog notificacion { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -123,7 +128,7 @@ else
         var perroFromApi = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{perro.Id}");
         string nombreActual = perroFromApi.Nombre;
         var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{perro.UsuarioId}");
-        
+
 
 
         if (nombreActual.Equals(perro.Nombre) && perroFromApi.UsuarioId == perro.UsuarioId)
@@ -147,7 +152,7 @@ else
                 ModalEditarPerro.labelNombreEnUso = "El dueño ya tiene un perro asociado con ese nombre. Por favor, ingrese otro";
             }
         }
-        
+
     }
 
     async Task BorrarPerro(int id)
@@ -160,5 +165,9 @@ else
             await http.DeleteAsync($"https://localhost:7083/api/perros/{id}");
             await cargarPerros();
         }
+    }
+    async Task libretaSanitaria()
+    {
+        notificacion.Open();
     }
 }
