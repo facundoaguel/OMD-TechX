@@ -17,6 +17,7 @@
 
 <ModalFormularioTurnos @ref="@ModalCrearTurno" TextoBoton="Sacar turno" Titulo="Crear turno" OnValidSubmit="(() => crearTurno())" Turno="@turno">
 </ModalFormularioTurnos>
+
 <ModalDialog @ref="@ModalAvisarRespuesta" Titulo="Turno pendiente">
     <h4>Tu turno esta pendiente a la respuesta de los veterinarios.</h4>
 </ModalDialog>
@@ -62,7 +63,15 @@ else
     </table>
 }
 <SurveyPrompt />
+
+<ModalDialog @ref="@notificacionFallida" Titulo="Error">
+    <h4>No se puede cancelar un turno con menos de 24 horas de anticipacion.</h4>
+</ModalDialog>
+
+
 @code {
+    private ModalDialog notificacionFallida { get; set; }
+    private ModalDialog confirmacion { get; set; }
     Turno[] turnos { get; set; }
     Turno turno { get; set; } = new Turno();
     private ModalFormularioTurnos ModalCrearTurno { get; set; }
@@ -120,8 +129,7 @@ else
         }
         else
         {
-            string mensajeAlerta = $"No se puede cancelar un turno con menos de 24 horas de anticipacion";
-            await JS.InvokeVoidAsync("alert", mensajeAlerta);
+            notificacionFallida.Open();
         }
     }
 
