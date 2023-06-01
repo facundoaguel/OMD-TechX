@@ -81,12 +81,14 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             [Required(ErrorMessage = "El campo Nombre es requerido.")]
             [StringLength(50, ErrorMessage = "El campo Nombre admite hasta 50 caracteres")]
             [Display(Name = "Nombre")]
+            [RegularExpression(@"^[A-Za-z]+$", ErrorMessage = "Ingresa solo letras")]
             public string Nombre { get; set; }
 
             //apellido
             [Required(ErrorMessage = "El campo Apellido es requerido.")]
             [StringLength(50, ErrorMessage = "El campo Apellido admite hasta 50 caracteres")]
             [Display(Name = "Apellido")]
+            [RegularExpression(@"^[A-Za-z]+$", ErrorMessage = "Ingresa solo letras")]
             public string Apellido { get; set; }
 
             /// <summary>
