@@ -85,7 +85,12 @@
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Tamaño</span>
-                                <InputText @bind-Value="@Perro.Tamanio" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Chico" />
+                                <InputSelect @bind-Value="@Perro.Tamanio" class="form-select">
+                                    <option style="opacity:70%" value="">Seleccione el tamaño</option>
+                                    <option value="Chico">Chico</option>
+                                    <option value="Mediano">Mediano</option>
+                                    <option value="Grande">Grande</option>
+                                </InputSelect>
                             </div>
                         </div>
                     </div>
@@ -288,7 +293,7 @@
         Perro.Comentarios = "";
         Perro.Sexo = "";  
         imagenBase64 = "/imagenes/perrito.jpg";
-        Perro.Foto = convertirImagen("C:/Users/aguel/source/repos/OMD-TechX/OMD-TechX/wwwroot/imagenes/perrito.jpg");
+        Perro.Foto = convertirImagen("C:/Users/juana/Source/Repos/facundoaguel/OMD-TechX/OMD-TechX/wwwroot/imagenes/perrito.jpg");
         Perro.UsuarioId = "";
         Perro.Id = 0;
         ClearInputFile();
