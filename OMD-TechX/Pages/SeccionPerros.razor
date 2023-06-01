@@ -71,6 +71,9 @@ else
 <ModalDialog @ref="@notificacion" Titulo="Libreta sanitaria">
     <h4>Proximamente. Esta funcion no esta disponible actualmente.</h4>
 </ModalDialog>
+<ModalDialog @ref="@notificacionBorrado" Titulo="Error">
+    <h4>Este perro tiene turnos asociado, para borrarlo, elimine sus turnos.</h4>
+</ModalDialog>
 <!--<RadzenButton Text="@text" Click="@botonClick"></RadzenButton>-->
 @code {
     /*string text = "hola";
@@ -87,6 +90,7 @@ else
     private ModalFormularioPerros ModalCrearPerro { get; set; }
     private ModalFormularioPerros ModalEditarPerro { get; set; }
     private ModalDialog notificacion { get; set; }
+    private ModalDialog notificacionBorrado { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -158,12 +162,18 @@ else
     async Task BorrarPerro(int id)
     {
         var perro = perros.First(a => a.Id == id);
-
-        string mensajeconfirmacion = $"¿Desea borrar este perro: {perro.Nombre}?";
-        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        if (perro.Turnos.Count > 0)
         {
-            await http.DeleteAsync($"https://localhost:7083/api/perros/{id}");
-            await cargarPerros();
+            notificacionBorrado.Open();
+        }
+        else
+        {
+            string mensajeconfirmacion = $"¿Desea borrar este perro: {perro.Nombre}?";
+            if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+            {
+                await http.DeleteAsync($"https://localhost:7083/api/perros/{id}");
+                await cargarPerros();
+            }
         }
     }
     async Task libretaSanitaria()

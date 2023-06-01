@@ -21,13 +21,13 @@ namespace OMD_TechX.Controladores
         [HttpGet]
         public async Task<ActionResult<List<Perro>>> Get()
         {
-            return await context.Perros.ToListAsync();
+            return await context.Perros.Include(p => p.Turnos).ToListAsync();
 
         }
         [HttpGet("{id}", Name = "getPerro")]
         public async Task<ActionResult<Perro>> Get(int id)
         {
-            return await context.Perros.FirstOrDefaultAsync(p => p.Id == id);
+            return await context.Perros.Include(p => p.Turnos).FirstOrDefaultAsync(p => p.Id == id);
         }
         [HttpPost]
         public async Task<ActionResult> Post(Perro perro)

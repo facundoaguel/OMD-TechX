@@ -121,10 +121,12 @@ else
         //var turnos = await http.GetFromJsonAsync<Turno[]>("https://localhost:7083/api/turnos");
         //await turno.EstablecerEstadoPorIdAsync(turno.PerroId, turno.motivoId);
         Turno turnoPost = new Turno(turno.Fecha, turno.Franja, turno.PerroId, turno.motivoId, userId);
+        Perro perro = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{turno.PerroId}");
         //comprobacion de atencion
         int checkeo = await verificarAtencion(turnoPost);
         if (checkeo == 0)
         {
+            perro.Turnos.Add(turnoPost);
             var res = await http.PostAsJsonAsync("api/turnos", turnoPost);
             ModalCrearTurno.Close();
             ModalAvisarRespuesta.Open();
@@ -137,6 +139,7 @@ else
         else
         {
             diasEspera.Open();
+            perro.Turnos.Add(turnoPost);
             var res = await http.PostAsJsonAsync("api/turnos", turnoPost);
             ModalCrearTurno.Close();
             ModalAvisarRespuesta.Open();

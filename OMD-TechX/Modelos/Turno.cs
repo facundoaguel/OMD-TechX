@@ -3,6 +3,7 @@ using System.Data;
 using static System.Net.WebRequestMethods;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OMD_TechX.Modelos
 {
