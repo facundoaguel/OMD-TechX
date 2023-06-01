@@ -63,7 +63,7 @@
                                 <div class="input-group mb-3">
                                 <span class="input-group-text">Perro</span>
                                 <InputSelect @bind-Value="@Turno.PerroId" class="form-select rounded">
-                                    <option value="" selected>Seleccione perro/a</option>
+                                    <option value="0" selected>Seleccione perro/a</option>
                                     @foreach (var perro in perros)
                                     {
                                         <option value="@perro.Id">@perro.Nombre</option>
@@ -78,7 +78,7 @@
                                 <div class="input-group mb-3">
                                 <span class="input-group-text">Motivo</span>
                                 <InputSelect @bind-Value="@Turno.motivoId" class="form-select rounded">
-                                    <option value="">Seleccione tipo de atencion</option>
+                                    <option value="0" selected>Seleccione tipo de atencion</option>
                                     @foreach (var atencion in atenciones)
                                     {
                                         <option value="@atencion.Id">@atencion.Nombre $@atencion.Precio</option>

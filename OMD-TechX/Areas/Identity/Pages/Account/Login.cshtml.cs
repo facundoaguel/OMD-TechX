@@ -146,7 +146,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
                 else
                 {
                     //si llego hasta aca y el mail no es inexistente entonces la contrasenia es incorrecta
-                    if(usuario != null )
+                    if(usuario != null  || Input.Email.Equals("pedro@omd.com"))
                     {
                         ModelState.AddModelError(Input.Password, "Contraseña incorrecta.");
                     }

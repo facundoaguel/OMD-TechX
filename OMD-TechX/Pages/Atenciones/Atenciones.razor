@@ -102,7 +102,7 @@ else
     {
         var atencion = atenciones.First(a => a.Id == id);
 
-        string mensajeconfirmacion = $"¿Desea borrar este usuario: {atencion.Nombre}?";
+        string mensajeconfirmacion = $"¿Desea borrar esta atencion: {atencion.Nombre}?";
         if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
         {
             await http.DeleteAsync($"https://localhost:7083/api/atenciones/{id}");

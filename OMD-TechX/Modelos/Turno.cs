@@ -16,9 +16,11 @@ namespace OMD_TechX.Modelos
         [Required(ErrorMessage = "La franja horaria es requerida")]
         public string Franja { get; set; }
         [Required(ErrorMessage = "El campo perro es requerido")]
+        [Range(1, 35000, ErrorMessage = "El campo perro es requerido")]
         public int PerroId { get; set; }
         public string Perro { get; set; }
         public string estado { get; set; }
+        [Range(1, 35000, ErrorMessage = "El campo motivo es requerido")]
         [Required(ErrorMessage = "El campo motivo es requerido")]
         public int motivoId { get; set; }
 

@@ -5,7 +5,7 @@
 <hr />
 <div class="container">
     <div class="row">
-        <div style="margin-right: 10px" class="col-sm">
+        <div style="margin-right: 10px" class="col-sm-7">
             <h4 style="text-align: center">Pendientes</h4>
             <hr />
             @if (turnosPendientes == null)
@@ -47,7 +47,7 @@
                 </table>
                 }
         </div>
-        <div style="margin-left: 10px" class="col-sm">
+        <div style="margin-left: 10px" class="col-sm    ">
             <h4 style="text-align:center">Aceptados</h4>
             <hr />
             @if (turnosAceptados == null)
@@ -88,8 +88,11 @@
 </div>
 <SurveyPrompt />
 
-<ModalDialog @ref="@notificacion" Titulo="Proximamente">
-    <h4>Estamos trabajando para brindar esta funcionalidad mas adelante, gracias.</h4>
+<ModalDialog @ref="@notificacion" Titulo="Recodatorio">
+    <h4>Esta funcionalidad no entraba en este sprint, la hicimos para poder mostrar los escenarios de listas vacias.</h4>
+</ModalDialog>
+<ModalDialog @ref="@recordatorio" Titulo="Recordatorio">
+    <h4>Esta funcionalidad no entraba en este sprint, la hicimos para poder mostrar la eliminacion de perros.</h4>
 </ModalDialog>
 
 
@@ -97,6 +100,7 @@
     Turno[] turnosPendientes { get; set; }
     Turno[] turnosAceptados { get; set; }
     private ModalDialog notificacion { get; set; }
+    private ModalDialog recordatorio { get; set; }
     protected override async Task OnInitializedAsync()
     {
         http.BaseAddress = new Uri("https://localhost:7083/");
@@ -117,10 +121,22 @@
 
     async Task CancelarTurno(int turnoId)
     {
-        notificacion.Open();
+        recordatorio.Open();
+        /*string mensajeconfirmacion = $"¿Desea rechazar el turno?";
+        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        {
+
+            await http.DeleteAsync($"https://localhost:7083/api/turnos/{turnoId}");
+            await cargarTurnosPendientes();
+        }*/
     }
     async Task AceptarTurno(int turnoId)
     {
         notificacion.Open();
+        /*Turno turno = await http.GetFromJsonAsync<Turno>($"https://localhost:7083/api/turnos/{turnoId}");
+        turno.estado = "Aceptado";
+        await http.PutAsJsonAsync($"https://localhost:7083/api/turnos", turno);
+        await cargarTurnosPendientes();
+        await cargarTurnosAceptados();*/
     }
 }
