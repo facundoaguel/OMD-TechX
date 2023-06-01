@@ -202,7 +202,23 @@ else
 
         DateTime maniana = DateTime.Now.AddDays(1);
 
-        if (DateTime.Compare(maniana,turno.Fecha) <= 0)
+        if (turno.estado.Equals("Aceptado"))
+        {
+            if (DateTime.Compare(maniana, turno.Fecha) <= 0)
+            {
+                if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+                {
+
+                    await http.DeleteAsync($"https://localhost:7083/api/turnos/{id}");
+                    await cargarTurno();
+                }
+            }
+            else
+            {
+                notificacionFallida.Open();
+            }
+        }
+        else
         {
             if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
             {
@@ -211,10 +227,8 @@ else
                 await cargarTurno();
             }
         }
-        else
-        {
-            notificacionFallida.Open();
-        }
+
+        
     }
 
     /*private void verificarId()

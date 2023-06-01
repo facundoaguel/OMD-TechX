@@ -8,7 +8,7 @@ namespace OMD_TechX.Modelos
         [Key]
         public int Id { get; set; }
         [Required(ErrorMessage ="El campo Nombre es requerido")]
-        [RegularExpression(@"^[A-Za-z]+$", ErrorMessage = "Ingresa solo letras")]
+        [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Ingresa solo letras")]
         public string Nombre { get; set; }
         [Required (ErrorMessage ="El campo Precio es requerido")]
         [Range(0, double.MaxValue, ErrorMessage = "El precio no puede ser menor que 0")]
