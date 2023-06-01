@@ -68,10 +68,28 @@ else
     <h4>No se puede cancelar un turno con menos de 24 horas de anticipacion.</h4>
 </ModalDialog>
 
+<ModalDialog @ref="@perroJoven" Titulo="Error">
+    <h4>Tu perro es muy joven para solicitar este tratamiento.</h4>
+</ModalDialog>
+
+<ModalDialog @ref="@diasEspera" Titulo="Error">
+    <h4 class="text-danger">El checkeo de la cantidad de días no está disponible en este sprint.</h4>
+    <h4>Todavía no se cumplió el tiempo necesario para solicitar este tratamiento.</h4>
+    <h4>Para solicitarlo, faltan @diasDeEspera días.</h4>
+</ModalDialog>
+
 
 @code {
+
+    //turnos
     private ModalDialog notificacionFallida { get; set; }
     private ModalDialog confirmacion { get; set; }
+
+    //checkeo atenciones
+    private ModalDialog perroJoven { get; set; }
+    private ModalDialog diasEspera { get; set; }
+    private int diasDeEspera { get; set; } = 0;
+
     Turno[] turnos { get; set; }
     Turno turno { get; set; } = new Turno();
     private ModalFormularioTurnos ModalCrearTurno { get; set; }
@@ -103,11 +121,74 @@ else
         //var turnos = await http.GetFromJsonAsync<Turno[]>("https://localhost:7083/api/turnos");
         //await turno.EstablecerEstadoPorIdAsync(turno.PerroId, turno.motivoId);
         Turno turnoPost = new Turno(turno.Fecha, turno.Franja, turno.PerroId, turno.motivoId, userId);
-        var res = await http.PostAsJsonAsync("api/turnos", turnoPost);
-        ModalCrearTurno.Close();
-        ModalAvisarRespuesta.Open();
-        await cargarTurno();
+        //comprobacion de atencion
+        int checkeo = await verificarAtencion(turnoPost);
+        if (checkeo == 0)
+        {
+            var res = await http.PostAsJsonAsync("api/turnos", turnoPost);
+            ModalCrearTurno.Close();
+            ModalAvisarRespuesta.Open();
+            await cargarTurno();
+        }
+        else if (checkeo < 0)
+        {
+            perroJoven.Open();
+        }
+        else
+        {
+            diasEspera.Open();
+            var res = await http.PostAsJsonAsync("api/turnos", turnoPost);
+            ModalCrearTurno.Close();
+            ModalAvisarRespuesta.Open();
+            await cargarTurno();
+        }
 
+
+    }
+
+    private async Task<int> verificarAtencion(Turno turno)
+    {
+        Perro perro = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{turno.PerroId}");
+        int dias = (turno.Fecha - perro.FechaN).Days;
+        if (turno.motivo.Equals("Vacuna antirrabica"))
+        {
+            //-1 si es menor a 4 meses
+
+            if (dias < 120)
+            {
+                return -1;
+            }
+            else
+            {
+                //aca habria que checkear si ya se vacuno, para calcular el periodo
+                //cada un anio
+                return 1;
+            }
+        }
+        else if (turno.motivo.Equals("Vacuna por enfermedad"))
+        {
+            if (dias < 60)
+            {
+                return -1;
+            }
+            else if (dias >= 60 && dias <= 120) 
+            {
+                //aca habria que checkear si ya se vacuno, para calcular el periodo
+                //cada 21 dias
+
+                return 1;
+            }
+            else
+            {
+                //mayor a 4 meses
+                //chequear cada un anio
+                return 1;
+            }
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     async Task CancelarTurno(int id)

@@ -15,7 +15,7 @@ namespace OMD_TechX.Controladores.Validaciones
 
                 if (user == null && !(value.Equals("pedro@omd.com")))
                 {
-                    return new ValidationResult("Email inexistente, por favor registrese.");
+                    return new ValidationResult("Email inexistente, por favor acerquese a la veterinaria para registrarse.");
                 }
             }
 

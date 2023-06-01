@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -18,6 +17,9 @@ using OMD_TechX.Modelos;
 using OMD_TechX.Controladores.Validaciones;
 using OMD_TechX.Data;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.JSInterop;
+using Microsoft.CodeAnalysis.Scripting;
+using System.Security.Principal;
 
 namespace OMD_TechX.Areas.Identity.Pages.Account
 {
@@ -27,14 +29,16 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
         private readonly ILogger<LoginModel> _logger;
         private readonly HttpClient http;
         private readonly ApplicationDbContext context;
+        private readonly IJSRuntime _jsRuntime;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, ApplicationDbContext context)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, ApplicationDbContext context, IJSRuntime jsRuntime)
         {
             this.context = context;
             _signInManager = signInManager;
             _logger = logger;
             http = new HttpClient();
             http.BaseAddress = new Uri("https://localhost:7083/");
+            _jsRuntime = jsRuntime;
         }
 
         /// <summary>
@@ -132,8 +136,6 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
                     _logger.LogInformation("El usuario se encuentra logueado");
                     if (usuario != null && usuario.primerInicio)
                     {
-                        usuario.primerInicio = false;
-                        http.PutAsJsonAsync("api/usuarios", usuario);
                         return RedirectToPage("./Manage/ChangePassword");
                     }
                     else

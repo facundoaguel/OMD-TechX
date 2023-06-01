@@ -1,6 +1,9 @@
 ﻿.omd-azul {
     background-color: #21618C;
 }
+.iconos {
+    font-size: 35px;
+}
 .loader {
     display: flex;
     justify-content: center;

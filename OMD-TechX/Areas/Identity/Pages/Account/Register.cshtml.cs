@@ -79,13 +79,13 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
 
             //nombre
             [Required(ErrorMessage = "El campo Nombre es requerido.")]
-            [StringLength(30)]
+            [StringLength(50, ErrorMessage = "El campo Nombre admite hasta 50 caracteres")]
             [Display(Name = "Nombre")]
             public string Nombre { get; set; }
 
             //apellido
             [Required(ErrorMessage = "El campo Apellido es requerido.")]
-            [StringLength(30)]
+            [StringLength(50, ErrorMessage = "El campo Apellido admite hasta 50 caracteres")]
             [Display(Name = "Apellido")]
             public string Apellido { get; set; }
 
@@ -97,6 +97,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             [EmailAddress(ErrorMessage = "Este formato no es válido")]
             [EmailUnico]
             [Display(Name = "Email")]
+            [StringLength(50, ErrorMessage = "El campo Email admite hasta 50 caracteres")]
             public string Email { get; set; }
 
             /// <summary>
@@ -106,11 +107,13 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             [Required(ErrorMessage = "El campo DNI es requerido.")]
             [Display(Name = "DNI")]
             [DniUnico]
+            [StringLength(maximumLength:8, MinimumLength =8, ErrorMessage = "El campo DNI debe tener 8 caracteres")]
             
             public string DNI { get; set; }
             [Required(ErrorMessage = "El campo Telefono es requerido.")]
             [DataType(DataType.PhoneNumber)]
             [Display(Name = "Telefono")]
+            [StringLength(30, ErrorMessage = "El campo Teléfono admite hasta 30 caracteres")]
             public string Telefono { get; set; }
 
             /// <summary>

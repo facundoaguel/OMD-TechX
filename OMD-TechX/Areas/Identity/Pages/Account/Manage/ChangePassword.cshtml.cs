@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using OMD_TechX.Modelos;
 
 namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
 {
@@ -17,15 +18,20 @@ namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<ChangePasswordModel> _logger;
+        private readonly HttpClient http;
+
 
         public ChangePasswordModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            ILogger<ChangePasswordModel> logger)
+            ILogger<ChangePasswordModel> logger,
+            HttpClient http)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            this.http = http;
+            http.BaseAddress = new Uri("https://localhost:7083/");
         }
 
         /// <summary>
@@ -118,9 +124,20 @@ namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            await _signInManager.RefreshSignInAsync(user);
-            _logger.LogInformation("El usuario cambio la contraseña satisfactoriamente.");
-            StatusMessage = "Tu contraseña fue cambiada.";
+            string userId = _userManager.GetUserId(User);
+            Usuario usuario = await http.GetFromJsonAsync<Usuario>($"api/usuarios/{userId}");
+            if (usuario.primerInicio == true)
+            {
+                StatusMessage = "Dado que es tu primer inicio de sesión, tenes que cambiar tu contraseña.";
+                http.PutAsJsonAsync("api/usuarios", usuario);
+            }
+            else
+            {
+                await _signInManager.RefreshSignInAsync(user);
+                _logger.LogInformation("El usuario cambio la contraseña satisfactoriamente.");
+                StatusMessage = "Tu contraseña fue cambiada.";
+            }
+           
 
             return this.Redirect("/");
         }

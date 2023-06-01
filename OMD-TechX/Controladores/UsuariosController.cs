@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Plugins;
 using OMD_TechX.Data;
 using OMD_TechX.Helpers;
 using OMD_TechX.Modelos;
@@ -44,6 +45,7 @@ namespace OMD_TechX.Controladores
         [HttpPut]
         public async Task<ActionResult> Put(Usuario user)
         {
+            user.primerInicio = false;
             context.Entry(user).State = EntityState.Modified;
             await context.SaveChangesAsync();
             return NoContent();

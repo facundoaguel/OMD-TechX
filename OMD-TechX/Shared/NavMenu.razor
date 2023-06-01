@@ -1,4 +1,12 @@
-﻿
+﻿<head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .iconos{
+            font-size:27px;
+            margin-right: 10px
+        }
+    </style>
+</head>
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <img src="/imagenes/Logo2-removebg-preview.png" alt="Logo" width="20%" height="20%" class="img-fluid mx-auto d-block">
@@ -12,65 +20,85 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+                <span class="material-icons iconos">
+                    home
+                </span> Home
             </NavLink>
         </div>
         <AuthorizeView Roles="Admin">
             <NotAuthorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="turnos">
-                        <span class="oi oi-plus" aria-hidden="true"></span> Turnos
+                        <span class="material-icons iconos">
+                            medical_services
+                        </span> Turnos
                     </NavLink>
                 </div>
             </NotAuthorized>
            <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="turnosVet">
-                        <span class="oi oi-plus" aria-hidden="true"></span> Turnos
+                        <span class="material-icons iconos">
+                            medical_services
+                        </span> Turnos
                     </NavLink>
                 </div>
            </Authorized>
         </AuthorizeView>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="adopciones">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Adopciones (proximamente)
+                <span class="material-icons iconos">
+                    volunteer_activism
+                </span> Adopciones (proximamente)
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="perdidas">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Perdidas (proximamente)
+                <span class="material-icons iconos">
+                    search_off
+                </span> Perdidas (proximamente)
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="hallazgos">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Hallazgos (proximamente)
+                <span class="material-icons iconos">
+                    zoom_in
+                </span> Hallazgos (proximamente)
             </NavLink>
         </div>
         <AuthorizeView Roles="Admin,Normal">
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="cruzas">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Cruzas (proximamente)
+                    <span class="material-icons iconos">
+                        handshake
+                    </span> Cruzas (proximamente)
                 </NavLink>
             </div>
         </AuthorizeView>
         <AuthorizeView Roles="Admin">
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="atenciones">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Atenciones
+                    <span class="material-icons iconos">
+                        healing
+                    </span> Atenciones
                 </NavLink>
             </div>
         </AuthorizeView>
         <AuthorizeView Roles="Admin">
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="perros">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Perros
+                    <span class="material-icons iconos">
+                        pets
+                    </span> Perros
                 </NavLink>
             </div>
         </AuthorizeView>
         <AuthorizeView Roles="Admin">
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="usuarios">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Usuarios
+                    <span class="iconos material-icons">
+                        manage_accounts
+                    </span> Usuarios
                 </NavLink>
             </div>
         </AuthorizeView>
