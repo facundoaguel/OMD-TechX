@@ -110,10 +110,10 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
             [Display(Name = "DNI")]
             [DniUnico]
             [StringLength(maximumLength:8, MinimumLength =8, ErrorMessage = "El campo DNI debe tener 8 caracteres")]
-            
+            [RegularExpression(@"^[0-9]+$", ErrorMessage = "Por favor, ingresa solo números")]
             public string DNI { get; set; }
             [Required(ErrorMessage = "El campo Telefono es requerido.")]
-            [DataType(DataType.PhoneNumber)]
+            [RegularExpression(@"^[0-9]+$", ErrorMessage = "Por favor, ingresa solo números")]
             [Display(Name = "Telefono")]
             [StringLength(30, ErrorMessage = "El campo Teléfono admite hasta 30 caracteres")]
             public string Telefono { get; set; }
