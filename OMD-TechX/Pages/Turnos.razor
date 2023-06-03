@@ -127,7 +127,6 @@ else
         if (checkeo == 0)
         {
             perro.Turnos.Add(turnoPost);
-            turnoPost.PasarAHistorial();
             var res = await http.PostAsJsonAsync("api/turnos", turnoPost);
             ModalCrearTurno.Close();
             ModalAvisarRespuesta.Open();
