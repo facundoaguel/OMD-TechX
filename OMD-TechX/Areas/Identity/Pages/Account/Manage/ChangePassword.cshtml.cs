@@ -128,7 +128,6 @@ namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
             Usuario usuario = await http.GetFromJsonAsync<Usuario>($"api/usuarios/{userId}");
             if (usuario.primerInicio == true)
             {
-                StatusMessage = "Dado que es tu primer inicio de sesión, tenes que cambiar tu contraseña.";
                 http.PutAsJsonAsync("api/usuarios", usuario);
             }
             else

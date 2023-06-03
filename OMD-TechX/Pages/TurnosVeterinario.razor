@@ -121,22 +121,24 @@
 
     async Task CancelarTurno(int turnoId)
     {
-        recordatorio.Open();
-        /*string mensajeconfirmacion = $"¿Desea rechazar el turno?";
+        //recordatorio.Open();
+        string mensajeconfirmacion = $"¿Desea rechazar el turno?";
         if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
         {
-
-            await http.DeleteAsync($"https://localhost:7083/api/turnos/{turnoId}");
+            //para que no se elimine para el usuario sino que lo vea pero con el estado rechazado
+            Turno turno = await http.GetFromJsonAsync<Turno>($"https://localhost:7083/api/turnos/{turnoId}");
+            turno.estado = "Rechazado";
+            await http.PutAsJsonAsync("https://localhost:7083/api/turnos",turno);
             await cargarTurnosPendientes();
-        }*/
+        }
     }
     async Task AceptarTurno(int turnoId)
     {
-        notificacion.Open();
-        /*Turno turno = await http.GetFromJsonAsync<Turno>($"https://localhost:7083/api/turnos/{turnoId}");
+        //notificacion.Open();
+        Turno turno = await http.GetFromJsonAsync<Turno>($"https://localhost:7083/api/turnos/{turnoId}");
         turno.estado = "Aceptado";
         await http.PutAsJsonAsync($"https://localhost:7083/api/turnos", turno);
         await cargarTurnosPendientes();
-        await cargarTurnosAceptados();*/
+        await cargarTurnosAceptados();
     }
 }
