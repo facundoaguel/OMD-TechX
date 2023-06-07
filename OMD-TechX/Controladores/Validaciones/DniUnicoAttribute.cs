@@ -12,7 +12,7 @@ namespace OMD_TechX.Controladores.Validaciones
             {
                 // Verificar si ya existe un usuario con este DNI en la base de datos
                 var dbContext = (ApplicationDbContext)validationContext.GetService(typeof(ApplicationDbContext)); // Reemplaza "TuDbContext" con el nombre de tu DbContext
-                var user = dbContext.Usuarios.FirstOrDefault(u => u.DNI == (string)value);
+                var user = dbContext.Usuarios.Where(u=>u.eliminado == false).FirstOrDefault(u => u.DNI == (string)value);
 
                 if (user != null)
                 {

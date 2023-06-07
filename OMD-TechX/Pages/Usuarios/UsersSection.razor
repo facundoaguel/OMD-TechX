@@ -49,7 +49,7 @@ else
                     <td>@user.Email</td>
                     <td>@user.Telefono</td>
                     <td style="text-align: right">
-                        <button class="btn btn-danger" @onclick="@(()=>BorrarUsuario(user.Id))"><i class="oi oi-trash"></i></button>
+                        <button class="btn btn-danger" @onclick="@(()=>BorrarUsuarioLogico(user.Id))"><i class="oi oi-trash"></i></button>
                     </td>
                 </tr>
             }
@@ -75,7 +75,7 @@ else
     {
         //hago un GET al controlador de usuarios /api/usuarios
         //esta definido en UsuariosController como ApiController
-        usuarios = await http.GetFromJsonAsync<Usuario[]>("https://localhost:7083/api/usuarios");
+        usuarios = await http.GetFromJsonAsync<Usuario[]>("https://localhost:7083/api/usuarios/actuales");
     }
 
     async Task BorrarUsuario(string id)
@@ -94,6 +94,17 @@ else
                 await loadUsers();
             }
         }
-        
+
+    }
+
+    async Task BorrarUsuarioLogico(string id)
+    {
+        var usuario = usuarios.First(u => u.Id == id);
+        string mensajeconfirmacion = $"¿Desea borrar este usuario: {usuario.Email}?";
+        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        {
+            await http.PutAsJsonAsync<Usuario>("https://localhost:7083/api/usuarios/eliminado", usuario);
+            await loadUsers();
+        }
     }
 }

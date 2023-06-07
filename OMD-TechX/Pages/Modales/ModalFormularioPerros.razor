@@ -256,7 +256,7 @@
         modalDisplay = "block";
         modalClass = "show";
         showBackdrop = true;
-        usuarios = await http.GetFromJsonAsync<List<Usuario>>("https://localhost:7083/api/usuarios");
+        usuarios = await http.GetFromJsonAsync<List<Usuario>>("https://localhost:7083/api/usuarios/actuales");
         var perroFromApi = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{id}");
         actualizarCampos(Perro, perroFromApi);
         ClearInputFile();
@@ -284,7 +284,7 @@
         modalClass = "show";
         modalDisplay = "block";
         showBackdrop = true;
-        usuarios = await http.GetFromJsonAsync<List<Usuario>>("https://localhost:7083/api/usuarios");
+        usuarios = await http.GetFromJsonAsync<List<Usuario>>("https://localhost:7083/api/usuarios/actuales");
         Perro.Nombre = "";
         Perro.FechaN = DateTime.Today;
         Perro.Raza = "";

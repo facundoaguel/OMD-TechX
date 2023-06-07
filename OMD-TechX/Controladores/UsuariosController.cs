@@ -35,6 +35,12 @@ namespace OMD_TechX.Controladores
             return await context.Usuarios.Include(u => u.Perros).ToListAsync();
         }
 
+        [HttpGet("actuales")]
+        public async Task<ActionResult<List<Usuario>>> GetUsuariosActuales()
+        {
+            return await context.Usuarios.Include(u => u.Perros).Where(u => u.eliminado == false).ToListAsync();
+        }
+
         [HttpPost]
         public async Task<ActionResult> Post(Usuario user)
         {
@@ -47,6 +53,16 @@ namespace OMD_TechX.Controladores
         {
             user.primerInicio = false;
             context.Entry(user).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpPut("eliminado")]
+        public async Task<ActionResult> borradoLogico(Usuario user)
+        {
+            user.eliminado = true;
+            context.Entry(user).State = EntityState.Modified;
+            context.Users.Remove(await context.Users.FirstOrDefaultAsync(u => u.Id == user.Id));
             await context.SaveChangesAsync();
             return NoContent();
         }
