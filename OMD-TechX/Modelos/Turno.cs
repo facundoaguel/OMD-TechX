@@ -92,12 +92,14 @@ namespace OMD_TechX.Modelos
         {
 
             int dias = (DateTime.Now - this.Fecha).Days;
-            if (dias <= 0)
+            if (dias <= 0 && this.estado.Equals("Aceptado"))
             {
                 PerroAtencion nuevoHistorial = new PerroAtencion(this.PerroId, this.motivoId, this.Fecha);
+                
                 using (HttpClient client = new HttpClient())
                 {
-                    await client.PostAsJsonAsync("https://localhost:7083/api/atenciones", nuevoHistorial);
+              
+                    var res = await client.PostAsJsonAsync("https://localhost:7083/api/perroAtencion", nuevoHistorial);
                 }
             }
         }

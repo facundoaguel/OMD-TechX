@@ -6,7 +6,7 @@ using OMD_TechX.Modelos;
 namespace OMD_TechX.Controladores
 {
     [ApiController]
-    [Route("/api/perroAtencion")]
+    [Route("api/perroAtencion")]
     public class PerroAtencionController : ControllerBase
     {
 
@@ -22,18 +22,23 @@ namespace OMD_TechX.Controladores
         {
             return await context.PerroAtenciones.ToListAsync();
         }
-
-        [HttpGet("{id}", Name = "getPerroAtencion")]
-        public async Task<ActionResult<PerroAtencion>> Get(int id)
+        [HttpGet("{perroId}", Name = "getPerroAtencion")]
+        public async Task<ActionResult<List<PerroAtencion>>> Get(int id)
         {
-            return await context.PerroAtenciones.FirstOrDefaultAsync(pa => pa.Id == id);
+            return await context.PerroAtenciones.Where(pa => pa.PerroId == id).ToListAsync();
         }
         [HttpPost]
         public async Task<ActionResult> Post(PerroAtencion perroAtencion)
         {
-            context.Add(perroAtencion);
-            await context.SaveChangesAsync();
-            return new CreatedAtRouteResult("getPerroAtencion", new { Id = perroAtencion.Id }, perroAtencion);
+            var check = chequearAtencion(perroAtencion);
+            if (!check)
+            {
+                context.Add(perroAtencion);
+                await context.SaveChangesAsync();
+                return new CreatedAtRouteResult("getPerroAtencion", new { Id = perroAtencion.PerroId }, perroAtencion);
+            }
+            return NoContent();
+            
         }
 
         [HttpDelete("{id}")]
@@ -57,6 +62,11 @@ namespace OMD_TechX.Controladores
             context.Entry(perroAtencion).State = EntityState.Modified;
             await context.SaveChangesAsync();
             return NoContent();
+        }
+
+        public bool chequearAtencion(PerroAtencion perroAtencion)
+        {
+            return context.PerroAtenciones.Any(pa => pa.AtencionId == perroAtencion.AtencionId && pa.Fecha == perroAtencion.Fecha && pa.PerroId == perroAtencion.PerroId);
         }
     }
 }

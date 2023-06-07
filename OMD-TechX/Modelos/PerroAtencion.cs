@@ -7,8 +7,8 @@ namespace OMD_TechX.Modelos
         [Key]
         public int Id { get; set; }
         public int PerroId { get; set; }
-        public Perro perro { get; set; }
-        public Atencion Atencion { get; set; }
+        public string perro { get; set; }
+        public string Atencion { get; set; }
         public int AtencionId { get; set; }
         public DateTime Fecha { get; set; }
 
@@ -30,7 +30,7 @@ namespace OMD_TechX.Modelos
             this.Atencion = await ObtenerAtencion(atencionId);
         }
 
-        public static async Task<Perro> ObtenerPerro(int Id)
+        public static async Task<string> ObtenerPerro(int Id)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -39,17 +39,16 @@ namespace OMD_TechX.Modelos
                     HttpResponseMessage response = await client.GetAsync($"https://localhost:7083/api/perros/{Id}");
                     response.EnsureSuccessStatusCode(); // Verificar que la respuesta sea exitosa
                     var perro = await response.Content.ReadFromJsonAsync<Perro>();
-                    return perro;
+                    return perro.Nombre;
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"No hay perros cargados: {ex.Message}");
-                    return new Perro();
-                }
+                    return "";               }
             }
         }
 
-        public static async Task<Atencion> ObtenerAtencion(int Id)
+        public static async Task<string> ObtenerAtencion(int Id)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -58,12 +57,12 @@ namespace OMD_TechX.Modelos
                     HttpResponseMessage response = await client.GetAsync($"https://localhost:7083/api/atenciones/{Id}");
                     response.EnsureSuccessStatusCode(); // Verificar que la respuesta sea exitosa
                     var atencion = await response.Content.ReadFromJsonAsync<Atencion>();
-                    return atencion;
+                    return atencion.Nombre;
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"No hay atenciones cargadas: {ex.Message}");
-                    return new Atencion();
+                    return "";
                 }
             }
         }

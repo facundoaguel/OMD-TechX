@@ -58,7 +58,7 @@ else
                     <td>@perro.Sexo</td>
                     <td>@perro.FechaN.ToShortDateString()</td>
                     <td style="text-align:right;">
-                        <button class="btn" style="background-color:cadetblue" @onclick="@(()=>libretaSanitaria())"><i class="oi oi-heart"></i> </button>
+                        <button class="btn" style="background-color:cadetblue" @onclick="@(()=>libretaSanitaria(perro.Id))"><i class="oi oi-heart"></i> </button>
                         <button class="btn btn-danger" @onclick="@(()=>BorrarPerro(perro.Id))"><i class="oi oi-trash"></i> </button>
                         <button class="btn btn-primary" style="background-color: 4BA9E7" value="Editar" @onclick="@(()=>ModalEditarPerro.Open(perro.Id))"><i class="oi oi-pencil"></i></button>
                     </td>
@@ -68,8 +68,36 @@ else
     </table>
 }
 <SurveyPrompt />
-<ModalDialog @ref="@notificacion" Titulo="Libreta sanitaria">
-    <h4>Proximamente. Esta funcion no esta disponible actualmente.</h4>
+<ModalDialog @ref="@historialAtenciones" Titulo="Libreta sanitaria">
+    @if (atenciones == null)
+    {
+        <h4>Cargando atenciones...</h4>
+    }
+    else if (atenciones.Count == 0)
+    {
+        <h4>El perro @perro.Nombre no tiene atenciones.</h4>
+    }
+    else
+    {
+        <h4>Atenciones del perro @perro.Nombre</h4>
+        <hr />
+        <table class="table">
+            <thead>
+            <th>Fecha</th>
+            <th>Atencion</th>
+            </thead>
+            <tbody>
+                @foreach (PerroAtencion atencion in atenciones)
+                {
+                    <tr>
+                        <td>@atencion.Fecha.ToShortDateString()</td>
+                        <td>@atencion.Atencion</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    
 </ModalDialog>
 <ModalDialog @ref="@notificacionBorrado" Titulo="Error">
     <h4>Este perro tiene turnos asociado, para borrarlo, elimine sus turnos.</h4>
@@ -84,12 +112,14 @@ else
     }*/
     Perro[] perros { get; set; }
     Perro perro { get; set; } = new Perro();
+    List<PerroAtencion> atenciones = new List<PerroAtencion>();
+
     List<Usuario> usuarios { get; set; } = new List<Usuario>();
     Usuario usuario { get; set; } = new Usuario();
     private string imagenBase64 { get; set; }
     private ModalFormularioPerros ModalCrearPerro { get; set; }
     private ModalFormularioPerros ModalEditarPerro { get; set; }
-    private ModalDialog notificacion { get; set; }
+    private ModalDialog historialAtenciones { get; set; }
     private ModalDialog notificacionBorrado { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -176,8 +206,25 @@ else
             }
         }
     }
-    async Task libretaSanitaria()
+    async Task libretaSanitaria(int perroId)
+    {   
+        perro = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{perroId}");
+        await pasarAHistorial(perro);
+        await cargarAtenciones(perroId);
+        historialAtenciones.Open();
+    }
+
+    async Task cargarAtenciones(int perroId)
     {
-        notificacion.Open();
+        atenciones = await http.GetFromJsonAsync<List<PerroAtencion>>($"https://localhost:7083/api/perroAtencion");
+        atenciones = atenciones.Where(a => a.PerroId == perroId).ToList();
+    }
+
+    async Task pasarAHistorial(Perro perro)
+    {
+        foreach (Turno turno in perro.Turnos)
+        {
+            turno.PasarAHistorial();
+        }
     }
 }
