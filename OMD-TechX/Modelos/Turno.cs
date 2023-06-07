@@ -85,6 +85,22 @@ namespace OMD_TechX.Modelos
             this.motivoId = motivoId;
             Task.Run(async () => await EstablecerEstadoPorIdAsync(perroId, motivoId)).Wait();
         }
+
+        //en algun lugar tenemos que llamar este metodo,
+        //podemos hacer que el veterinario tenga boton de actualizar libreta y entonces se llame a este metodo en todos los turno de ese perro
+        public async void PasarAHistorial()
+        {
+
+            int dias = (DateTime.Now - this.Fecha).Days;
+            if (dias <= 0)
+            {
+                PerroAtencion nuevoHistorial = new PerroAtencion(this.PerroId, this.motivoId, this.Fecha);
+                using (HttpClient client = new HttpClient())
+                {
+                    await client.PostAsJsonAsync("https://localhost:7083/api/atenciones", nuevoHistorial);
+                }
+            }
+        }
     }
 
 }
