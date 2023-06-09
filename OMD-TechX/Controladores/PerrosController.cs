@@ -27,8 +27,28 @@ namespace OMD_TechX.Controladores
         [HttpGet("{id}", Name = "getPerro")]
         public async Task<ActionResult<Perro>> Get(int id)
         {
-            return await context.Perros.Include(p => p.Turnos).FirstOrDefaultAsync(p => p.Id == id);
+            return await context.Perros.Where(p=> p.eliminado == false).Include(p => p.Turnos).FirstOrDefaultAsync(p => p.Id == id);
         }
+
+        [HttpGet("byUser/{userId}")]
+        public async Task<ActionResult<List<Perro>>> Get(string userId)
+        {
+            if (userId != null)
+            {
+                return await context.Perros.Where(p => p.UsuarioId == userId).Include(p => p.Turnos).ToListAsync();
+            }
+            else
+            {
+                return new List<Perro>();
+            }
+        }
+
+        [HttpGet("actuales")]
+        public async Task<ActionResult<List<Perro>>> GetPerrosActuales()
+        {
+            return await context.Perros.Include(p => p.Turnos).Where(p => p.eliminado == false).ToListAsync();
+        }
+
         [HttpPost]
         public async Task<ActionResult> Post(Perro perro)
         {
@@ -47,6 +67,16 @@ namespace OMD_TechX.Controladores
 
             return NoContent();
         }
+
+        [HttpPut("eliminado")]
+        public async Task<ActionResult> borradoLogico(Perro perro)
+        {
+            perro.eliminado = true;
+            context.Entry(perro).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+
         [HttpPut]
         public async Task<ActionResult> Put(Perro perro)
         {

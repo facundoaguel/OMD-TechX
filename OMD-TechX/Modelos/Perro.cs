@@ -38,6 +38,7 @@ namespace OMD_TechX.Modelos
 
         public List<Turno> Turnos {get; set; }
         public List<PerroAtencion> PerroAtencion { get; set; }
+        public bool eliminado { get; set; } = false;
         public Perro(string nombre, DateTime fechaN, string raza,string tamanio, string sexo, string color, string com, string usuarioId)
         {
             this.Nombre = nombre; 

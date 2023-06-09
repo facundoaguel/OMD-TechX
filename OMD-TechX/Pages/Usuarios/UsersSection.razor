@@ -107,4 +107,10 @@ else
             await loadUsers();
         }
     }
+
+    async Task BorrarPerroEnCadena(int id)
+    {
+        var perro = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{id}");
+        await http.PutAsJsonAsync<Perro>("https://localhost:7083/api/perros/eliminado", perro);
+    }
 }
