@@ -244,8 +244,6 @@ else
 
     async Task libretaSanitaria(int perroId)
     {   
-        perro = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{perroId}");
-        await pasarAHistorial(perro);
         await cargarAtenciones(perroId);
         historialAtenciones.Open();
     }
@@ -254,13 +252,5 @@ else
     {
         atenciones = await http.GetFromJsonAsync<List<PerroAtencion>>($"https://localhost:7083/api/perroAtencion");
         atenciones = atenciones.Where(a => a.PerroId == perroId).ToList();
-    }
-
-    async Task pasarAHistorial(Perro perro)
-    {
-        foreach (Turno turno in perro.Turnos)
-        {
-            turno.PasarAHistorial();
-        }
     }
 }

@@ -73,7 +73,6 @@ else
 </ModalDialog>
 
 <ModalDialog @ref="@diasEspera" Titulo="Error">
-    <h4 class="text-danger">El checkeo de la cantidad de días no está disponible en este sprint.</h4>
     <h4>Todavía no se cumplió el tiempo necesario para solicitar este tratamiento.</h4>
     <h4>Para solicitarlo, faltan @diasDeEspera días.</h4>
 </ModalDialog>
@@ -139,11 +138,11 @@ else
         else
         {
             diasEspera.Open();
-            perro.Turnos.Add(turnoPost);
-            var res = await http.PostAsJsonAsync("api/turnos", turnoPost);
+            //perro.Turnos.Add(turnoPost);
+            //var res = await http.PostAsJsonAsync("api/turnos", turnoPost);
             ModalCrearTurno.Close();
-            ModalAvisarRespuesta.Open();
-            await cargarTurno();
+            //ModalAvisarRespuesta.Open();
+            //await cargarTurno();
         }
 
 
@@ -153,6 +152,8 @@ else
     {
         Perro perro = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{turno.PerroId}");
         int dias = (turno.Fecha - perro.FechaN).Days;
+        List<PerroAtencion> atenciones = await http.GetFromJsonAsync<List<PerroAtencion>>($"https://localhost:7083/api/perroAtencion");
+        List<PerroAtencion> atencionesPerro = atenciones.Where(a => a.PerroId == perro.Id).ToList();
         if (turno.motivo.Equals("Vacuna antirrabica"))
         {
             //-1 si es menor a 4 meses
@@ -165,7 +166,21 @@ else
             {
                 //aca habria que checkear si ya se vacuno, para calcular el periodo
                 //cada un anio
-                return 1;
+                //List<PerroAtencion> atenciones = await http.GetFromJsonAsync<List<PerroAtencion>>($"https://localhost:7083/api/perroAtencion/{perro.Id}");
+                if(atencionesPerro.Count > 0)
+                {
+                    PerroAtencion ultimaVacuna = atencionesPerro.LastOrDefault(a => a.Atencion == "Vacuna antirrabica");
+                    if(ultimaVacuna != null)
+                    {
+                        int diasUltimaVez = (turno.Fecha - ultimaVacuna.Fecha).Days;
+                        if (diasUltimaVez < 365)
+                        {
+                            diasDeEspera = 365 - diasUltimaVez;
+                            return 1;
+                        }
+                    }
+                }
+                return 0;
             }
         }
         else if (turno.motivo.Equals("Vacuna por enfermedad"))
@@ -178,14 +193,39 @@ else
             {
                 //aca habria que checkear si ya se vacuno, para calcular el periodo
                 //cada 21 dias
-
-                return 1;
+                if (atencionesPerro.Count > 0)
+                {
+                    PerroAtencion ultimaVacuna = atencionesPerro.LastOrDefault(a => a.Atencion == "Vacuna por enfermedad");
+                    if (ultimaVacuna != null)
+                    {
+                        int diasUltimaVez = (turno.Fecha - ultimaVacuna.Fecha).Days;
+                        if (diasUltimaVez < 21)
+                        {
+                            diasDeEspera = 21 - diasUltimaVez;
+                            return 1;
+                        }
+                    }
+                }
+                return 0;
             }
             else
             {
                 //mayor a 4 meses
                 //chequear cada un anio
-                return 1;
+                if (atencionesPerro.Count > 0)
+                {
+                    PerroAtencion ultimaVacuna = atencionesPerro.LastOrDefault(a => a.Atencion == "Vacuna por enfermedad");
+                    if (ultimaVacuna != null)
+                    {
+                        int diasUltimaVez = (turno.Fecha - ultimaVacuna.Fecha).Days;
+                        if (diasUltimaVez < 365)
+                        {
+                            diasDeEspera = 365 - diasUltimaVez;
+                            return 1;
+                        }
+                    }
+                }
+                return 0;
             }
         }
         else

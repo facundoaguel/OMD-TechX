@@ -78,6 +78,9 @@
                                 <td>@turno.Franja</td>
                                 <td>@turno.motivo</td>
                                 <td>@turno.Perro</td>
+                                <td style="text-align: right">
+                                    <button class="btn btn-success" @onclick="@(()=>libretaSanitaria(turno.Id))"><i class="oi oi-check"></i></button>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -139,6 +142,16 @@
         turno.estado = "Aceptado";
         await http.PutAsJsonAsync($"https://localhost:7083/api/turnos", turno);
         await cargarTurnosPendientes();
+        await cargarTurnosAceptados();
+    }
+
+
+    async Task libretaSanitaria(int turnoId)
+    {
+        Turno turno = await http.GetFromJsonAsync<Turno>($"https://localhost:7083/api/turnos/{turnoId}");
+        turno.PasarAHistorial();
+        turno.estado = "Realizado";
+        await http.PutAsJsonAsync($"https://localhost:7083/api/turnos", turno);
         await cargarTurnosAceptados();
     }
 }
