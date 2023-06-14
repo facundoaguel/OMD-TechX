@@ -1,0 +1,68 @@
+﻿@page "/turnosAceptados"
+@inject HttpClient http
+@inject IJSRuntime JS
+
+<h4 style="text-align:center">Turnos aceptados</h4>
+<hr />
+@if (turnosAceptados == null)
+{
+    <text>Cargando...</text>
+}
+else if (turnosAceptados.Length == 0)
+{
+    <text>No hay turnos aceptados.</text>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Franja</th>
+                <th>Hora</th>
+                <th>Motivo</th>
+                <th>Perro</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var turno in turnosAceptados)
+            {
+                <tr>
+
+                    <td>@turno.Fecha.ToShortDateString()</td>
+                    <td>@turno.Franja</td>
+                    <td>@turno.hora.Value.TimeOfDay</td>
+                    <td>@turno.motivo</td>
+                    <td>@turno.Perro</td>
+                    <td style="text-align: right">
+                        <button class="btn btn-success" @onclick="@(()=>libretaSanitaria(turno.Id))"><i class="oi oi-check"></i></button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    Turno[] turnosAceptados { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        http.BaseAddress = new Uri("https://localhost:7083/");
+        await cargarTurnosAceptados();
+    }
+    async Task cargarTurnosAceptados()
+    {
+        turnosAceptados = await http.GetFromJsonAsync<Turno[]>($"https://localhost:7083/api/turnos/aceptados");
+    }
+    async Task libretaSanitaria(int turnoId)
+    {
+        Turno turno = await http.GetFromJsonAsync<Turno>($"https://localhost:7083/api/turnos/{turnoId}");
+        turno.PasarAHistorial();
+        turno.estado = "Realizado";
+        await http.PutAsJsonAsync($"https://localhost:7083/api/turnos", turno);
+        await cargarTurnosAceptados();
+    }
+
+}

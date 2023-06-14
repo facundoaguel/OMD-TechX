@@ -13,6 +13,9 @@ namespace OMD_TechX.Modelos
         public int Id { get; set; }
         [Required(ErrorMessage = "La fecha es requerida")]
         public DateTime Fecha { get; set; }
+
+        //[Required(ErrorMessage = "La hora es requerida")]
+        public DateTime? hora { get; set; }
         [Required(ErrorMessage = "La franja horaria es requerida")]
         public string Franja { get; set; }
         [Required(ErrorMessage = "El campo perro es requerido")]
@@ -83,6 +86,7 @@ namespace OMD_TechX.Modelos
             this.estado = "Pendiente";
             this.PerroId = perroId;
             this.motivoId = motivoId;
+            this.hora = DateTime.Now;
             Task.Run(async () => await EstablecerEstadoPorIdAsync(perroId, motivoId)).Wait();
         }
 
@@ -96,6 +100,10 @@ namespace OMD_TechX.Modelos
             { 
                 var res = await client.PostAsJsonAsync("https://localhost:7083/api/perroAtencion", nuevoHistorial);
             }
+        }
+        public void setHora(DateTime hora)
+        {
+            this.hora = hora;
         }
     }
 

@@ -1,0 +1,72 @@
+﻿@inject HttpClient http
+<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow:auto;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #28567A">
+                <div class="d-flex align-items-center">
+                    <div class="ms-auto">
+                        <img src="/imagenes/Logo2-removebg-preview.png" class="rounded float-end img-fluid" width="70px" height="70px" alt="omd-logo">
+                    </div>
+                    <h2 style="color:darkorange; text-align: center; margin-left: 10px">@Titulo</h2>
+                </div>
+                <hr />
+
+            </div>
+            <div class="modal-body">
+                <h4>Por favor, especifique la hora del turno.</h4>
+                <hr />
+                <EditForm Model="@turno" OnValidSubmit="OnValidSubmit">
+                    <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                        <ValidationMessage For="@(() => turno.hora)"></ValidationMessage>
+                    </label>
+                    <input type="time" @bind=@turno.hora class="form-select rounded" required />
+                    <div class="row" style="margin-top: 30px">
+                    <div class="col-sm-10">
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="submit" style="background-color:darkorange;" class="w-100 btn">Confirmar</button>
+                    </div>
+                </div>
+                </EditForm>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter]
+    public string Titulo { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+    [Parameter]
+    public Turno turno { get; set; }
+
+    private string modalDisplay = "none";
+    private string modalClass = string.Empty;
+    private bool showBackdrop = false;
+
+    public async Task Open(Turno turno)
+    {
+        this.turno = turno;
+        modalDisplay = "block";
+        modalClass = "show";
+        showBackdrop = true;
+    }
+    public void Close()
+    {
+        modalDisplay = "none";
+        modalClass = string.Empty;
+        showBackdrop = false;
+    }
+
+   
+}
+

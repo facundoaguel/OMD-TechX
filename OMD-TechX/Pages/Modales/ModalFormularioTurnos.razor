@@ -15,7 +15,7 @@
             <div class="modal-body">
 
                 <!-- comienzo del formulario-->
-                <EditForm Model="@Turno" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="error">
+                <EditForm @ref="@formRef" Model="@Turno" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="error">
                     <!-- header -->
 
                     <div class="row">
@@ -96,9 +96,9 @@
                                 <button type="submit" style="background-color:#21618C;" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
                             </div>
                         </div>
-                        
                     <DataAnnotationsValidator> </DataAnnotationsValidator>
                 </EditForm>
+               
             </div>
         </div>
     </div>
@@ -156,8 +156,9 @@
             Turno.PerroId = 0;
             Turno.usuarioId = "";
             Turno.Id = 0;
+            
         }
-       
+
 
     }
     public async Task Close()

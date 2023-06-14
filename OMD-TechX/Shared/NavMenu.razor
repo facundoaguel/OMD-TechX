@@ -5,6 +5,16 @@
             font-size:27px;
             margin-right: 10px
         }
+
+        .dropdown-menu {
+            display: block;
+            position: absolute;
+            background-color: #f9f9f9;
+            padding: 8px;
+            margin-top: 4px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
     </style>
 </head>
 <div class="top-row ps-3 navbar navbar-dark">
@@ -36,13 +46,33 @@
                 </div>
             </NotAuthorized>
            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="turnosVet">
-                        <span class="material-icons iconos">
+                <div class="nav-item px-3" >
+                    <NavLink class="nav-link " @onclick="ToggleDropdown">
+                    <span class="material-icons iconos" >
                             medical_services
-                        </span> Turnos
-                    </NavLink>
+                     </span> Turnos
+                     </NavLink>
                 </div>
+                @if (isDropdownOpen)
+                    {
+                    <div style="margin-left: 20px;margin-top:-20px">
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="turnosAceptados">
+                                <span class="material-icons iconos">
+                                    check_circle
+                                </span> Aceptados
+                            </NavLink>
+                        </div>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="turnosPendientes">
+                                <span class="material-icons iconos">
+                                    pending
+                                </span> Pendientes
+                            </NavLink>
+                        </div>
+                    </div>
+                    
+                    }
            </Authorized>
         </AuthorizeView>
         <div class="nav-item px-3">
@@ -107,11 +137,18 @@
 
 @code {
     private bool collapseNavMenu = true;
+    bool isDropdownOpen = false;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+   
+
+    void ToggleDropdown()
+    {
+        isDropdownOpen = !isDropdownOpen;
     }
 }

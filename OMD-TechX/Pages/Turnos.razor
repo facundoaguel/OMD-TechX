@@ -38,6 +38,7 @@ else
             <tr>
                 <th>Fecha</th>
                 <th>Franja</th>
+                <th>Hora</th>
                 <th>Motivo</th>
                 <th>Perro</th>
                 <th>Estado</th>
@@ -51,6 +52,14 @@ else
 
                     <td>@turno.Fecha.ToShortDateString()</td>
                     <td>@turno.Franja</td>
+                    @if (turno.estado.Equals("Aceptado"))
+                    {
+                        <td>@turno.hora.Value.TimeOfDay</td>
+                    }
+                    else
+                    {
+                        <td>Por especificar..</td>
+                    }
                     <td>@turno.motivo</td>
                     <td>@turno.Perro</td>
                     <td>@turno.estado</td>
