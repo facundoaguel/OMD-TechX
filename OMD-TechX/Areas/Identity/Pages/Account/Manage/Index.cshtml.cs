@@ -22,6 +22,8 @@ namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
         private readonly SignInManager<IdentityUser> _signInManager;
         public HttpClient http;
 
+        
+
         public IndexModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager)
@@ -154,5 +156,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account.Manage
             StatusMessage = "Tu perfil ha sido actualizado.";
             return RedirectToPage();
         }
+
+        
     }
 }

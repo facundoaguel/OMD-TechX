@@ -4,7 +4,8 @@
 @{
     ViewData["Title"] = "Perfil";
     ViewData["ActivePage"] = ManageNavPages.Index;
-}
+    
+    }
 
 <h3>@ViewData["Title"]</h3>
 <div class="row">
@@ -56,7 +57,7 @@
                             if (Model.Perros.Count > 0)
                             {
                                 int cont = 0;
-                                foreach (var perro in Model.Perros)
+                                foreach (var perro in Model.Perros.Where(p=> p.eliminado == false))
                                 {
                                     cont++;
                                     <tr>
@@ -79,7 +80,7 @@
                                             @perro.Tamanio
                                         </th>
                                         <th style="text-align:right; ">
-                                            <button class="btn btn-primary" style="margin:5px"><i class="oi oi-plus">Historial</i></button>
+                                            <button class="btn btn-primary" onclick="Open(@perro.Id)" id="openButton" style="margin:5px"><i class="oi oi-plus">Historial</i></button>
                                         </th>
                                     </tr>
                                 }
@@ -106,7 +107,139 @@
     </div>
 </div>
 
+<div id="modalDialog" class="modal" tabindex="-1" role="dialog" style=" overflow:auto;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #28567A">
+                <div class="d-flex align-items-center">
+                    <div class="ms-auto">
+                        <img src="/imagenes/Logo2-removebg-preview.png" class="rounded float-end img-fluid" width="70px" height="70px" alt="omd-logo">
+                    </div>
+                    <h2 style="color:darkorange; text-align: center; margin-left: 10px">Historial de atenciones</h2>
+                </div>
+                <hr />
+
+            </div>
+            <div class="modal-body">
+                <h4 id="texto"></h4>
+                <table id="tabla" class="table">
+                    <thead>
+                        <th>Fecha</th>
+                        <th>Atencion</th>
+                    </thead>
+                    <tbody id="body">
+                        
+                    </tbody>
+                </table>
+               
+                <div class="col-sm-10">
+                </div>
+                <div class="col-sm-2">
+                    <button id="closeButton" style="background-color:darkorange;" class="w-100 btn">Aceptar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="backdrop" class="modal-backdrop fade show"></div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+
+
 }
 
+
+
+<script>
+    const modal = document.getElementById("modalDialog")
+    const backdrop = document.getElementById("backdrop")
+    const tabla = document.getElementById("tabla")
+    const texto = document.getElementById("texto")
+
+    /*document.getElementById("openButton").addEventListener("click", function () {
+        Open();
+    });*/
+    document.getElementById("closeButton").addEventListener("click", function () {
+        Close();
+    });
+    let showBackdrop = false
+    modal.className += " "
+    modal.style.display = "none"
+    backdrop.hidden = true
+    texto.hidden = true
+    tabla.hidden = true
+
+    function Open(perroId) {
+        
+        // Aquí puedes realizar las acciones necesarias al abrir el modal
+        console.log("PARAMETRO DEL PERRO ID: " + perroId)
+        modal.className += " show"
+        modal.style.display = "block"
+        showBackdrop = true
+        backdrop.hidden = false
+        fetch(`https://localhost:7083/api/perros/${perroId}`)
+            .then(response => response.json())
+            .then(data => {
+                renderizarTabla(data.perroAtencion) ; // Hacer algo con la respuesta del backend
+            });
+            
+    }
+
+    function limpiarTabla() {
+        const body = document.getElementById("body");
+        while (body.firstChild) {
+            body.removeChild(body.firstChild);
+        }
+        tabla.hidden = true;
+    }
+
+    function Close(){
+        limpiarTabla()
+        modal.className += " "
+        modal.style.display = "none"
+        showBackdrop = false
+        backdrop.hidden = true
+    }
+
+    function renderizarTabla(atenciones){
+        console.log(atenciones)
+        if (atenciones == null){
+            texto.innerHTML = "Cargando..."
+            texto.hidden = false
+        }
+        else if (atenciones.length == 0){
+            texto.hidden = false
+            texto.innerHTML = "Este perro no tiene atenciones."
+        }
+        else{
+            const body = document.getElementById("body")
+            tabla.hidden = false
+            atenciones.forEach(value=> {
+                 const row = document.createElement('tr');
+
+                    const td = document.createElement('td');
+                    const fechaString = value.fecha
+                    const fecha = new Date(fechaString)
+
+                    const dia = fecha.getDate();
+                    const mes = fecha.toLocaleString('default', { month: 'long' });
+                    const anio = fecha.getFullYear();
+
+                    const fechaFormateada = `${dia} ${mes} ${anio}`
+                    
+                    td.textContent = fechaFormateada
+                    row.appendChild(td);
+                    const td1 = document.createElement('td');
+                    td1.textContent = value.atencion;
+                    row.appendChild(td1);
+                body.appendChild(row);
+            });
+        }
+
+        
+    }
+</script>

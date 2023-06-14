@@ -97,7 +97,9 @@ namespace OMD_TechX.Modelos
             PerroAtencion nuevoHistorial = new PerroAtencion(this.PerroId, this.motivoId, this.Fecha);
                 
             using (HttpClient client = new HttpClient())
-            { 
+            {
+                Perro perro = await client.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{this.PerroId}");
+                perro.PerroAtencion.Add(nuevoHistorial);
                 var res = await client.PostAsJsonAsync("https://localhost:7083/api/perroAtencion", nuevoHistorial);
             }
         }
