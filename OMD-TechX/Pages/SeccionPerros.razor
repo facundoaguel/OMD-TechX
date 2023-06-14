@@ -1,6 +1,7 @@
 ﻿@page "/perros"
 @using System.Net.Http.Headers;
 @using Microsoft.AspNetCore.Mvc;
+@using OMD_TechX.Helpers;
 @inject HttpClient http
 @inject IJSRuntime JS
 @attribute [Authorize(Roles = "Admin")]
@@ -236,8 +237,9 @@ else
         {
             await http.PutAsJsonAsync<Perro>("https://localhost:7083/api/perros/eliminado", perro);
             var usuario = usuarios.FirstOrDefault(u => u.Id == perro.UsuarioId);
-            usuario.Perros.RemoveAll(p => p.Id == perro.Id);
-            await http.PutAsJsonAsync("https://localhost:7083/api/usuarios/modificacion", usuario);
+            //var elim = usuario.Perros.RemoveAll(p => p.Id == perro.Id);
+            BorrarPerroHelper bp = new BorrarPerroHelper(usuario, perro);
+            var res = await http.PutAsJsonAsync("https://localhost:7083/api/usuarios/modificacion", bp);
             await cargarPerros();
         }
     }

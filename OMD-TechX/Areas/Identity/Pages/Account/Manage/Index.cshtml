@@ -31,10 +31,14 @@
                 <input asp-for="Telefono" class="form-control" placeholder="Please choose your email." disabled />
                 <label asp-for="Telefono" class="form-label"></label>
             </div>
+        @if (!Model.Email.Equals("pedro@omd.com"))
+        {
             <h3 style="text-align:center" class="rounded">Perros</h3>
             <hr />
+
+
             <div class="form-floating mb-3">
-                
+
                 <table class="table table-striped">
                     <thead class="thead-dark">
                         <tr>
@@ -83,14 +87,16 @@
                             else
                             {
                                 <tr>
-                                No tenes perros asociados :c
+                                    No tenes perros asociados :c
                                 </tr>
                             }
                         }
-                    
+
                     </tbody>
                 </table>
             </div>
+        }
+        
             <!--<div class="form-floating mb-3">
                 <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
                 <label asp-for="Input.PhoneNumber" class="form-label"></label>

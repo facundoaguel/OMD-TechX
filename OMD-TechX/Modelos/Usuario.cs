@@ -29,5 +29,9 @@ namespace OMD_TechX.Modelos
         {
             
         }
+        public void eliminarPerro(Perro p)
+        {
+            this.Perros.Remove(p);
+        }
     }
 }
