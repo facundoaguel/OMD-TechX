@@ -11,7 +11,7 @@ namespace OMD_TechX.Controladores.Validaciones
             if (value != null)
             {
                 var dbContext = (ApplicationDbContext)validationContext.GetService(typeof(ApplicationDbContext)); // Reemplaza "TuDbContext" con el nombre de tu DbContext
-                var user = dbContext.Usuarios.FirstOrDefault(u => u.Email == (string)value);
+                var user = dbContext.Usuarios.Where(u => u.eliminado == false).FirstOrDefault(u => u.Email == (string)value);
 
                 if (user == null && !(value.Equals("pedro@omd.com")))
                 {

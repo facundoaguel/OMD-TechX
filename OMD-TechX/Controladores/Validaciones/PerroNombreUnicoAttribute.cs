@@ -51,7 +51,7 @@ namespace OMD_TechX.Controladores.Validaciones
             var usuarioIdValue = usuarioIdInfo.GetValue(validationContext.ObjectInstance, null);
             Usuario usuario = dbContext.Usuarios.Include(u => u.Perros).FirstOrDefault(u => u.Id == usuarioIdValue);
             if (usuario != null) {
-                var encontre = usuario.Perros.Any(p => {Console.WriteLine("Nombre del perro: " + p.Nombre); return p.Nombre.Equals((string)value); });
+                var encontre = usuario.Perros.Any(p => {Console.WriteLine("Nombre del perro: " + p.Nombre); return p.Nombre.Equals((string)value) && p.eliminado == false; });
                 if (encontre)
                 {
                     return new ValidationResult("El cliente ya tiene un perro asociado con ese nombre. Por favor, ingrese otro.");

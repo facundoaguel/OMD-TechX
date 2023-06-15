@@ -104,13 +104,19 @@ else
         if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
         {
             await http.PutAsJsonAsync<Usuario>("https://localhost:7083/api/usuarios/eliminado", usuario);
+
             await loadUsers();
+            foreach (Perro perro in usuario.Perros)
+            {
+                await BorrarPerroEnCadena(perro.Id);
+            }
         }
     }
 
     async Task BorrarPerroEnCadena(int id)
     {
         var perro = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{id}");
-        await http.PutAsJsonAsync<Perro>("https://localhost:7083/api/perros/eliminado", perro);
+        perro.eliminado = true;
+        await http.PutAsJsonAsync<Perro>("https://localhost:7083/api/perros", perro);
     }
 }

@@ -66,7 +66,10 @@
                                     <option value="0" selected>Seleccione perro/a</option>
                                     @foreach (var perro in perros)
                                     {
-                                        <option value="@perro.Id">@perro.Nombre</option>
+                                        if(perro.eliminado == false)
+                                        {
+                                            <option value="@perro.Id">@perro.Nombre</option>
+                                        }
                                     }
                                 </InputSelect>
                                 </div>

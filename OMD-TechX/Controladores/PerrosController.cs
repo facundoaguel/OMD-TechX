@@ -35,7 +35,7 @@ namespace OMD_TechX.Controladores
         {
             if (userId != null)
             {
-                return await context.Perros.Where(p => p.UsuarioId == userId).Include(p => p.Turnos).ToListAsync();
+                return await context.Perros.Where(p => p.UsuarioId == userId && p.eliminado == false).Include(p => p.Turnos).ToListAsync();
             }
             else
             {
@@ -94,6 +94,7 @@ namespace OMD_TechX.Controladores
                 existingPerro.UsuarioId = perro.UsuarioId;
                 existingPerro.Comentarios = perro.Comentarios;
                 existingPerro.Sexo = perro.Sexo;
+                existingPerro.eliminado = perro.eliminado;
                 //context.Entry(perro).State = EntityState.Modified;
                 await context.SaveChangesAsync();
                 return NoContent();

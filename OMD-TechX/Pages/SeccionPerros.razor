@@ -142,7 +142,8 @@ else
     {
 
         var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{perro.UsuarioId}");
-        bool nombreEnUso = usuario.Perros.Any(p => p.Nombre.Equals(perro.Nombre));
+        List<Perro> existentes = usuario.Perros.FindAll(p => p.eliminado == false);
+        bool nombreEnUso = existentes.Any(p => p.Nombre.Equals(perro.Nombre));
         if (!nombreEnUso)
         {
             ModalCrearPerro.labelNombreEnUso = "";
@@ -195,7 +196,8 @@ else
         }
         else
         {
-            bool nombreEnUso = usuario.Perros.Any(p => p.Nombre.Equals(perro.Nombre));
+            List<Perro> existentes = usuario.Perros.FindAll(p => p.eliminado == false);
+            bool nombreEnUso = existentes.Any(p => p.Nombre.Equals(perro.Nombre));
             if (!nombreEnUso)
             {
                 ModalEditarPerro.labelNombreEnUso = "";
@@ -238,7 +240,8 @@ else
             await http.PutAsJsonAsync<Perro>("https://localhost:7083/api/perros/eliminado", perro);
             var usuario = usuarios.FirstOrDefault(u => u.Id == perro.UsuarioId);
             var elim = usuario.Perros.RemoveAll(p => p.Id == perro.Id);
-           
+            List<Perro> nuevaLista = usuario.Perros;
+            usuario.Perros = nuevaLista;
             var res = await http.PutAsJsonAsync("https://localhost:7083/api/usuarios/modificacion", usuario);
             await cargarPerros();
         }
