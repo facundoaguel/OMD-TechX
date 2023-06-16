@@ -117,6 +117,10 @@ else
     {
         var perro = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{id}");
         perro.eliminado = true;
+        foreach(Turno turno in perro.Turnos)
+        {
+            await http.DeleteFromJsonAsync<Turno>($"https://localhost:7083/api/turnos/{turno.Id}");
+        }
         await http.PutAsJsonAsync<Perro>("https://localhost:7083/api/perros", perro);
     }
 }
