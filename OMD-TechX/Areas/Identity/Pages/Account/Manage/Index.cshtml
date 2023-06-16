@@ -39,25 +39,24 @@
 
 
             <div class="form-floating mb-3">
-
-                <table class="table table-striped">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Raza</th>
-                            <th scope="col">Sexo</th>
-                            <th scope="col">Fecha de nacimiento</th>
-                            <th scope="col">Tamaño</th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @{
-                            if (Model.Perros.Count > 0)
-                            {
+                @if (Model.Perros.FindAll(p => p.eliminado == false).Count > 0)
+                {
+                    <table class="table table-striped">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Raza</th>
+                                <th scope="col">Sexo</th>
+                                <th scope="col">Fecha de nacimiento</th>
+                                <th scope="col">Tamaño</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
                                 int cont = 0;
-                                foreach (var perro in Model.Perros.Where(p=> p.eliminado == false))
+                                foreach (var perro in Model.Perros.Where(p => p.eliminado == false))
                                 {
                                     cont++;
                                     <tr>
@@ -85,16 +84,17 @@
                                     </tr>
                                 }
                             }
-                            else
-                            {
-                                <tr>
-                                    No tenes perros asociados :c
-                                </tr>
-                            }
-                        }
+                      
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <h4>
+                        No tenes perros asociados
+                    </h4>
+                }
             </div>
         }
         
@@ -216,6 +216,7 @@
             texto.innerHTML = "Este perro no tiene atenciones."
         }
         else{
+            texto.hidden = true;
             const body = document.getElementById("body")
             tabla.hidden = false
             atenciones.forEach(value=> {

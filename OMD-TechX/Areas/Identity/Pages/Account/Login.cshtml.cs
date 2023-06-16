@@ -129,7 +129,7 @@ namespace OMD_TechX.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 var usuarios = await http.GetFromJsonAsync<List<Usuario>>($"api/usuarios");
 
-                Usuario usuario = usuarios.FirstOrDefault( u => u.Email == Input.Email);
+                Usuario usuario = usuarios.Where(u => u.eliminado == false).FirstOrDefault( u => u.Email == Input.Email);
 
                 if (result.Succeeded)
                 {

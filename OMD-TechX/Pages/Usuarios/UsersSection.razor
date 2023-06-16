@@ -116,6 +116,10 @@ else
     async Task BorrarPerroEnCadena(int id)
     {
         var perro = await http.GetFromJsonAsync<Perro>($"https://localhost:7083/api/perros/{id}");
+        foreach (Turno turno in perro.Turnos)
+        {
+            await http.DeleteAsync($"https://localhost:7083/api/turnos/{turno.Id}");
+        }
         perro.eliminado = true;
         await http.PutAsJsonAsync<Perro>("https://localhost:7083/api/perros", perro);
     }
