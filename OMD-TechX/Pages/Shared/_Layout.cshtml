@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Hosting
 @using Microsoft.AspNetCore.Mvc.ViewEngines
+@using OMD_TechX.Modelos;
 @inject IWebHostEnvironment Environment
 @inject ICompositeViewEngine Engine
 <!DOCTYPE html>
@@ -7,7 +8,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - OMD-TechX</title>
+    <title>@ViewData["Title"] - ¡Oh My Dog! </title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet">
@@ -27,11 +28,26 @@
     <header>
         <nav style="background-color: #FFA75A;" class="navbar navbar-expand-sm navbar-toggleable-sm bg-orange border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" href="~/"></a>
+                @{
+                    using (HttpClient http = new HttpClient())
+                    {
+                        var usuarios = await http.GetFromJsonAsync<List<Usuario>>($"https://localhost:7083/api/usuarios");
+
+                        Usuario usuario = usuarios.FirstOrDefault(u => u.Email == this.User.Identity.Name);
+                        if ((usuario != null && usuario.primerInicio == false) ||  ( this.User.Identity.Name != null) && (this.User.Identity.Name.Equals("pedro@omd.com")))
+                        {
+                            <a class="navbar-brand" style="font-size: 30px" href="~/">¡Oh My Dog!</a>
+                        }
+                    }
+                    
+                  
+                }
+                
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+                
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     @{
                         var result = Engine.FindView(ViewContext, "_LoginPartial", isMainPage: false);
