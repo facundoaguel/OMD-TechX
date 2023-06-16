@@ -86,6 +86,13 @@ else
     <h4>Para solicitarlo, faltan @diasDeEspera días.</h4>
 </ModalDialog>
 
+<ModalDialog @ref="@dobleCastracion" Titulo="Error">
+    <h4>Su perro ya ha sido castrado, no se puede realizar esta atencion dos veces.</h4>
+</ModalDialog>
+
+<ModalDialog @ref="@turnoExistente" Titulo="Error">
+    <h4>Usted ya ha solicitado un turno para esta atencion, por favor espere la respuesta de los veterinarios.</h4>
+</ModalDialog>
 
 @code {
 
@@ -96,6 +103,8 @@ else
     //checkeo atenciones
     private ModalDialog perroJoven { get; set; }
     private ModalDialog diasEspera { get; set; }
+    private ModalDialog dobleCastracion { get; set; }
+    private ModalDialog turnoExistente { get; set; }
     private int diasDeEspera { get; set; } = 0;
 
     Turno[] turnos { get; set; }
@@ -142,7 +151,18 @@ else
         }
         else if (checkeo < 0)
         {
-            perroJoven.Open();
+            if(checkeo == -10)
+            {
+                dobleCastracion.Open();
+            }
+            else if(checkeo == -20)
+            {
+                turnoExistente.Open();
+            }
+            else
+            {
+                perroJoven.Open();
+            }
         }
         else
         {
@@ -163,6 +183,11 @@ else
         int dias = (turno.Fecha - perro.FechaN).Days;
         List<PerroAtencion> atenciones = await http.GetFromJsonAsync<List<PerroAtencion>>($"https://localhost:7083/api/perroAtencion");
         List<PerroAtencion> atencionesPerro = atenciones.Where(a => a.PerroId == perro.Id).ToList();
+        bool turnoInvalido = perro.Turnos.Any(t => t.motivo.Equals(turno.motivo) && (t.estado.Equals("Pendiente") || t.estado.Equals("Aceptado")));
+        if (turnoInvalido)
+        {
+            return -20;//retorno exactamente -20 cuando el turno ya ha sido solicitado.
+        }
         if (turno.motivo.Equals("Vacuna antirrabica"))
         {
             //-1 si es menor a 4 meses
@@ -236,6 +261,15 @@ else
                 }
                 return 0;
             }
+        }
+        else if (turno.motivo.Equals("Castracion"))
+        {
+            bool yaHayTurno = perro.Turnos.Any(t => t.motivo.Equals("Castracion") && !t.estado.Equals("Rechazado"));
+            if (yaHayTurno)
+            {
+                return -10;//retorno exactamente -10 cuando es doble castracion
+            }
+            return 0;
         }
         else
         {
