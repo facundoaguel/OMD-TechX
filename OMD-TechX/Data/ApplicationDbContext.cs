@@ -14,7 +14,7 @@ namespace OMD_TechX.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+            modelBuilder.Entity<Adopcion>().HasBaseType<Publicacion>();
         }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -33,6 +33,7 @@ namespace OMD_TechX.Data
         public DbSet<Turno> Turnos => Set<Turno>();
         public DbSet<PerroAtencion> PerroAtenciones => Set<PerroAtencion>();
         public DbSet<Disponibilidad> Disponibilidades => Set<Disponibilidad>();
+        public DbSet<Publicacion> Publicaciones => Set<Publicacion>();
 
     }
 }
