@@ -1,6 +1,55 @@
 ﻿@page "/adopciones"
+@inject HttpClient http
+
 <h1>Adopciones</h1>
+@if (adopciones == null)
+{
+    <h4>cargando...</h4>
+}
+else if (adopciones.Count == 0)
+{
+    <h4>No hay publicaciones</h4>
+}
+else
+{
+    foreach(Adopcion a in adopciones)
+    {
+        <div class="card">
+            <div class="card-header">
+                Publicacion
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@a.Nombre</h5>
+                <p class="card-text">@a.Raza</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+        </div>
+    }
+   
+}
 
 @code {
+    List<Adopcion> adopciones { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        http.BaseAddress = new Uri("https://localhost:7083/");
+        await prueba();
+        await cargarAdopciones();
+    }
+
+    public async Task cargarAdopciones()
+    {
+        adopciones = await http.GetFromJsonAsync<List<Adopcion>>("api/publicaciones/adopciones"); 
+    }
+
+    public async Task prueba()
+    {
+        Adopcion a1 = new Adopcion("prueba", DateTime.Now, "raza","chico", "fem", "gris", "1234", "coms");
+        var res1 = await http.PostAsJsonAsync<Adopcion>("api/publicaciones", a1);
+        Adopcion a2 = new Adopcion("prueba 2", DateTime.Now, "raza2", "chico", "fem", "gris", "1234", "coms");
+        var res2 = await http.PostAsJsonAsync<Adopcion>("api/publicaciones", a2);
+    }
 
 }

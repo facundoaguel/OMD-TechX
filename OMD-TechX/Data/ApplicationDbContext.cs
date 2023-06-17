@@ -14,7 +14,12 @@ namespace OMD_TechX.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Adopcion>().HasBaseType<Publicacion>();
+
+            modelBuilder.Entity<Publicacion>()
+                .HasDiscriminator<string>("Discriminator")
+                .HasValue<Publicacion>("Publicacion")
+                .HasValue<Adopcion>("Adopcion");
+            
         }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

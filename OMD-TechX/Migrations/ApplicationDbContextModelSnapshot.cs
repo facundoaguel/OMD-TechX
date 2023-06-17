@@ -241,7 +241,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Atenciones");
+                    b.ToTable("Atenciones", (string)null);
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Disponibilidad", b =>
@@ -264,7 +264,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Disponibilidades");
+                    b.ToTable("Disponibilidades", (string)null);
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Perro", b =>
@@ -321,7 +321,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("Perros");
+                    b.ToTable("Perros", (string)null);
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.PerroAtencion", b =>
@@ -353,7 +353,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasIndex("PerroId");
 
-                    b.ToTable("PerroAtenciones");
+                    b.ToTable("PerroAtenciones", (string)null);
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Publicacion", b =>
@@ -406,7 +406,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Publicaciones");
+                    b.ToTable("Publicaciones", (string)null);
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("Publicacion");
 
@@ -457,7 +457,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasIndex("PerroId");
 
-                    b.ToTable("Turnos");
+                    b.ToTable("Turnos", (string)null);
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Usuario", b =>
@@ -493,7 +493,7 @@ namespace OMD_TechX.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Usuarios");
+                    b.ToTable("Usuarios", (string)null);
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Adopcion", b =>
