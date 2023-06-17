@@ -2,6 +2,7 @@
 @inject HttpClient http
 
 <h1>Adopciones</h1>
+<hr />
 @if (adopciones == null)
 {
     <h4>cargando...</h4>
@@ -15,7 +16,8 @@ else
     foreach(Adopcion a in adopciones)
     {
         <div class="card">
-            <div class="card-header">
+            <div class="card-header" style="background-color:#28567A;color:lightcyan">
+                <img src="/imagenes/Logo2-removebg-preview.png" class="rounded float-end img-fluid" width="45px" height="45px" alt="omd-logo">
                 Publicacion
             </div>
             <div class="card-body">
@@ -24,6 +26,7 @@ else
                 <a href="#" class="btn btn-primary">Go somewhere</a>
             </div>
         </div>
+        <br />
     }
    
 }
@@ -35,7 +38,8 @@ else
     protected override async Task OnInitializedAsync()
     {
         http.BaseAddress = new Uri("https://localhost:7083/");
-        await prueba();
+        //await prueba();
+        //await prueba2();
         await cargarAdopciones();
     }
 
@@ -48,7 +52,10 @@ else
     {
         Adopcion a1 = new Adopcion("prueba", DateTime.Now, "raza","chico", "fem", "gris", "1234", "coms");
         var res1 = await http.PostAsJsonAsync<Adopcion>("api/publicaciones", a1);
-        Adopcion a2 = new Adopcion("prueba 2", DateTime.Now, "raza2", "chico", "fem", "gris", "1234", "coms");
+    }
+    public async Task prueba2()
+    {
+        Adopcion a2 = new Adopcion("prueba dos", DateTime.Now, "raza dos", "chico", "fem", "gris", "1234", "coms");
         var res2 = await http.PostAsJsonAsync<Adopcion>("api/publicaciones", a2);
     }
 

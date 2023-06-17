@@ -30,13 +30,14 @@ namespace OMD_TechX.Controladores
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(Publicacion publicacion)
+        public async Task<ActionResult> Post(Adopcion publicacion)
         {
             context.Add(publicacion);
             await context.SaveChangesAsync();
             return new CreatedAtRouteResult("getPublicacion", new { id = publicacion.Id }, publicacion); ;
 
         }
+      
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
