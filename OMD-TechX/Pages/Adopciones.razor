@@ -1,8 +1,22 @@
 ﻿@page "/adopciones"
 @inject HttpClient http
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<h1>Adopciones</h1>
-<hr />
+<div class="d-flex">
+    <div class="p-2 w-100">
+        <h1>Adopciones</h1>
+       
+    </div>
+    <AuthorizeView>
+        <Authorized>
+            <div class="p-2 flex-shrink-1">
+                <input type="button" class="btn btn-success" style="background-color: #28567A" value="Publicar adopcion" @onclick="() => ModalCrearPublicacionAdopcion.Open()">
+            </div>
+        </Authorized>
+    </AuthorizeView>
+    
+</div>
+<hr/>
 @if (adopciones == null)
 {
     <h4>cargando...</h4>
@@ -31,8 +45,14 @@ else
    
 }
 
+<ModalPublicaciones @ref="@ModalCrearPublicacionAdopcion" TextoBoton="Crear publicacion" Titulo="Crear publicacion" OnValidSubmit="(() => crearPublicacionAdopcion())" Adopcion="@adopcion">
+</ModalPublicaciones>
+
 @code {
     List<Adopcion> adopciones { get; set; }
+
+    Adopcion adopcion { get; set; } = new Adopcion();
+    ModalPublicaciones ModalCrearPublicacionAdopcion { get; set; } 
 
 
     protected override async Task OnInitializedAsync()
@@ -48,6 +68,25 @@ else
         adopciones = await http.GetFromJsonAsync<List<Adopcion>>("api/publicaciones/adopciones"); 
     }
 
+    async Task crearPublicacionAdopcion()
+    {
+        
+        /*var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{perro.UsuarioId}");
+        bool nombreEnUso = existentes.Any(p => p.Nombre.Equals(perro.Nombre));
+        if (!nombreEnUso)
+        {
+            ModalCrearPerro.labelNombreEnUso = "";
+            await http.PostAsJsonAsync("https://localhost:7083/api/perros", perro);
+            ModalCrearPerro.Close();
+            await cargarPerros();
+        }
+        else
+        {
+            ModalCrearPerro.labelNombreEnUso = "El dueño ya tiene un perro asociado con ese nombre. Por favor, ingrese otro";
+        }*/
+
+    }
+
     public async Task prueba()
     {
         Adopcion a1 = new Adopcion("prueba", DateTime.Now, "raza","chico", "fem", "gris", "1234", "coms");
@@ -58,5 +97,4 @@ else
         Adopcion a2 = new Adopcion("prueba dos", DateTime.Now, "raza dos", "chico", "fem", "gris", "1234", "coms");
         var res2 = await http.PostAsJsonAsync<Adopcion>("api/publicaciones", a2);
     }
-
 }

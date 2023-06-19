@@ -1,0 +1,198 @@
+﻿@inject HttpClient http;
+@inject UserManager<IdentityUser> UserManager
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.Forms;
+@using Microsoft.AspNetCore.Identity;
+@using OMD_TechX.Modelos;
+<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow:auto;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: darkorange">
+                <h5 class="modal-title">@Titulo</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @onclick="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- comienzo del formulario-->
+                <EditForm @ref="formRef" Model="@Adopcion" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="error">
+                    <!-- header -->
+
+
+                    <div class="row">
+                        <div class="d-flex align-items-center">
+                            <h2>¡Oh My Dog!</h2>
+                            <div class="ms-auto">
+                                <img src="/imagenes/Logo2.png" class="rounded float-end img-fluid" width="50px" height="50px" alt="omd-logo">
+                            </div>
+                        </div>
+                        <hr />
+                    </div>
+
+                    <!-- campos -->
+
+
+                    <div class="row">  
+                        <div class="col">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Adopcion.Nombre)" class=""></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
+                                <InputText @bind-Value="@Adopcion.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Jack" />
+                            </div>
+                        </div>     
+                     </div>
+
+
+
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Adopcion.Raza)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Raza</span>
+                                <InputText @bind-Value="@Adopcion.Raza" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Golden" />
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Adopcion.Tamanio)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Tamaño</span>
+                                <InputSelect @bind-Value="@Adopcion.Tamanio" class="form-select">
+                                    <option style="opacity:70%" value="">Seleccione el tamaño</option>
+                                    <option value="Chico">Chico</option>
+                                    <option value="Mediano">Mediano</option>
+                                    <option value="Grande">Grande</option>
+                                </InputSelect>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Adopcion.Sexo)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Sexo</span>
+
+                                <InputSelect @bind-Value="@Adopcion.Sexo" class="form-select">
+                                    <option style="opacity:70%" value="">Seleccione el sexo</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                </InputSelect>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Adopcion.Color)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Color</span>
+                                <InputText @bind-Value="@Adopcion.Color" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Negro" />
+                            </div>
+                        </div>
+                    </div>
+
+                   <div class="row">
+                        <div class="col">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Adopcion.FechaN)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Fecha de nacimiento</span>
+                                <InputDate max="@DateTime.Now.ToString("yyyy-MM-dd")" @bind-Value="@Adopcion.FechaN" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
+                            </div>
+                        </div> 
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Adopcion.comentarios)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Comentarios</span>
+                                <InputText @bind-Value="@Adopcion.comentarios" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Es muy bueno pero ya no puedo cuidarlo..." />
+                            </div>
+                        </div>                      
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col">
+                            <button type="submit" style="background-color:#21618C" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
+                        </div>
+                    </div>
+
+                    <DataAnnotationsValidator> </DataAnnotationsValidator>
+
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter]
+    public string Titulo { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public Adopcion Adopcion { get; set; }
+    [Parameter]
+    public string TextoBoton { get; set; } = "Listo";
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    private EditForm formRef;
+
+    private string modalDisplay = "none";
+    private string modalClass = string.Empty;
+    private bool showBackdrop = false;
+
+
+    private HttpContext context { get; set; }
+
+
+
+    public async Task Open() //cuando se abre para crear la idea es que los campos esten vacios
+    {
+        modalClass = "show";
+        modalDisplay = "block";
+        showBackdrop = true;
+
+        Adopcion.Nombre = "";
+        Adopcion.Tamanio = "";
+        Adopcion.Raza = "";
+        Adopcion.Color = "";
+        Adopcion.comentarios = "";
+        Adopcion.Sexo = "";
+        Adopcion.Id = 0;
+        Adopcion.FechaN = DateTime.Now;
+
+
+
+    }
+    public async Task Close()
+    {
+        modalDisplay = "none";
+        modalClass = string.Empty;
+        showBackdrop = false;
+    }
+    public void error()
+    {
+        Console.WriteLine("Invalid submit");
+    }
+
+}
