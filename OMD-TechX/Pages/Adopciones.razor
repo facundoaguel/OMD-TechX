@@ -1,6 +1,9 @@
 ﻿@page "/adopciones"
+@using Microsoft.AspNetCore.Identity;
 @inject HttpClient http
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject UserManager<IdentityUser> UserManager
 
 <div class="d-flex">
     <div class="p-2 w-100">
@@ -52,11 +55,13 @@ else
     List<Adopcion> adopciones { get; set; }
 
     Adopcion adopcion { get; set; } = new Adopcion();
-    ModalPublicaciones ModalCrearPublicacionAdopcion { get; set; } 
+    ModalPublicaciones ModalCrearPublicacionAdopcion { get; set; }
 
+    private string userId;
 
     protected override async Task OnInitializedAsync()
     {
+        userId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
         http.BaseAddress = new Uri("https://localhost:7083/");
         //await prueba();
         //await prueba2();
@@ -70,23 +75,39 @@ else
 
     async Task crearPublicacionAdopcion()
     {
-        
-        /*var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{perro.UsuarioId}");
-        bool nombreEnUso = existentes.Any(p => p.Nombre.Equals(perro.Nombre));
+        adopcion.UsuarioId = userId;
+        List<Adopcion> adopcionesUser = await http.GetFromJsonAsync<List<Adopcion>>($"https://localhost:7083/api/publicaciones/adopciones/{userId}");
+        bool nombreEnUso = adopcionesUser.Any(a => a.Nombre.Equals(adopcion.Nombre));
+
         if (!nombreEnUso)
         {
-            ModalCrearPerro.labelNombreEnUso = "";
-            await http.PostAsJsonAsync("https://localhost:7083/api/perros", perro);
-            ModalCrearPerro.Close();
-            await cargarPerros();
+            ModalCrearPublicacionAdopcion.textoNombre = "";
+            var res = await http.PostAsJsonAsync("https://localhost:7083/api/publicaciones", adopcion);
+            ModalCrearPublicacionAdopcion.Close();
+            await cargarAdopciones();
         }
         else
         {
+            ModalCrearPublicacionAdopcion.textoNombre = "Ya tenes una publicacion de un perro con este nombre.";
+        }
+
+        /*var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{perro.UsuarioId}");
+        bool nombreEnUso = existentes.Any(p => p.Nombre.Equals(perro.Nombre));
+            if (!nombreEnUso)
+            {
+            ModalCrearPerro.labelNombreEnUso = "";
+            await http.PostAsJsonAsync("https://localhost:7083/api/perros", perro);
+            ModalCrearPerro.Close();
+        await cargarPerros();
+        }
+        else
+            {
             ModalCrearPerro.labelNombreEnUso = "El dueño ya tiene un perro asociado con ese nombre. Por favor, ingrese otro";
         }*/
 
     }
 
+ 
     public async Task prueba()
     {
         Adopcion a1 = new Adopcion("prueba", DateTime.Now, "raza","chico", "fem", "gris", "1234", "coms");

@@ -23,6 +23,14 @@ namespace OMD_TechX.Controladores
             return await context.Publicaciones.OfType<Adopcion>().ToListAsync();     
         }
 
+        //get adopciones by userId
+        [HttpGet("adopciones/{id}")]
+        public async Task<ActionResult<List<Adopcion>>> GetAdopcionesByUserId(string id)
+        {
+            return await context.Publicaciones.OfType<Adopcion>().Where(a => a.UsuarioId == id && a.completado == false).ToListAsync();
+        }
+       
+
         [HttpGet("{id}", Name = "getPublicacion")]
         public async Task<ActionResult<Publicacion>> Get(int id)
         {
