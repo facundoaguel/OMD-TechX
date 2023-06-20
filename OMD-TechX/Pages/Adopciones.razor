@@ -1,9 +1,11 @@
 ﻿@page "/adopciones"
 @using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Identity.UI.Services;
 @inject HttpClient http
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @inject UserManager<IdentityUser> UserManager
+@using OMD_TechX.Helpers;
 
 <div class="d-flex">
     <div class="p-2 w-100">
@@ -12,6 +14,19 @@
     </div>
     <AuthorizeView>
         <Authorized>
+            <!--<div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="display:flex; width:50%">
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" @onclick="@(() => cargarAdopciones())" checked>
+                <label class="btn btn-outline-primary" for="btnradio1" style="display:1; width:50%">Todo</label>
+
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" @onclick="@(() => cargarAdopcionesUsuario())">
+                <label class="btn btn-outline-primary" for="btnradio2" style="display:1; width:50%">Mis publicaciones</label>
+            </div>-->
+            <div class="form-check" style="text-align:center">
+                <label class="form-check-label" for="defaultCheck1" style="text-align:center">
+                    Mis publicaciones
+                </label>
+                <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" @onclick=@(()=> filtrarPublicaciones())>  
+            </div>
             <div class="p-2 flex-shrink-1">
                 <input type="button" class="btn btn-success" style="background-color: #28567A" value="Publicar adopcion" @onclick="() => ModalCrearPublicacionAdopcion.Open()">
             </div>
@@ -35,12 +50,36 @@ else
         <div class="card">
             <div class="card-header" style="background-color:#28567A;color:lightcyan">
                 <img src="/imagenes/Logo2-removebg-preview.png" class="rounded float-end img-fluid" width="45px" height="45px" alt="omd-logo">
-                Publicacion
+                <h5>@a.Nombre</h5>
             </div>
             <div class="card-body">
-                <h5 class="card-title">@a.Nombre</h5>
-                <p class="card-text">@a.Raza</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <h6 class="card-text">Raza: @a.Raza</h6>
+                <h6 class="card-text">Tamaño: @a.Tamanio</h6>
+                <h6 class="card-text">Sexo: @a.Sexo</h6>
+                <h6 class="card-text">Color: @a.Color</h6>
+                <h6 class="card-text">Comentarios: @a.comentarios</h6>
+                @if (a.completado)
+                {
+                    <h6 class="card-text text-danger">Adoptado</h6>
+                }
+                else{
+                    <AuthorizeView Roles="Normal">
+                        <Authorized>
+                            @if (a.UsuarioId.Equals(userId))
+                            {
+                                <button type="button" @onclick="@(() => adoptar(a.Id))" class="btn btn-primary" style="float: right">Adoptado</button>
+                            }
+                            else
+                            {
+                                <button type="button" @onclick="@(() => mandarMail(a.UsuarioId, a.Nombre))" class="btn btn-primary" style="float: right">Contactarse</button>
+                            }
+                        </Authorized>
+                        <NotAuthorized>
+
+                            <button type="button" @onclick="@(() => abrirModal(a.UsuarioId, a.Nombre))" class="btn btn-primary" style="float: right">Contactarse</button>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                }
             </div>
         </div>
         <br />
@@ -50,14 +89,28 @@ else
 
 <ModalPublicaciones @ref="@ModalCrearPublicacionAdopcion" TextoBoton="Crear publicacion" Titulo="Crear publicacion" OnValidSubmit="(() => crearPublicacionAdopcion())" Adopcion="@adopcion">
 </ModalPublicaciones>
+<ModalContrasenia @ref="@ModalContrasenia" TextoBoton="Confirmar" Titulo="Enviar Mail de contacto" OnValidSubmit="(() => mandarMailNoAutorizado())" User="@userMail">
+</ModalContrasenia>
+<ModalDialog @ref="@avisoEnvio" Titulo="Mail enviado"> 
+    <h4>Hemos enviado un mail automatico al creador de la publicacion especificando que se contacte a tu mail.</h4>
+    <h5>Gracias por elegir el camino de la adopcion.</h5>
+</ModalDialog>
 
 @code {
     List<Adopcion> adopciones { get; set; }
 
     Adopcion adopcion { get; set; } = new Adopcion();
     ModalPublicaciones ModalCrearPublicacionAdopcion { get; set; }
+    ModalContrasenia ModalContrasenia { get; set; }
+    ModalDialog avisoEnvio{ get; set; }
+
+    Usuario userMail { get; set; } = new Usuario();
+
+    private bool filtro = false;
 
     private string userId;
+    string nombrePerro;
+    string idUsuarioMail;
 
     protected override async Task OnInitializedAsync()
     {
@@ -71,6 +124,26 @@ else
     public async Task cargarAdopciones()
     {
         adopciones = await http.GetFromJsonAsync<List<Adopcion>>("api/publicaciones/adopciones"); 
+    }
+
+    public async Task cargarAdopcionesUsuario()
+    {
+        string usuarioId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
+        adopciones = await http.GetFromJsonAsync<List<Adopcion>>($"api/publicaciones/adopciones/{usuarioId}");
+    }
+
+    public async Task filtrarPublicaciones()
+    {
+        if (this.filtro)
+        {
+            this.filtro = false;
+            await cargarAdopciones();
+        }
+        else
+        {
+            this.filtro = true;
+            await cargarAdopcionesUsuario();
+        }
     }
 
     async Task crearPublicacionAdopcion()
@@ -98,16 +171,19 @@ else
             ModalCrearPerro.labelNombreEnUso = "";
             await http.PostAsJsonAsync("https://localhost:7083/api/perros", perro);
             ModalCrearPerro.Close();
-        await cargarPerros();
-        }
-        else
+            await cargarPerros();
+            }
+            else
             {
             ModalCrearPerro.labelNombreEnUso = "El dueño ya tiene un perro asociado con ese nombre. Por favor, ingrese otro";
         }*/
 
     }
 
- 
+    public async Task mostrarPublicaciones()
+    {
+
+    }
     public async Task prueba()
     {
         Adopcion a1 = new Adopcion("prueba", DateTime.Now, "raza","chico", "fem", "gris", "1234", "coms");
@@ -117,5 +193,47 @@ else
     {
         Adopcion a2 = new Adopcion("prueba dos", DateTime.Now, "raza dos", "chico", "fem", "gris", "1234", "coms");
         var res2 = await http.PostAsJsonAsync<Adopcion>("api/publicaciones", a2);
+    }
+    public void cerrar()
+    {
+        ModalContrasenia.Close();
+    }
+    public async Task mandarMail(string id, string nombrePerro)
+    {
+        Usuario from = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{userId}");
+        Usuario to = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{id}");
+        CorreoElectronico.enviarCorreoDesdeHasta(from.Email,to.Email,to.Nombre,nombrePerro);
+        avisoEnvio.Open();
+    }
+
+    public async Task mandarMailNoAutorizado()
+    {
+        ModalContrasenia.Close();
+        //Usuario from = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{userId}");
+        Usuario to = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{idUsuarioMail}");
+        CorreoElectronico.enviarCorreoDesdeHasta(userMail.Email, to.Email, to.Nombre, nombrePerro);
+        avisoEnvio.Open();
+    }
+    public async Task abrirModal(string id, string nombrePerro)
+    {
+        this.nombrePerro = nombrePerro;
+        this.idUsuarioMail = id;
+
+        ModalContrasenia.Open();
+    }
+
+    public async Task adoptar(int id)
+    {
+        Adopcion adopcion = adopciones.FirstOrDefault(a => a.Id == id);
+        adopcion.completado = true;
+        await http.PutAsJsonAsync<Publicacion>("https://localhost:7083/api/publicaciones", adopcion);
+        if (!this.filtro)
+        {
+            await cargarAdopciones();
+        }
+        else
+        {
+            await cargarAdopcionesUsuario();
+        }
     }
 }
