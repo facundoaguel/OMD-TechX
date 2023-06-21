@@ -1,0 +1,125 @@
+﻿@inject HttpClient http;
+<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow:auto;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: darkorange">
+                <h5 class="modal-title">@Titulo</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @onclick="Close"></button>
+            </div>
+            <div class="modal-body">
+                <EditForm Model="@Servicio" OnValidSubmit="OnValidSubmit">
+
+                    <div class="col">
+                        <div class="d-flex align-items-center">
+                            <h2>¡Oh My Dog!</h2>
+                            <div class="ms-auto">
+                                <img src="/imagenes/Logo2.png" class="rounded float-end img-fluid" width="50px" height="50px" alt="omd-logo">
+                            </div>
+                        </div>
+                        <hr />
+
+
+                        @if (this.EsEdicion)
+                        {
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
+                                <span class="form-control rounded float-end">@Servicio.Nombre</span>
+                            </div>
+                            <input type="hidden" @bind="@Servicio.Nombre" />
+                        }
+                        else
+                        {
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Servicio.Nombre)" class=""></ValidationMessage>
+                                @if (!string.IsNullOrEmpty(MensajeError))
+                                {
+                                    <span class="text-danger">@MensajeError</span>
+                                }
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
+                                <InputText @bind-Value="@Servicio.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Vacunación" />
+                            </div>
+                        }
+                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                            <ValidationMessage For="@(() => Servicio.Precio)"></ValidationMessage>
+                        </label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">$</span>
+                            <InputNumber @bind-Value="@Servicio.Precio" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="500" ParsingErrorMessage="El campo precio es requerido." />
+
+                        </div>
+                        <button type="submit" style="background-color:#21618C" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
+                    </div>
+                    <DataAnnotationsValidator> </DataAnnotationsValidator>
+
+
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter]
+    public string MensajeError { get; set; }
+
+    [Parameter]
+    public string Titulo { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public Servicio Servicio { get; set; }
+    [Parameter]
+    public string TextoBoton { get; set; } = "Salvar cambios";
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    private string modalDisplay = "none";
+    private string modalClass = string.Empty;
+    private bool showBackdrop = false;
+    private bool EsEdicion { get; set; } = false;
+
+
+    public async Task Open(int id)
+    {
+        EsEdicion = true;
+        modalDisplay = "block";
+        modalClass = "show";
+        showBackdrop = true;
+        var servicioFromApi = await http.GetFromJsonAsync<Servicio>($"https://localhost:7083/api/servicios/{id}");
+        Servicio.Nombre = servicioFromApi.Nombre;
+        Servicio.Apellido = servicioFromApi.Apellido;
+        Servicio.Email = servicioFromApi.Email;
+        Servicio.Telefono = servicioFromApi.Telefono;
+        Servicio.FranjaHoraria = servicioFromApi.FranjaHoraria;
+        Servicio.Tipo = servicioFromApi.Tipo;
+
+    }
+    public void Open()
+    {
+        modalDisplay = "block";
+        modalClass = "show";
+        showBackdrop = true;
+        Servicio.Nombre = "";
+        Servicio.Apellido = "";
+        Servicio.Email = "";
+        Servicio.Telefono = "";
+        Servicio.FranjaHoraria = "";
+        Servicio.Tipo = "";
+
+    }
+    public void Close()
+    {
+        MensajeError = "";
+        modalDisplay = "none";
+        modalClass = string.Empty;
+        showBackdrop = false;
+    }
+
+}
