@@ -39,5 +39,7 @@ namespace OMD_TechX.Data
         public DbSet<Disponibilidad> Disponibilidades => Set<Disponibilidad>();
         public DbSet<Publicacion> Publicaciones => Set<Publicacion>();
 
+        public DbSet<Servicio> Servicios => Set<Servicio>();
+
     }
 }
