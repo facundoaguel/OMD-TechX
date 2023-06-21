@@ -50,5 +50,10 @@ namespace OMD_TechX.Modelos
         }
         public Publicacion() { }
 
+
+        public async Task borrar()
+        {
+            await http.DeleteAsync($"https://localhost:7083/api/publicaciones/{this.Id}");
+        }
     }
 }
