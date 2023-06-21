@@ -7,8 +7,8 @@
 @inject UserManager<IdentityUser> UserManager
 @using OMD_TechX.Helpers;
 
-<div class="d-flex">
-    <div class="p-2 w-100">
+<div class="row align-items-center">
+    <div class="col">
         <h1>Adopciones</h1>
        
     </div>
@@ -21,15 +21,20 @@
                 <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" @onclick="@(() => cargarAdopcionesUsuario())">
                 <label class="btn btn-outline-primary" for="btnradio2" style="display:1; width:50%">Mis publicaciones</label>
             </div>-->
-            <div class="form-check" style="text-align:center">
-                <label class="form-check-label" for="defaultCheck1" style="text-align:center">
-                    Mis publicaciones
-                </label>
-                <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" @onclick=@(()=> filtrarPublicaciones())>  
+            <div class="col-md-auto">
+                <div class="form-check form-check-inline" style="font-size:18px">
+                    <label class="form-check-label" for="defaultCheck1" >
+                        Mis publicaciones
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" style="margin-top:7px" id="defaultCheck1" @onclick=@(()=> filtrarPublicaciones())>
+                </div>
             </div>
-            <div class="p-2 flex-shrink-1">
+            <div class="col col-lg-2" style="text-align:right">
                 <input type="button" class="btn btn-success" style="background-color: #28567A" value="Publicar adopcion" @onclick="() => ModalCrearPublicacionAdopcion.Open()">
             </div>
+
+
+            
         </Authorized>
     </AuthorizeView>
     
@@ -45,44 +50,60 @@ else if (adopciones.Count == 0)
 }
 else
 {
+
     foreach(Adopcion a in adopciones)
     {
-        <div class="card">
-            <div class="card-header" style="background-color:#28567A;color:lightcyan">
-                <img src="/imagenes/Logo2-removebg-preview.png" class="rounded float-end img-fluid" width="45px" height="45px" alt="omd-logo">
-                <h5>@a.Nombre</h5>
-            </div>
-            <div class="card-body">
-                <h6 class="card-text">Raza: @a.Raza</h6>
-                <h6 class="card-text">Tamaño: @a.Tamanio</h6>
-                <h6 class="card-text">Sexo: @a.Sexo</h6>
-                <h6 class="card-text">Color: @a.Color</h6>
-                <h6 class="card-text">Comentarios: @a.comentarios</h6>
-                @if (a.completado)
-                {
-                    <h6 class="card-text text-danger">Adoptado</h6>
-                }
-                else{
-                    <AuthorizeView Roles="Normal">
-                        <Authorized>
-                            @if (a.UsuarioId.Equals(userId))
-                            {
-                                <button type="button" @onclick="@(() => adoptar(a.Id))" class="btn btn-primary" style="float: right">Adoptado</button>
-                            }
-                            else
-                            {
-                                <button type="button" @onclick="@(() => mandarMail(a.UsuarioId, a.Nombre))" class="btn btn-primary" style="float: right">Contactarse</button>
-                            }
-                        </Authorized>
-                        <NotAuthorized>
+        usuario = usuarios.FirstOrDefault(u => u.Id == a.UsuarioId);
+        if (usuario!= null)
+        {
+            <div class="card">
+                <div class="card-header" style="background-color:#28567A;color:lightcyan">
+                    <img src="/imagenes/Logo2-removebg-preview.png" class="rounded float-end img-fluid" width="45px" height="45px" alt="omd-logo">
+                    <h5>@usuario.Nombre @usuario.Apellido creo una publiación de adopción...</h5>
+                </div>
+                <div class="card-body">
+                    <h4>Hola mi nombre es @a.Nombre y estoy buscando un hogar!</h4>
+                    @if (a.Sexo.Equals("Masculino"))
+                    {
+                        <h6 class="card-text">Soy un perrito de raza @a.Raza, tengo @a.calcularEdad().ToString() años, mi tamaño es @a.Tamanio, y soy de color @a.Color. </h6>
+                    }
+                    else
+                    {
+                        <h6 class="card-text">Soy una perrita de raza @a.Raza, tengo @a.calcularEdad().ToString() años, mi tamaño es @a.Tamanio, y soy de color @a.Color. </h6>
+                    }
 
-                            <button type="button" @onclick="@(() => abrirModal(a.UsuarioId, a.Nombre))" class="btn btn-primary" style="float: right">Contactarse</button>
-                        </NotAuthorized>
-                    </AuthorizeView>
-                }
+                    <h5 class="card-text">Informacion adicional: </h5>
+                    <h6 class="card-text">@a.comentarios</h6>
+
+                    <h6 class="card-text">Contacto: Tel @usuario.Telefono - Email @usuario.Email</h6>
+                    @if (a.completado)
+                    {
+                        <h6 class="card-text text-danger">Adoptado</h6>
+                    }
+                    else
+                    {
+                        <AuthorizeView Roles="Normal">
+                            <Authorized>
+                                @if (a.UsuarioId.Equals(userId))
+                                {
+                                    <button type="button" @onclick="@(() => adoptar(a.Id))" class="btn" style="float: right; background-color:#FFA75A; color:maroon;font-style:italic;font-weight:30px">Marcar como adoptado</button>
+                                }
+                                else
+                                {
+                                    <button type="button" @onclick="@(() => mandarMail(a.UsuarioId, a.Nombre))" class="btn rounded" style="float: right;background-color:#28567A;color:darkorange"><i class="oi oi-envelope-open"></i></button>
+                                }
+                            </Authorized>
+                            <NotAuthorized>
+
+                                <button type="button" @onclick="@(() => abrirModal(a.UsuarioId, a.Nombre))" class="btn rounded" style="float: right;background-color:#28567A;color:darkorange"><i class="oi oi-envelope-open"></i></button>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    }
+                </div>
             </div>
-        </div>
-        <br />
+            <br />
+        }
+        
     }
    
 }
@@ -106,6 +127,9 @@ else
 
     Usuario userMail { get; set; } = new Usuario();
 
+    List<Usuario> usuarios { get; set; } = new List<Usuario>();
+    Usuario usuario { get; set; } = new Usuario();
+
     private bool filtro = false;
 
     private string userId;
@@ -119,6 +143,14 @@ else
         //await prueba();
         //await prueba2();
         await cargarAdopciones();
+        await cargarUsuarios();
+    }
+
+    
+
+    async Task cargarUsuarios()
+    {
+        usuarios = await http.GetFromJsonAsync<List<Usuario>>($"https://localhost:7083/api/usuarios/actuales");
     }
 
     public async Task cargarAdopciones()

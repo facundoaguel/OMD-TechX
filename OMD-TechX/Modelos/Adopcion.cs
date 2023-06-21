@@ -14,5 +14,18 @@ namespace OMD_TechX.Modelos
         }
         public Adopcion() { }
 
+        public int calcularEdad()
+        {
+            DateTime fechaActual = DateTime.Now; // Obtiene la fecha actual
+
+            int edad = fechaActual.Year - this.FechaN.Year; // Calcula la diferencia en años
+
+            // Verifica si el cumpleaños aún no ha ocurrido este año
+            if (fechaActual.Month < this.FechaN.Month || (fechaActual.Month == this.FechaN.Month && fechaActual.Day < this.FechaN.Day))
+            {
+                edad--;
+            }
+            return edad;
+        }
     }
 }
