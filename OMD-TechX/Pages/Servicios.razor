@@ -1,65 +1,76 @@
-﻿    @page "/servicios"
-    @using Microsoft.AspNetCore.Identity;
-    @using Microsoft.AspNetCore.Identity.UI.Services;
-    @inject HttpClient http
-    @inject AuthenticationStateProvider AuthenticationStateProvider
-    @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
-    @inject UserManager<IdentityUser> UserManager
-    @using OMD_TechX.Helpers;
+﻿@page "/servicios"
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Identity.UI.Services;
+@inject HttpClient http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject UserManager<IdentityUser> UserManager
+@using OMD_TechX.Helpers;
 
-    <div class="d-flex">
-        <div class="p-2 w-100">
-            <h1>Servicios</h1>
+<div class="d-flex">
+    <div class="p-2 w-100">
+        <h1>Servicios</h1>
 
-        </div>
-        <AuthorizeView Roles="Admin">
-            <Authorized>
-                <div class="p-2 flex-shrink-1">
-                    <input type="button" class="btn btn-success" style="background-color: #28567A" value="Cargar servicio">
-                </div>
-            </Authorized>
-        </AuthorizeView>
     </div>
-    <hr />
-
-    @if (servicios == null)
-    {
-        <h4>cargando...</h4>
-    }
-    else if (servicios.Count == 0)
-    {
-        <h4>No hay servicios.</h4>
-    }
-    else
-
-    {
-        @foreach(Servicio s in servicios)
-        {
-            <div class="card" style="background-color:#28567A;color:lightcyan">
-                <div class="card-header">
-                    <img src="/imagenes/Logo2-removebg-preview.png" class="rounded float-end img-fluid" width="45px" height="45px" alt="omd-logo">
-                    <h5>@s.Nombre @s.Apellido</h5>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-text">Hola, soy @s.Nombre! Me gustan mucho los perros y estoy dispuesto a cuidar del tuyo.</h5>
-                    <br>
-                    <h6 class="card-text">Actividad: @s.Tipo</h6>
-                    <h6 class="card-text">Franja Horaria: @s.Franja</h6>
-                    <h6 class="card-text">Si estás interesado contactame.</h6>
-                    <h6 class ="card-text">Informacion de contacto:</h6>
-                    <h6 class="card-text">@s.Email</h6>
-                    <h6 class="card-text">@s.Telefono</h6>
-                </div>
+    <select class="form-select" @onchange="filtrarServicios">
+        <option value="">Todas</option>
+        <option value="/paseadores" >Paseadores</option>
+        <option value="/cuidadores">Cuidadores</option>
+    </select>
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <div class="p-2 flex-shrink-1">
+                <input type="button" class="btn btn-success" style="background-color: #28567A" value="Cargar servicio" @onclick="()=> ModalFormularioServicio.Open()">
             </div>
-            <br>
-        }
+        </Authorized>
+    </AuthorizeView>
 
+
+</div>
+<hr />
+<ModalFormularioServicio @ref="@ModalFormularioServicio" TextoBoton="Aceptar" Titulo="Crear publicacion de servicio" OnValidSubmit="(() => crearServicio())" Servicio="@servicio">
+</ModalFormularioServicio>
+
+@if (servicios == null)
+{
+    <h4>cargando...</h4>
+}
+else if (servicios.Count == 0)
+{
+    <h4>No hay servicios.</h4>
+}
+else
+
+{
+    @foreach (Servicio s in servicios)
+    {
+        <div class="card" style="background-color:#28567A;color:lightcyan">
+            <div class="card-header">
+                <img src="/imagenes/Logo2-removebg-preview.png" class="rounded float-end img-fluid" width="45px" height="45px" alt="omd-logo">
+                <h5>@s.Nombre @s.Apellido</h5>
+            </div>
+            <div class="card-body">
+                <h5 class="card-text">Hola, soy @s.Nombre! Me gustan mucho los perros y estoy dispuesto a cuidar del tuyo.</h5>
+                <br>
+                <h6 class="card-text">Actividad: @s.Tipo</h6>
+                <h6 class="card-text">Franja Horaria: @s.Franja</h6>
+                <h6 class="card-text">Si estás interesado contactame.</h6>
+                <h6 class="card-text">Informacion de contacto:</h6>
+                <h6 class="card-text">@s.Email</h6>
+                <h6 class="card-text">@s.Telefono</h6>
+            </div>
+        </div>
+        <br>
     }
 
-    @code
+}
+
+@code
 {
+
     List<Servicio> servicios { get; set; }
     Servicio servicio { get; set; } = new Servicio();
+    ModalFormularioServicio ModalFormularioServicio { get; set; }
 
     private string userId;
 
@@ -76,9 +87,30 @@
         servicios = await http.GetFromJsonAsync<List<Servicio>>("api/servicios");
     }
 
+    public async Task filtrarServicios(ChangeEventArgs valorSelect)
+    {
+        servicios = await http.GetFromJsonAsync<List<Servicio>>($"api/servicios{valorSelect.Value}");
+    }
+
     public async Task prueba()
     {
         Servicio serv = new Servicio("Juana", "B", "jb@gmail.com", "12345", "Paseador", "Mañana");
         var res = await http.PostAsJsonAsync<Servicio>("api/servicios", serv);
+    }
+
+    public async Task crearServicio()
+    {
+        bool existe = servicios.Any(s => s.Tipo.Equals(servicio.Tipo) && s.Email.Equals(servicio.Email));
+        if (!existe)
+        {
+            ModalFormularioServicio.textoNombre = "";
+            ModalFormularioServicio.Close();
+            var res = await http.PostAsJsonAsync<Servicio>("api/servicios", servicio);
+            await cargarServicios();
+        }
+        else
+        {
+            ModalFormularioServicio.textoNombre = $"Ese email ya está en uso por otro {servicio.Tipo}";
+        }
     }
 }

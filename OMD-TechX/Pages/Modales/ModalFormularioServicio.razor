@@ -1,0 +1,177 @@
+﻿@inject HttpClient http;
+<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow:auto;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: darkorange">
+                <h5 class="modal-title">@Titulo</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @onclick="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- comienzo del formulario-->
+                <EditForm Model="@Servicio" OnValidSubmit="OnValidSubmit">
+                    <!-- header -->
+
+
+                    <div class="row">
+                        <div class="d-flex align-items-center">
+                            <h2>¡Oh My Dog!</h2>
+                            <div class="ms-auto">
+                                <img src="/imagenes/Logo2.png" class="rounded float-end img-fluid" width="50px" height="50px" alt="omd-logo">
+                            </div>
+                        </div>
+                        <hr />
+                    </div>
+
+                    <!-- campos -->
+
+
+                    <div class="row">
+                        <div class="col">
+
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Servicio.Nombre)" class=""></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
+                                <InputText @bind-Value="@Servicio.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Jack" />
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Servicio.Apellido)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Apellido</span>
+                                <InputText @bind-Value="@Servicio.Apellido" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Golden" />
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Servicio.Franja)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Franja Horaria</span>
+                                <InputSelect @bind-Value="@Servicio.Franja" class="form-select">
+                                    <option style="opacity:70%" value="">Seleccione la franja horaria </option>
+                                    <option value="Mañana">Mañana</option>
+                                    <option value="Tarde">Tarde</option>
+                                    <option value="Noche">Noche</option>
+                                </InputSelect>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                            <text>@textoNombre</text>
+
+                            <ValidationMessage For="@(() => Servicio.Email)"></ValidationMessage>
+                        </label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Email</span>
+                            <InputText @bind-Value="@Servicio.Email" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Negro" />
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Servicio.Telefono)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Telefono</span>
+                                <InputText @bind-Value="@Servicio.Telefono" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Es muy bueno pero ya no puedo cuidarlo..." />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Servicio.Tipo)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Tipo de servicio</span>
+
+                                <InputSelect @bind-Value="@Servicio.Tipo" class="form-select">
+                                    <option style="opacity:70%" value="">Seleccione el servicio</option>
+                                    <option value="Paseador">Paseador</option>
+                                    <option value="Cuidador">Cuidador</option>
+                                </InputSelect>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col">
+                            <button type="submit" style="background-color:#21618C" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
+                        </div>
+                    </div>
+
+                    <DataAnnotationsValidator> </DataAnnotationsValidator>
+
+                </EditForm>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+@code {
+    [Parameter]
+    public string MensajeError { get; set; }
+
+    [Parameter]
+    public string Titulo { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public Servicio Servicio { get; set; }
+    [Parameter]
+    public string TextoBoton { get; set; } = "Salvar cambios";
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    private string modalDisplay = "none";
+    private string modalClass = string.Empty;
+    private bool showBackdrop = false;
+
+    public string textoNombre;
+
+
+    public void Open()
+    {
+        textoNombre = "";
+        modalDisplay = "block";
+        modalClass = "show";
+        showBackdrop = true;
+        Servicio.Nombre = "";
+        Servicio.Apellido = "";
+        Servicio.Email = "";
+        Servicio.Telefono = "";
+        Servicio.Franja = "";
+        Servicio.Tipo = "";
+
+    }
+    public void Close()
+    {
+        MensajeError = "";
+        modalDisplay = "none";
+        modalClass = string.Empty;
+        showBackdrop = false;
+    }
+
+}
