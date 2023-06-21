@@ -27,7 +27,7 @@ namespace OMD_TechX.Controladores
         [HttpGet("adopciones/{id}")]
         public async Task<ActionResult<List<Adopcion>>> GetAdopcionesByUserId(string id)
         {
-            return await context.Publicaciones.OfType<Adopcion>().Where(a => a.UsuarioId == id && a.completado == false).ToListAsync();
+            return await context.Publicaciones.OfType<Adopcion>().Where(a => a.UsuarioId == id).ToListAsync();
         }
        
 

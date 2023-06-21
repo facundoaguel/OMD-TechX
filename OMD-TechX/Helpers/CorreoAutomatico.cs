@@ -34,6 +34,35 @@ namespace OMD_TechX.Helpers
 
             smtp.Send(message);
         }
+        public static void enviarCorreoDesdeHasta(string fromAdress,string toAdresss, string name, string nombrePerro)
+        {
+            var fromAddress = new MailAddress("techxdevteam@gmail.com", "TechX Team");
+            var toAddress = new MailAddress(toAdresss, name);
+            const string fromPassword = "tknjoravwdnmxzrt";
 
+            const string subject = $"Sobre tu publicacion de adopcion!";
+            string body = $"Hola {name}! Este es un correo automatico de ¡Oh My Dog! \n" + 
+                $"Estoy interesado en adoptar a {nombrePerro} \n" +
+                $"Por favor contactame a el siguiente correo: {fromAdress} \n" +
+                "Espero tu respuesta con ansias.\n " + 
+                "Saludos!";
+
+            var smtp = new SmtpClient
+            {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
+            };
+            using (var message = new MailMessage(fromAddress, toAddress)
+            {
+                Subject = subject,
+                Body = body
+            })
+
+                smtp.Send(message);
+        }
     }
 }

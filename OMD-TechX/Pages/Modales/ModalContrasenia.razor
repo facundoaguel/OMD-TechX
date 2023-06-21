@@ -1,0 +1,72 @@
+﻿@inject HttpClient http
+<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow:auto;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #28567A">
+                <div class="d-flex align-items-center">
+                    <div class="ms-auto">
+                        <img src="/imagenes/Logo2-removebg-preview.png" class="rounded float-end img-fluid" width="70px" height="70px" alt="omd-logo">
+                    </div>
+                    <h2 style="color:darkorange; text-align: center; margin-left: 10px">@Titulo</h2>
+                </div>
+                <hr />
+
+            </div>
+            <div class="modal-body">
+                <h4>Por favor, ingrese su mail para contactarse con quien realizo la publicacion.</h4>
+                <hr />
+                <EditForm Model="@User" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="error">
+                    <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                        <ValidationMessage For="@(() => User.Email)" class=""></ValidationMessage>
+                    </label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">Email</span>
+                        <InputText @bind-Value="@User.Email" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="" />
+                    </div>
+                    <button type="submit" style="background-color:#21618C" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter]
+    public string Titulo { get; set; }
+    [Parameter]
+    public string TextoBoton { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+    [Parameter]
+    public Usuario User { get; set; }
+
+    private string modalDisplay = "none";
+    private string modalClass = string.Empty;
+    private bool showBackdrop = false;
+
+    public async Task Open()
+    {
+        modalDisplay = "block";
+        modalClass = "show";
+        showBackdrop = true;
+    }
+    public void Close()
+    {
+        modalDisplay = "none";
+        modalClass = string.Empty;
+        showBackdrop = false;
+    }
+    public void error()
+    {
+        Console.WriteLine("Invalid submit");
+    }
+
+}

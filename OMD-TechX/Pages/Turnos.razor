@@ -63,9 +63,18 @@ else
                     <td>@turno.motivo</td>
                     <td>@turno.Perro</td>
                     <td>@turno.estado</td>
-                    <td style="text-align:right; ">
-                        <button class="btn btn-danger" @onclick="@(()=>CancelarTurno(turno.Id))" style="margin:5px"><i class="oi oi-x"></i></button>
-                    </td>
+                    @if (!turno.estado.Equals("Realizado"))
+                    {
+                        <td style="text-align:right; ">
+                            <button class="btn btn-danger" @onclick="@(()=>CancelarTurno(turno.Id))" style="margin:5px"><i class="oi oi-x"></i></button>
+                        </td>
+                    }
+                    else
+                    {
+                        <td style="text-align:right; ">
+                          
+                        </td>
+                    }
                 </tr>
             }
         </tbody>

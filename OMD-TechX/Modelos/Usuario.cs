@@ -9,6 +9,8 @@ namespace OMD_TechX.Modelos
         public string DNI { get; set; }
         public string Nombre { get; set; }
         public string Apellido { get; set; }
+        [EmailAddress(ErrorMessage = "El formato del mail no es valido.")]
+        [Required(ErrorMessage ="El campo mail es requerido.")]
         public string Email { get; set; }
         public string Telefono { get; set; }
         public bool primerInicio { get; set; } = true;
