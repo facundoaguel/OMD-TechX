@@ -52,9 +52,9 @@ else
 
                     <td>@turno.Fecha.ToShortDateString()</td>
                     <td>@turno.Franja</td>
-                    @if (turno.estado.Equals("Aceptado"))
+                    @if (!turno.estado.Equals("Pendiente"))
                     {
-                        <td>@turno.hora.Value.TimeOfDay</td>
+                        <td>@turno.hora.Value.ToString("h:mm tt");</td>
                     }
                     else
                     {

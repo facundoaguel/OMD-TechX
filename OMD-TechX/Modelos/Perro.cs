@@ -1,5 +1,11 @@
-﻿using OMD_TechX.Controladores.Validaciones;
+﻿using Microsoft.AspNetCore.Mvc;
+using OMD_TechX.Controladores.Validaciones;
 using System.ComponentModel.DataAnnotations;
+using System.Net.NetworkInformation;
+
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using Xunit.Sdk;
 
 namespace OMD_TechX.Modelos
 {
