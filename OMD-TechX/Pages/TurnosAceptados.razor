@@ -2,15 +2,15 @@
 @inject HttpClient http
 @inject IJSRuntime JS
 
-<h4 style="text-align:center">Turnos aceptados</h4>
+<h1 style="text-align:center">Turnos aceptados</h1>
 <hr />
 @if (turnosAceptados == null)
 {
-    <text>Cargando...</text>
+    <h4>Cargando...</h4>
 }
 else if (turnosAceptados.Length == 0)
 {
-    <text>No hay turnos aceptados.</text>
+    <h4>No hay turnos aceptados.</h4>
 }
 else
 {

@@ -56,6 +56,13 @@ namespace OMD_TechX.Controladores
             await context.SaveChangesAsync();
             return NoContent();
         }
+        [HttpPut("normal")]
+        public async Task<ActionResult> editarNormal(Usuario user)
+        {
+            context.Entry(user).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
 
         [HttpPut("eliminado")]
         public async Task<ActionResult> borradoLogico(Usuario user)

@@ -1,15 +1,15 @@
 ﻿@page "/turnosPendientes"
 @inject HttpClient http
 @inject IJSRuntime JS
-            <h4 style="text-align: center">Turnos pendientes</h4>
+            <h1 style="text-align: center">Turnos pendientes</h1>
             <hr />
             @if (turnosPendientes == null)
             {
-                <text>Cargando...</text>
+                <h4>Cargando...</h4>
             }
             else if (turnosPendientes.Length == 0)
             {
-                <text>No hay turnos pendientes.</text>
+                <h4>No hay turnos pendientes.</h4>
             }
             else
             {

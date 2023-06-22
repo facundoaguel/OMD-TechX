@@ -19,11 +19,11 @@
 
 @if (usuarios == null)
 {
-    <text>Cargando...</text>
+    <h4>Cargando...</h4>
 }
 else if (usuarios.Length == 0)
 {
-    <text>No hay usuarios cargados.</text>
+    <h4>No hay usuarios cargados.</h4>
 }
 else
 {
@@ -103,19 +103,28 @@ else
         string mensajeconfirmacion = $"¿Desea borrar este usuario: {usuario.Email}?";
         if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
         {
-            await http.PutAsJsonAsync<Usuario>("https://localhost:7083/api/usuarios/eliminado", usuario);
-
-            await loadUsers();
-            foreach (Perro perro in usuario.Perros)
-            {
-                await BorrarPerroEnCadena(perro.Id);
-            }
-
             List<Publicacion> publicaciones = await http.GetFromJsonAsync<List<Publicacion>>($"https://localhost:7083/api/publicaciones/usuario/{usuario.Id}");
             foreach (Publicacion publicacion in publicaciones)
             {
                 await publicacion.borrar();
             }
+
+            foreach (Perro perro in usuario.Perros)
+            {
+                if (!perro.eliminado)
+                {
+                    await BorrarPerroEnCadena(perro.Id);
+                }
+                
+            }
+
+            usuario.eliminado = true;
+            await http.PutAsJsonAsync<Usuario>("https://localhost:7083/api/usuarios/normal", usuario);
+
+            await loadUsers();
+           
+
+            
             
         }
     }
