@@ -94,7 +94,7 @@ namespace OMD_TechX.Modelos
         //podemos hacer que el veterinario tenga boton de actualizar libreta y entonces se llame a este metodo en todos los turno de ese perro
         public async void PasarAHistorial()
         {
-            PerroAtencion nuevoHistorial = new PerroAtencion(this.PerroId, this.motivoId, this.Fecha);
+            PerroAtencion nuevoHistorial = new PerroAtencion(this.PerroId, this.motivoId, this.Fecha,this.motivo);
                 
             using (HttpClient client = new HttpClient())
             {

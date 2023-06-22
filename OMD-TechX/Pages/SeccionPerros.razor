@@ -2,6 +2,8 @@
 @using System.Net.Http.Headers;
 @using Microsoft.AspNetCore.Mvc;
 @using OMD_TechX.Helpers;
+@using SixLabors.ImageSharp;
+@using SixLabors.ImageSharp.Formats;
 @inject HttpClient http
 @inject IJSRuntime JS
 @attribute [Authorize(Roles = "Admin")]
@@ -145,7 +147,9 @@ else
 
         var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{perro.UsuarioId}");
         List<Perro> existentes = usuario.Perros.FindAll(p => p.eliminado == false);
+
         bool nombreEnUso = existentes.Any(p => p.Nombre.Equals(perro.Nombre));
+
         if (!nombreEnUso)
         {
             ModalCrearPerro.labelNombreEnUso = "";
@@ -155,7 +159,7 @@ else
         }
         else
         {
-            ModalCrearPerro.labelNombreEnUso = "El dueño ya tiene un perro asociado con ese nombre. Por favor, ingrese otro";
+            ModalCrearPerro.labelNombreEnUso = "El dueño ya tiene un perro asociado con ese nombre. Por favor, ingrese otro.";
         }
 
     }

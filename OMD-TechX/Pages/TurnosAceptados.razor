@@ -58,7 +58,7 @@ else
     }
     async Task libretaSanitaria(int turnoId)
     {
-        string mensajeconfirmacion = "¿Está seguro que desea marcar este truno como realizado y pasarlo al historial del perro?";
+        string mensajeconfirmacion = "¿Está seguro que desea marcar este turno como realizado y pasarlo al historial del perro?";
         if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
         {
             Turno turno = await http.GetFromJsonAsync<Turno>($"https://localhost:7083/api/turnos/{turnoId}");

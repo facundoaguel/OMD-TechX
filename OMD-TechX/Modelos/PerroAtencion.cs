@@ -12,11 +12,12 @@ namespace OMD_TechX.Modelos
         public int AtencionId { get; set; }
         public DateTime Fecha { get; set; }
 
-        public PerroAtencion(int perroId, int atencionId, DateTime fecha)
+        public PerroAtencion(int perroId, int atencionId, DateTime fecha, string atencion)
         {
             this.PerroId = perroId;
             this.AtencionId = atencionId;
             this.Fecha = fecha;
+            this.Atencion = atencion;
             Task.Run(async () => await EstablecerEstadoPorIdAsync(perroId, atencionId)).Wait();
         }
         public PerroAtencion()
@@ -27,7 +28,7 @@ namespace OMD_TechX.Modelos
         public async Task EstablecerEstadoPorIdAsync(int perroId, int atencionId)
         {
             this.perro = await ObtenerPerro(perroId);
-            this.Atencion = await ObtenerAtencion(atencionId);
+            //this.Atencion = await ObtenerAtencion(atencionId);
         }
 
         public static async Task<string> ObtenerPerro(int Id)
