@@ -23,9 +23,10 @@ namespace OMD_TechX.Modelos
         [Required(ErrorMessage = "El campo Telefono es requerido.")]
         [StringLength(30, ErrorMessage = "El campo Teléfono admite hasta 30 caracteres")]
         public string Telefono { get; set; }
-        [Required]
+        [Required(ErrorMessage = "El campo Tipo es requerido.")]
+        
         public string Tipo { get; set; }
-        [Required]
+        [Required(ErrorMessage = "El campo Franja es requerido.")]
         public string Franja { get; set; }
 
 

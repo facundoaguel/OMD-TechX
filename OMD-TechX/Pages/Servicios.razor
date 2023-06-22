@@ -7,24 +7,40 @@
 @inject UserManager<IdentityUser> UserManager
 @using OMD_TechX.Helpers;
 
-<div class="d-flex">
-    <div class="p-2 w-100">
+<div class="row">
+    <div class="col">
         <h1>Servicios</h1>
 
     </div>
-    <select class="form-select" @onchange="filtrarServicios">
-        <option value="">Todas</option>
-        <option value="/paseadores" >Paseadores</option>
-        <option value="/cuidadores">Cuidadores</option>
-    </select>
-    <AuthorizeView Roles="Admin">
-        <Authorized>
-            <div class="p-2 flex-shrink-1">
-                <input type="button" class="btn btn-success" style="background-color: #28567A" value="Cargar servicio" @onclick="()=> ModalFormularioServicio.Open()">
-            </div>
-        </Authorized>
-    </AuthorizeView>
 
+        
+        
+        <AuthorizeView Roles="Admin">
+            <NotAuthorized>
+            <div class="col-md-2" style="text-align:right">
+                <select class="form-select" @onchange="filtrarServicios" style="width:200px; height:40px">
+                    <option value="">Todas</option>
+                    <option value="/paseadores">Paseadores</option>
+                    <option value="/cuidadores">Cuidadores</option>
+                </select>
+            </div>
+            </NotAuthorized>
+            <Authorized>
+            <div class="col-md-2" style="text-align:right;margin-right:-50px">
+                <select class="form-select" @onchange="filtrarServicios" style="width:200px; height:40px">
+                    <option value="">Todas</option>
+                    <option value="/paseadores">Paseadores</option>
+                    <option value="/cuidadores">Cuidadores</option>
+                </select>
+            </div>
+            <div class="col col-lg-2" style="text-align:right">
+                    <input type="button" class="btn btn-success" style="background-color: #28567A" value="Cargar servicio" @onclick="()=> ModalFormularioServicio.Open()">
+            </div>
+                   
+            
+            </Authorized>
+        </AuthorizeView>
+    
 
 </div>
 <hr />

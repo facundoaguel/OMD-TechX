@@ -12,7 +12,7 @@
         <h1>Adopciones</h1>
        
     </div>
-    <AuthorizeView>
+    <AuthorizeView Roles="Normal">
         <Authorized>
             <!--<div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="display:flex; width:50%">
                 <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" @onclick="@(() => cargarAdopciones())" checked>
@@ -42,7 +42,7 @@
 <hr/>
 @if (adopciones == null)
 {
-    <h4>cargando...</h4>
+    <h4>Cargando...</h4>
 }
 else if (adopciones.Count == 0)
 {

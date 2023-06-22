@@ -12,8 +12,8 @@ using OMD_TechX.Data;
 namespace OMD_TechX.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230621174354_Servicios")]
-    partial class Servicios
+    [Migration("20230621203441_servicios")]
+    partial class servicios
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -430,9 +430,10 @@ namespace OMD_TechX.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("FranjaHoraria")
+                    b.Property<string>("Franja")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

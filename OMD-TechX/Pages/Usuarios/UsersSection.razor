@@ -110,6 +110,13 @@ else
             {
                 await BorrarPerroEnCadena(perro.Id);
             }
+
+            List<Publicacion> publicaciones = await http.GetFromJsonAsync<List<Publicacion>>($"https://localhost:7083/api/publicaciones/usuario/{usuario.Id}");
+            foreach (Publicacion publicacion in publicaciones)
+            {
+                await publicacion.borrar();
+            }
+            
         }
     }
 

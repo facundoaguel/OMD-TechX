@@ -27,72 +27,67 @@
 
 
                     <div class="row">
-                        <div class="col">
+                        <div class="col-6">
 
                             <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
                                 <ValidationMessage For="@(() => Servicio.Nombre)" class=""></ValidationMessage>
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
-                                <InputText @bind-Value="@Servicio.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Jack" />
+                                <InputText @bind-Value="@Servicio.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Jorge" />
                             </div>
                         </div>
-                    </div>
-
-
-
-                    <div class="row">
                         <div class="col-6">
                             <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
                                 <ValidationMessage For="@(() => Servicio.Apellido)"></ValidationMessage>
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Apellido</span>
-                                <InputText @bind-Value="@Servicio.Apellido" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Golden" />
-                            </div>
-                        </div>
-
-                        <div class="col-6">
-                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
-                                <ValidationMessage For="@(() => Servicio.Franja)"></ValidationMessage>
-                            </label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text">Franja Horaria</span>
-                                <InputSelect @bind-Value="@Servicio.Franja" class="form-select">
-                                    <option style="opacity:70%" value="">Seleccione la franja horaria </option>
-                                    <option value="Mañana">Mañana</option>
-                                    <option value="Tarde">Tarde</option>
-                                    <option value="Noche">Noche</option>
-                                </InputSelect>
+                                <InputText @bind-Value="@Servicio.Apellido" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Gonzalez" />
                             </div>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
-                            <text>@textoNombre</text>
 
-                            <ValidationMessage For="@(() => Servicio.Email)"></ValidationMessage>
-                        </label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">Email</span>
-                            <InputText @bind-Value="@Servicio.Email" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Negro" />
-                        </div>
-                    </div>
 
 
                     <div class="row">
-                        <div class="col">
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <text>@textoNombre</text>
+
+                                <ValidationMessage For="@(() => Servicio.Email)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Email</span>
+                                <InputText @bind-Value="@Servicio.Email" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="jorgegonzalez@gmail.com" />
+                            </div>
+                        </div>
+                        <div class="col-6">
                             <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
                                 <ValidationMessage For="@(() => Servicio.Telefono)"></ValidationMessage>
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Telefono</span>
-                                <InputText @bind-Value="@Servicio.Telefono" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Es muy bueno pero ya no puedo cuidarlo..." />
+                                <InputText @bind-Value="@Servicio.Telefono" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="221 60822301" />
                             </div>
                         </div>
                     </div>
+                    <div class="col">
+                        <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                            <ValidationMessage For="@(() => Servicio.Franja)"></ValidationMessage>
+                        </label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Franja Horaria</span>
+                            <InputSelect @bind-Value="@Servicio.Franja" class="form-select">
+                                <option style="opacity:70%" value="">Seleccione la franja horaria </option>
+                                <option value="Mañana">Mañana</option>
+                                <option value="Tarde">Tarde</option>
+                                <option value="Noche">Noche</option>
+                            </InputSelect>
+                        </div>
+                    </div>
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col">
                             <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
                                 <ValidationMessage For="@(() => Servicio.Tipo)"></ValidationMessage>
                             </label>

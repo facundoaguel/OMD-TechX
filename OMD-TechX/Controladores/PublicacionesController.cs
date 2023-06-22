@@ -29,7 +29,13 @@ namespace OMD_TechX.Controladores
         {
             return await context.Publicaciones.OfType<Adopcion>().Where(a => a.UsuarioId == id).ToListAsync();
         }
-       
+
+
+        [HttpGet("usuario/{id}")]
+        public async Task<ActionResult<List<Publicacion>>> GetPublicacionesByUserId(string id)
+        {
+            return await context.Publicaciones.Where(a => a.UsuarioId == id).ToListAsync();
+        }
 
         [HttpGet("{id}", Name = "getPublicacion")]
         public async Task<ActionResult<Publicacion>> Get(int id)
@@ -56,6 +62,7 @@ namespace OMD_TechX.Controladores
 
             return NoContent();
         }
+
 
         [HttpPut]
         public async Task<IActionResult> Put(Publicacion publicacion)
