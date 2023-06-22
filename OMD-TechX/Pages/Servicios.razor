@@ -18,7 +18,7 @@
         
         <AuthorizeView Roles="Admin">
             <NotAuthorized>
-            <div class="col-md-2" style="text-align:right">
+            <div class="col-md-2" style="text-align:right;margin-right:30px">
                 <select class="form-select" @onchange="filtrarServicios" style="width:200px; height:40px">
                     <option value="">Todas</option>
                     <option value="/paseadores">Paseadores</option>
@@ -27,7 +27,7 @@
             </div>
             </NotAuthorized>
             <Authorized>
-            <div class="col-md-2" style="text-align:right;margin-right:-50px">
+            <div class="col-md-2" style="text-align:right;margin-right:30px">
                 <select class="form-select" @onchange="filtrarServicios" style="width:200px; height:40px">
                     <option value="">Todas</option>
                     <option value="/paseadores">Paseadores</option>
@@ -62,12 +62,12 @@ else
     @foreach (Servicio s in servicios)
     {
         <div class="card" >
-            <div class="card-header" style="background-color:#28567A">
+            <div class="card-header" style="background-color:#28567A;color:lightcyan">
                 <img src="/imagenes/Logo2-removebg-preview.png" class="rounded float-end img-fluid" width="45px" height="45px" alt="omd-logo">
-                <h5>@s.Nombre @s.Apellido</h5>
+                <h5>@s.Nombre @s.Apellido ofrece sus servicios...</h5>
             </div>
-            <div class="card-body carta" style="color:#28567A">
-                <h5 class="card-text">Hola, soy @s.Nombre! Me gustan mucho los perros y estoy dispuesto a cuidar del tuyo.</h5>
+            <div class="card-body" style="background: linear-gradient(to bottom right, #F8F9FA 30%, #28567A 90%);color:#28567A">
+                <h5 class="card-text">Hola, soy @s.Nombre! Me gustan mucho los perros y amo lo que hago.</h5>
                 <br>
                 <h6 class="card-text">Actividad: @s.Tipo</h6>
                 <h6 class="card-text">Franja Horaria: @s.Franja</h6>
@@ -77,7 +77,7 @@ else
                 <h6 class="card-text">@s.Telefono</h6>
                 <AuthorizeView Roles="Admin">
                     <Authorized>
-                        <button class="btn btn-danger" @onclick="@(()=>borrarServicio(s.Id))" style="float:right"><i class="oi oi-trash"></i></button>
+                        <button class="btn" @onclick="@(()=>borrarServicio(s.Id))" style="float:right;background-color: #F0F0F0; color: #28567A"><i class="oi oi-trash"></i></button>
                     </Authorized>
                 </AuthorizeView>
             </div>

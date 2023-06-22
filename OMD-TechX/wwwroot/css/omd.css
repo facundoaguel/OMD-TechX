@@ -3,7 +3,7 @@
 }
 
 .carta {
-    background-color: linear-gradient (to bottom, #F8F9FA 30%, #28567A 70%);
+    background: linear-gradient(to bottom, #F8F9FA 30%, #28567A 70%);
 }
 
 .iconos {
