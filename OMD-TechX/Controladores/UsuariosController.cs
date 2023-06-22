@@ -60,6 +60,7 @@ namespace OMD_TechX.Controladores
         public async Task<ActionResult> editarNormal(Usuario user)
         {
             context.Entry(user).State = EntityState.Modified;
+            context.Users.Remove(await context.Users.FirstOrDefaultAsync(u => u.Id == user.Id));
             await context.SaveChangesAsync();
             return NoContent();
         }

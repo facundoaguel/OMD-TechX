@@ -54,7 +54,7 @@ else
                     <td>@turno.Franja</td>
                     @if (!turno.estado.Equals("Pendiente"))
                     {
-                        <td>@turno.hora.Value.ToString("h:mm tt");</td>
+                        <td>@turno.hora.Value.ToString("h:mm tt")</td>
                     }
                     else
                     {
@@ -63,7 +63,7 @@ else
                     <td>@turno.motivo</td>
                     <td>@turno.Perro</td>
                     <td>@turno.estado</td>
-                    @if (!turno.estado.Equals("Realizado"))
+                    @if (!(turno.estado.Equals("Realizado") || turno.estado.Equals("Rechazado")))
                     {
                         <td style="text-align:right; ">
                             <button class="btn btn-danger" @onclick="@(()=>CancelarTurno(turno.Id))" style="margin:5px"><i class="oi oi-x"></i></button>

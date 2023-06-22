@@ -256,6 +256,7 @@ else
     async Task libretaSanitaria(int perroId)
     {   
         await cargarAtenciones(perroId);
+        perro = perros.FirstOrDefault(p => p.Id == perroId);
         historialAtenciones.Open();
     }
 
