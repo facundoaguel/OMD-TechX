@@ -182,7 +182,7 @@ else
     {
         adopcion.UsuarioId = userId;
         List<Adopcion> adopcionesUser = await http.GetFromJsonAsync<List<Adopcion>>($"https://localhost:7083/api/publicaciones/adopciones/{userId}");
-        bool nombreEnUso = adopcionesUser.Any(a => a.Nombre.Equals(adopcion.Nombre));
+        bool nombreEnUso = adopcionesUser.Any(a => a.Nombre.Equals(adopcion.Nombre) && a.completado == false);
 
         if (!nombreEnUso)
         {
