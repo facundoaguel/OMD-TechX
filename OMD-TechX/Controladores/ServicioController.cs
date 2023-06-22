@@ -71,5 +71,6 @@ namespace OMD_TechX.Controladores
             await context.SaveChangesAsync();
             return NoContent();
         }
+
     }
 }

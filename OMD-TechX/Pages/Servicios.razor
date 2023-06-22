@@ -6,6 +6,7 @@
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @inject UserManager<IdentityUser> UserManager
 @using OMD_TechX.Helpers;
+@inject IJSRuntime JS
 
 <div class="row">
     <div class="col">
@@ -60,12 +61,12 @@ else
 {
     @foreach (Servicio s in servicios)
     {
-        <div class="card" style="background-color:#28567A;color:lightcyan">
-            <div class="card-header">
+        <div class="card" >
+            <div class="card-header" style="background-color:#28567A">
                 <img src="/imagenes/Logo2-removebg-preview.png" class="rounded float-end img-fluid" width="45px" height="45px" alt="omd-logo">
                 <h5>@s.Nombre @s.Apellido</h5>
             </div>
-            <div class="card-body">
+            <div class="card-body carta" style="color:#28567A">
                 <h5 class="card-text">Hola, soy @s.Nombre! Me gustan mucho los perros y estoy dispuesto a cuidar del tuyo.</h5>
                 <br>
                 <h6 class="card-text">Actividad: @s.Tipo</h6>
@@ -74,6 +75,11 @@ else
                 <h6 class="card-text">Informacion de contacto:</h6>
                 <h6 class="card-text">@s.Email</h6>
                 <h6 class="card-text">@s.Telefono</h6>
+                <AuthorizeView Roles="Admin">
+                    <Authorized>
+                        <button class="btn btn-danger" @onclick="@(()=>borrarServicio(s.Id))" style="float:right"><i class="oi oi-trash"></i></button>
+                    </Authorized>
+                </AuthorizeView>
             </div>
         </div>
         <br>
@@ -127,6 +133,18 @@ else
         else
         {
             ModalFormularioServicio.textoNombre = $"Ese email ya está en uso por otro {servicio.Tipo}";
+        }
+    }
+
+    public async Task borrarServicio(int id)
+    {
+        var servicio = servicios.FirstOrDefault(a => a.Id == id);
+
+        string mensajeconfirmacion = $"¿Desea borrar la publicacion de {servicio.Nombre}?";
+        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        {
+            await http.DeleteAsync($"https://localhost:7083/api/servicios/{id}");
+            await cargarServicios();
         }
     }
 }

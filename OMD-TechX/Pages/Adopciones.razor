@@ -6,6 +6,7 @@
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @inject UserManager<IdentityUser> UserManager
 @using OMD_TechX.Helpers;
+@inject IJSRuntime JS
 
 <div class="row align-items-center">
     <div class="col">
@@ -87,6 +88,7 @@ else
                                 @if (a.UsuarioId.Equals(userId))
                                 {
                                     <button type="button" @onclick="@(() => adoptar(a.Id))" class="btn" style="float: right; background-color:#FFA75A; color:maroon;font-style:italic;font-weight:30px">Marcar como adoptado</button>
+                                    <button class="btn btn-danger" @onclick="@(()=>borrarAdopcion(a.Id))" style="float:right; margin-right:10px"><i class="oi oi-trash"></i></button>
                                 }
                                 else
                                 {
@@ -146,7 +148,7 @@ else
         await cargarUsuarios();
     }
 
-    
+
 
     async Task cargarUsuarios()
     {
@@ -266,6 +268,18 @@ else
         else
         {
             await cargarAdopcionesUsuario();
+        }
+    }
+
+    public async Task borrarAdopcion(int id)
+    {
+        var adopcion = adopciones.FirstOrDefault(a => a.Id == id);
+
+        string mensajeconfirmacion = $"¿Desea borrar la publicacion de {adopcion.Nombre}?";
+        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        {
+            await http.DeleteAsync($"https://localhost:7083/api/publicaciones/{id}");
+            await cargarAdopciones();
         }
     }
 }

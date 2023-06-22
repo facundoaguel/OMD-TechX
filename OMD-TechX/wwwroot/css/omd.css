@@ -1,6 +1,11 @@
 ﻿.omd-azul {
     background-color: #21618C;
 }
+
+.carta {
+    background-color: linear-gradient (to bottom, #F8F9FA 30%, #28567A 70%);
+}
+
 .iconos {
     font-size: 35px;
 }
