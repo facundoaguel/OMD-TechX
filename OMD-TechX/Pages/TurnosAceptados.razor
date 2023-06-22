@@ -32,7 +32,7 @@ else
 
                     <td>@turno.Fecha.ToShortDateString()</td>
                     <td>@turno.Franja</td>
-                    <td>@turno.hora.Value.TimeOfDay</td>
+                    <td>@turno.hora.Value.ToString("h:mm tt")</td>
                     <td>@turno.motivo</td>
                     <td>@turno.Perro</td>
                     <td style="text-align: right">
@@ -58,11 +58,15 @@ else
     }
     async Task libretaSanitaria(int turnoId)
     {
-        Turno turno = await http.GetFromJsonAsync<Turno>($"https://localhost:7083/api/turnos/{turnoId}");
-        turno.PasarAHistorial();
-        turno.estado = "Realizado";
-        await http.PutAsJsonAsync($"https://localhost:7083/api/turnos", turno);
-        await cargarTurnosAceptados();
+        string mensajeconfirmacion = "¿Está seguro que desea marcar este truno como realizado y pasarlo al historial del perro?";
+        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        {
+            Turno turno = await http.GetFromJsonAsync<Turno>($"https://localhost:7083/api/turnos/{turnoId}");
+            turno.PasarAHistorial();
+            turno.estado = "Realizado";
+            await http.PutAsJsonAsync($"https://localhost:7083/api/turnos", turno);
+            await cargarTurnosAceptados();
+        }     
     }
 
 }
