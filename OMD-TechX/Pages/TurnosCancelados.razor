@@ -1,0 +1,65 @@
+﻿@page "/turnosCancelados"
+@inject HttpClient http
+@inject IJSRuntime JS
+<h1 style="text-align: center">Turnos cancelados</h1>
+<hr />
+@if (turnosCancelados == null)
+{
+    <h4>Cargando...</h4>
+}
+else if (turnosCancelados.Length == 0)
+{
+    <h4>No hay turnos cancelados.</h4>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Franja</th>
+                <th>Motivo</th>
+                <th>Perro</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var turno in turnosCancelados)
+            {
+                <tr>
+
+                    <td>@turno.Fecha.ToShortDateString()</td>
+                    <td>@turno.Franja</td>
+                    <td>@turno.motivo</td>
+                    <td>@turno.Perro</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+<ModalDialog @ref="@recordatorio" Titulo="Recordatorio">
+    <h4>Esta funcionalidad no entraba en este sprint, la hicimos para poder mostrar la eliminacion de perros.</h4>
+</ModalDialog>
+
+
+@code {
+    Turno[] turnosCancelados { get; set; }
+    private ModalHoraTurno horario { get; set; }
+    private ModalDialog recordatorio { get; set; }
+    private Turno turno { get; set; } = new Turno();
+
+    protected override async Task OnInitializedAsync()
+    {
+        http.BaseAddress = new Uri("https://localhost:7083/");
+        await cargarTurnosCancelados();
+    }
+
+
+    async Task cargarTurnosCancelados()
+    {
+        turnosCancelados = await http.GetFromJsonAsync<Turno[]>($"https://localhost:7083/api/turnos/cancelados");
+    }
+
+}

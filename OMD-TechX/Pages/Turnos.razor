@@ -313,8 +313,9 @@ else
         {
             if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
             {
-
-                await http.DeleteAsync($"https://localhost:7083/api/turnos/{id}");
+                turno.estado = "Rechazado";
+                await http.PutAsJsonAsync("https://localhost:7083/api/turnos", turno);
+                //await http.DeleteAsync($"https://localhost:7083/api/turnos/{id}");
                 await cargarTurno();
             }
         }
