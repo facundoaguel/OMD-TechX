@@ -28,7 +28,7 @@ else
         <tbody>
             @foreach (var turno in turnosAceptados)
             {
-                <tr>
+                <tr style="vertical-align:middle">
 
                     <td>@turno.Fecha.ToShortDateString()</td>
                     <td>@turno.Franja</td>
@@ -76,7 +76,7 @@ else
         if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
         {
             Turno turno = await http.GetFromJsonAsync<Turno>($"https://localhost:7083/api/turnos/{turnoId}");
-            turno.estado = "Rechazado";
+            turno.estado = "Inasistido";
             await http.PutAsJsonAsync($"https://localhost:7083/api/turnos", turno);
             await cargarTurnosAceptados();
         }

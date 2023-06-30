@@ -1,7 +1,19 @@
 ﻿@page "/turnosCancelados"
 @inject HttpClient http
 @inject IJSRuntime JS
-<h1 style="text-align: center">Turnos cancelados</h1>
+<div class="row">
+    <div class="col">
+        <h1 style="text-align: center">Turnos cancelados</h1>
+    </div>
+    <div class="col-md-2" style="text-align:right;margin-right:30px">
+        <select class="form-select" @onchange="filtrarTurnos" style="width:200px; height:40px">
+            <option value="/todosCancelados">Todos</option>
+            <option value="/cancelados">Cancelados</option>
+            <option value="/rechazados">Rechazados</option>
+            <option value="/inasistidos">Inasistidos</option>
+        </select>
+    </div>
+</div>
 <hr />
 @if (turnosCancelados == null)
 {
@@ -9,7 +21,7 @@
 }
 else if (turnosCancelados.Length == 0)
 {
-    <h4>No hay turnos cancelados.</h4>
+    <h4>No hay turnos en este estado.</h4>
 }
 else
 {
@@ -26,7 +38,7 @@ else
         <tbody>
             @foreach (var turno in turnosCancelados)
             {
-                <tr>
+                <tr style="vertical-align:middle">
 
                     <td>@turno.Fecha.ToShortDateString()</td>
                     <td>@turno.Franja</td>
@@ -59,7 +71,12 @@ else
 
     async Task cargarTurnosCancelados()
     {
-        turnosCancelados = await http.GetFromJsonAsync<Turno[]>($"https://localhost:7083/api/turnos/cancelados");
+        turnosCancelados = await http.GetFromJsonAsync<Turno[]>("https://localhost:7083/api/turnos/todosCancelados");
+    }
+
+    async Task filtrarTurnos(ChangeEventArgs valorSelect)
+    {
+        turnosCancelados = await http.GetFromJsonAsync<Turno[]>($"https://localhost:7083/api/turnos{valorSelect.Value}");
     }
 
 }
