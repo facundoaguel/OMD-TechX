@@ -17,7 +17,8 @@ namespace OMD_TechX.Data
 
             modelBuilder.Entity<Publicacion>()
                 .HasDiscriminator<string>("Discriminator")
-                .HasValue<Adopcion>("Adopcion");
+                .HasValue<Adopcion>("Adopcion")
+                .HasValue<Perdida>("Perdida");
             
         }
 

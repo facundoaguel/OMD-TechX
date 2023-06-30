@@ -1,7 +1,285 @@
 ﻿@page "/perdidas"
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Identity.UI.Services;
+@inject HttpClient http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject UserManager<IdentityUser> UserManager
+@using OMD_TechX.Helpers;
+@inject IJSRuntime JS
 
-<h1>Perdidas</h1>
+<div class="row align-items-center">
+    <div class="col">
+        <h1>Pérdidas</h1>
+
+    </div>
+    <AuthorizeView Roles="Normal">
+        <Authorized>
+            <!--<div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="display:flex; width:50%">
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" @onclick="@(() => cargarAdopciones())" checked>
+                <label class="btn btn-outline-primary" for="btnradio1" style="display:1; width:50%">Todo</label>
+
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" @onclick="@(() => cargarAdopcionesUsuario())">
+                <label class="btn btn-outline-primary" for="btnradio2" style="display:1; width:50%">Mis publicaciones</label>
+            </div>-->
+            <div class="col-md-auto">
+                <div class="form-check form-check-inline" style="font-size:18px">
+                    <label class="form-check-label" for="defaultCheck1">
+                        Mis publicaciones
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" style="margin-top:7px" id="defaultCheck1" @onclick=@(()=> filtrarPublicaciones())>
+                </div>
+            </div>
+            <div class="col col-lg-2" style="text-align:right">
+                <input type="button" class="btn btn-success" style="background-color: #28567A" value="Publicar una pérdida" @onclick="() => ModalCrearPublicacionPerdida.Open()">
+            </div>
+        </Authorized>
+    </AuthorizeView>
+
+</div>
+<hr />
+@if (perdidas == null)
+{
+    <h4>Cargando...</h4>
+}
+else if (perdidas.Count == 0)
+{
+    <h4>No hay publicaciones</h4>
+}
+else
+{
+
+    <div class="container">
+        @for (int i = 0; i < perdidas.Count; i += 2)
+        {
+            <div class="row">
+                @for (int j = i; j < Math.Min(i + 2, perdidas.Count); j++)
+                {
+                    Perdida a = perdidas[j];
+                    usuario = usuarios.FirstOrDefault(u => u.Id == a.UsuarioId);
+                    if (usuario != null)
+                    {
+                        urlImagen = "data:image /jpeg;base64," + Convert.ToBase64String(a.Foto);
+                        <div class="col-md-6 mb-4">
+                            <div class="card" style="width: 30rem;">
+                                <img src="@urlImagen" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <h5 class="card-title">@usuario.Nombre @usuario.Apellido creo una publiación de pérdida...</h5>
+                                    <h6 class="card-text">Hola mi nombre es @a.Nombre, estoy perdido y mi familia me esta buscando. Por favor si me ves, contactate:</h6>
+                                    <h6 class="card-text">Tel @usuario.Telefono - Email @usuario.Email</h6>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">Color: @a.Color</li>
+                                    <li class="list-group-item">Raza: @a.Raza</li>
+                                    <li class="list-group-item">Sexo: @a.Sexo</li>
+                                    <li class="list-group-item">Edad: @a.calcularEdad()</li>
+                                    <li class="list-group-item">Comentarios: @a.comentarios</li>
+                                </ul>
+                                <div class="card-body">
+                                    @if (a.completado)
+                                    {
+                                        <h6 class="card-text text-danger">Encontrado</h6>
+                                    }
+                                    else
+                                    {
+                                        <AuthorizeView Roles="Normal">
+                                            <Authorized>
+                                                @if (a.UsuarioId.Equals(userId))
+                                                {
+                                                    <button type="button" class="btn" style="float: right; background-color:#FFA75A; color:maroon;font-style:italic;font-weight:30px">Marcar como encontrado</button>
+                                                    <button class="btn" @onclick="@(()=>borrarPerdida(a.Id))" style="float:right;background-color:#F0F0F0;color: #28567A; margin-right:10px"><i class="oi oi-trash"></i></button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" @onclick="@(() => mandarMail(a.UsuarioId, a.Nombre))" class="btn rounded" style="float: right;background-color:#28567A;color:darkorange;border: 2px solid #F0F0F0"><i class="oi oi-envelope-open"></i></button>
+                                                }
+                                            </Authorized>
+                                            <NotAuthorized>
+
+                                                <button type="button" @onclick="@(() => abrirModal(a.UsuarioId, a.Nombre))" class="btn rounded" style="float: right;background-color:#28567A;color:darkorange;border: 1px solid darkorange;"><i class="oi oi-envelope-open"></i></button>
+                                            </NotAuthorized>
+                                        </AuthorizeView>
+                                    }
+                                </div>
+                            </div>
+                            <br />
+                        </div>
+                    }
+                }
+            </div>
+        }
+    </div>
+}
+
+<ModalPublicacionPerdida @ref="@ModalCrearPublicacionPerdida" TextoBoton="Crear publicacion" Titulo="Crear publicacion" OnValidSubmit="(() => crearPublicacionPerdida())" Perdida="@perdida">
+</ModalPublicacionPerdida>
+<ModalContrasenia @ref="@ModalContrasenia" TextoBoton="Confirmar" Titulo="Enviar Mail de contacto" OnValidSubmit="(() => mandarMailNoAutorizado())" User="@userMail">
+</ModalContrasenia>
+<ModalDialog @ref="@avisoEnvio" Titulo="Mail enviado">
+    <h4>Hemos enviado un mail automatico al creador de la publicacion especificando que se contacte a tu mail.</h4>
+    <h5>Gracias por elegir el camino de la adopcion.</h5>
+</ModalDialog>
 
 @code {
+    List<Perdida> perdidas { get; set; }
 
+    Perdida perdida { get; set; } = new Perdida();
+    ModalPublicacionPerdida ModalCrearPublicacionPerdida { get; set; }
+    ModalContrasenia ModalContrasenia { get; set; }
+    ModalDialog avisoEnvio { get; set; }
+
+    Usuario userMail { get; set; } = new Usuario();
+
+    List<Usuario> usuarios { get; set; } = new List<Usuario>();
+    Usuario usuario { get; set; } = new Usuario();
+
+    private bool filtro = false;
+
+    private string userId;
+    string nombrePerro;
+    string idUsuarioMail;
+    string urlImagen;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
+        http.BaseAddress = new Uri("https://localhost:7083/");
+        //await prueba();
+        //await prueba2();
+        await cargarPerdidas();
+        await cargarUsuarios();
+    }
+
+
+
+    async Task cargarUsuarios()
+    {
+        usuarios = await http.GetFromJsonAsync<List<Usuario>>($"https://localhost:7083/api/usuarios/actuales");
+    }
+
+    public async Task cargarPerdidas() => perdidas = await http.GetFromJsonAsync<List<Perdida>>("api/publicaciones/perdidas");
+
+    public async Task cargarPerdidasUsuario()
+    {
+        string usuarioId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
+        perdidas = await http.GetFromJsonAsync<List<Perdida>>($"api/publicaciones/perdidas/{usuarioId}");
+    }
+
+    public async Task filtrarPublicaciones()
+    {
+        if (this.filtro)
+        {
+            this.filtro = false;
+            await cargarPerdidas();
+        }
+        else
+        {
+            this.filtro = true;
+            await cargarPerdidasUsuario();
+        }
+    }
+
+    async Task crearPublicacionPerdida()
+    {
+        perdida.UsuarioId = userId;
+        List<Perdida> perdidasUser = await http.GetFromJsonAsync<List<Perdida>>($"https://localhost:7083/api/publicaciones/perdidas/{userId}");
+        bool nombreEnUso = perdidasUser.Any(a => a.Nombre.Equals(perdida.Nombre) && a.completado == false);
+
+        if (!nombreEnUso)
+        {
+            ModalCrearPublicacionPerdida.textoNombre = "";
+            var res = await http.PostAsJsonAsync("https://localhost:7083/api/publicaciones/perdidas", perdida);
+            ModalCrearPublicacionPerdida.Close();
+            await cargarPerdidas();
+        }
+        else
+        {
+            ModalCrearPublicacionPerdida.textoNombre = "Ya tenes una publicacion de un perro con este nombre.";
+        }
+
+        /*var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{perro.UsuarioId}");
+        bool nombreEnUso = existentes.Any(p => p.Nombre.Equals(perro.Nombre));
+            if (!nombreEnUso)
+            {
+            ModalCrearPerro.labelNombreEnUso = "";
+            await http.PostAsJsonAsync("https://localhost:7083/api/perros", perro);
+            ModalCrearPerro.Close();
+            await cargarPerros();
+            }
+            else
+            {
+            ModalCrearPerro.labelNombreEnUso = "El dueño ya tiene un perro asociado con ese nombre. Por favor, ingrese otro";
+        }*/
+
+    }
+
+    public async Task mostrarPublicaciones()
+    {
+
+    }
+    public async Task prueba()
+    {
+        Adopcion a1 = new Adopcion("prueba", DateTime.Now, "raza", "chico", "fem", "gris", "1234", "coms");
+        var res1 = await http.PostAsJsonAsync<Adopcion>("api/publicaciones", a1);
+    }
+    public async Task prueba2()
+    {
+        Adopcion a2 = new Adopcion("prueba dos", DateTime.Now, "raza dos", "chico", "fem", "gris", "1234", "coms");
+        var res2 = await http.PostAsJsonAsync<Adopcion>("api/publicaciones", a2);
+    }
+    public void cerrar()
+    {
+        ModalContrasenia.Close();
+    }
+    public async Task mandarMail(string id, string nombrePerro)
+    {
+        Usuario from = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{userId}");
+        Usuario to = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{id}");
+        CorreoElectronico.enviarCorreoDesdeHasta(from.Email, to.Email, to.Nombre, nombrePerro);
+        avisoEnvio.Open();
+    }
+
+    public async Task mandarMailNoAutorizado()
+    {
+        ModalContrasenia.Close();
+        //Usuario from = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{userId}");
+        Usuario to = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{idUsuarioMail}");
+        CorreoElectronico.enviarCorreoDesdeHasta(userMail.Email, to.Email, to.Nombre, nombrePerro);
+        avisoEnvio.Open();
+    }
+    public async Task abrirModal(string id, string nombrePerro)
+    {
+        this.nombrePerro = nombrePerro;
+        this.idUsuarioMail = id;
+
+        ModalContrasenia.Open();
+    }
+
+    /*public async Task adoptar(int id)
+    {
+        Adopcion adopcion = adopciones.FirstOrDefault(a => a.Id == id);
+        adopcion.completado = true;
+        await http.PutAsJsonAsync<Publicacion>("https://localhost:7083/api/publicaciones", adopcion);
+        if (!this.filtro)
+        {
+            await cargarPerdidas();
+        }
+        else
+        {
+            await cargarPerdidasUsuario();
+        }
+    }*/
+
+    public async Task borrarPerdida(int id)
+    {
+        var perdida = perdidas.FirstOrDefault(a => a.Id == id);
+
+        string mensajeconfirmacion = $"¿Desea borrar la publicacion de {perdida.Nombre}?";
+        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        {
+            await http.DeleteAsync($"https://localhost:7083/api/publicaciones/{id}");
+            await cargarPerdidas();
+        }
+    }
 }
+

@@ -1,0 +1,266 @@
+﻿@inject HttpClient http;
+@inject UserManager<IdentityUser> UserManager
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.Forms;
+@using Microsoft.AspNetCore.Identity;
+@using OMD_TechX.Modelos;
+<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow:auto;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: darkorange">
+                <h5 class="modal-title">@Titulo</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @onclick="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- comienzo del formulario-->
+                <EditForm @ref="formRef" Model="@Perdida" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="error">
+                    <!-- header -->
+
+
+                    <div class="row">
+                        <div class="d-flex align-items-center">
+                            <h2>¡Oh My Dog!</h2>
+                            <div class="ms-auto">
+                                <img src="/imagenes/Logo2.png" class="rounded float-end img-fluid" width="50px" height="50px" alt="omd-logo">
+                            </div>
+                        </div>
+                        <hr />
+                    </div>
+
+                    <!-- campos -->
+
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                    <text>@textoNombre</text>
+                                    <ValidationMessage For="@(() => Perdida.Nombre)" class=""></ValidationMessage>
+                                </label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
+                                    <InputText @bind-Value="@Perdida.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Jack" />
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                    <ValidationMessage For="@(() => Perdida.Foto)"></ValidationMessage>
+                                </label>
+                                <div class="input-group mb-3">
+                                    @if (!limpiarInputFile)
+                                    {
+                                        <InputFile OnChange="HandleFileSelected" class="form-control rounded" accept="image/jpeg"></InputFile>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Perdida.Raza)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Raza</span>
+                                <InputText @bind-Value="@Perdida.Raza" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Golden" />
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Perdida.Tamanio)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Tamaño</span>
+                                <InputSelect @bind-Value="@Perdida.Tamanio" class="form-select">
+                                    <option style="opacity:70%" value="">Seleccione el tamaño</option>
+                                    <option value="Chico">Chico</option>
+                                    <option value="Mediano">Mediano</option>
+                                    <option value="Grande">Grande</option>
+                                </InputSelect>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Perdida.Sexo)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Sexo</span>
+
+                                <InputSelect @bind-Value="@Perdida.Sexo" class="form-select">
+                                    <option style="opacity:70%" value="">Seleccione el sexo</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                </InputSelect>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Perdida.Color)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Color</span>
+                                <InputText @bind-Value="@Perdida.Color" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Negro" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Perdida.FechaN)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Fecha de nacimiento</span>
+                                <InputDate max="@DateTime.Now.ToString("yyyy-MM-dd")" @bind-Value="@Perdida.FechaN" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Perdida.comentarios)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Comentarios</span>
+                                <InputText @bind-Value="@Perdida.comentarios" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Es muy bueno pero ya no puedo cuidarlo..." />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col">
+                            <button type="submit" style="background-color:#21618C" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
+                        </div>
+                    </div>
+
+                    <DataAnnotationsValidator> </DataAnnotationsValidator>
+
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter]
+    public string Titulo { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public Perdida Perdida { get; set; }
+    [Parameter]
+    public string TextoBoton { get; set; } = "Listo";
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    private EditForm formRef;
+
+    private string modalDisplay = "none";
+    private string modalClass = string.Empty;
+    private bool showBackdrop = false;
+
+    private IBrowserFile? selectedFile;
+    private string imagenBase64;
+    private bool limpiarInputFile { get; set; }
+
+    public string textoNombre = "";
+
+    private HttpContext context { get; set; }
+
+
+    private void ClearInputFile()
+    {
+        limpiarInputFile = true;
+        StateHasChanged();
+        limpiarInputFile = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        var buffer = new byte[selectedFile.Size];
+        await selectedFile.OpenReadStream().ReadAsync(buffer, 0, (int)selectedFile.Size);
+        // Guardar la ruta para mostrarla en el img
+        imagenBase64 = $"data:{selectedFile.ContentType};base64,{Convert.ToBase64String(buffer)}";
+
+
+        // Lee el contenido del archivo
+        var stream = selectedFile.OpenReadStream();
+        using (var memoryStream = new MemoryStream())
+        {
+            await stream.CopyToAsync(memoryStream);
+            byte[] fileBytes = memoryStream.ToArray();
+
+            // Puedes hacer algo con los bytes del archivo, como enviarlos al backend para guardarlos en la base de datos
+            Perdida.Foto = fileBytes;
+        }
+    }
+
+    public async Task Open() //cuando se abre para crear la idea es que los campos esten vacios
+    {
+        modalClass = "show";
+        modalDisplay = "block";
+        showBackdrop = true;
+
+        textoNombre = "";
+
+        Perdida.Nombre = "";
+        Perdida.Tamanio = "";
+        Perdida.Raza = "";
+        Perdida.Color = "";
+        Perdida.comentarios = "";
+        Perdida.Sexo = "";
+        Perdida.Id = 0;
+        Perdida.FechaN = DateTime.Now;
+
+        imagenBase64 = "/imagenes/perrito.jpg";
+
+        Perdida.Foto = convertirImagen("C:/Users/juana/Source/Repos/facundoaguel/OMD-TechX/OMD-TechX/wwwroot/imagenes/perrito.jpg");
+        ClearInputFile();
+
+    }
+    public async Task Close()
+    {
+        modalDisplay = "none";
+        modalClass = string.Empty;
+        showBackdrop = false;
+    }
+    public void error()
+    {
+        Console.WriteLine("Invalid submit");
+    }
+
+    private byte[] convertirImagen(string path)
+    {
+        byte[] imageBytes;
+        using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+        {
+            using (BinaryReader br = new BinaryReader(fs))
+            {
+                imageBytes = br.ReadBytes((int)fs.Length);
+            }
+        }
+        return imageBytes;
+    }
+}
