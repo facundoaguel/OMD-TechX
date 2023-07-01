@@ -61,24 +61,24 @@ else
                     {
                         urlImagen = "data:image /jpeg;base64," + Convert.ToBase64String(a.Foto);
                         <div class="col-md-6 mb-4">
-                            <div class="card" style="width: 30rem;">
+                            <div class="card border border-danger border-2" style="width: 30rem; background: linear-gradient(to bottom right, #A89BEF 30%, #F15A13 90%);">
                                 <img src="@urlImagen" class="card-img-top" alt="...">
                                 <div class="card-body">
-                                    <h5 class="card-title">@usuario.Nombre @usuario.Apellido creo una publiación de pérdida...</h5>
-                                    <h6 class="card-text">Hola mi nombre es @a.Nombre, estoy perdido y mi familia me esta buscando. Por favor si me ves, contactate:</h6>
-                                    <h6 class="card-text">Tel @usuario.Telefono - Email @usuario.Email</h6>
+                                    <h4 class="card-title">@usuario.Nombre @usuario.Apellido creo una publiación de pérdida...</h4>
+                                    <hr /   >
+                                    <h5 class="card-text">Hola mi nombre es @a.Nombre, estoy perdido y mi familia me esta buscando. Mi información:</h5>
+                                    <h5>Color: @a.Color </h5>
+                                    <h5>Raza: @a.Raza</h5>
+                                    <h5>Sexo: @a.Sexo</h5>
+                                    <h5>Edad: @a.calcularEdad()</h5>
+                                    <h5>Comentarios: @a.comentarios</h5>
+                                    <h5>Si me ves, por favor contactate con mi familia:</h5>
+                                    <h5>Tel @usuario.Telefono - Email @usuario.Email</h5>
                                 </div>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">Color: @a.Color</li>
-                                    <li class="list-group-item">Raza: @a.Raza</li>
-                                    <li class="list-group-item">Sexo: @a.Sexo</li>
-                                    <li class="list-group-item">Edad: @a.calcularEdad()</li>
-                                    <li class="list-group-item">Comentarios: @a.comentarios</li>
-                                </ul>
                                 <div class="card-body">
                                     @if (a.completado)
                                     {
-                                        <h6 class="card-text text-danger">Encontrado</h6>
+                                        <h5 class="card-text text-danger">Encontrado</h5>
                                     }
                                     else
                                     {
@@ -117,7 +117,7 @@ else
 </ModalContrasenia>
 <ModalDialog @ref="@avisoEnvio" Titulo="Mail enviado">
     <h4>Hemos enviado un mail automatico al creador de la publicacion especificando que se contacte a tu mail.</h4>
-    <h5>Gracias por elegir el camino de la adopcion.</h5>
+    <h5>Gracias por ayudar en la búsqueda.</h5>
 </ModalDialog>
 
 @code {
@@ -235,7 +235,14 @@ else
     {
         Usuario from = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{userId}");
         Usuario to = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{id}");
-        CorreoElectronico.enviarCorreoDesdeHasta(from.Email, to.Email, to.Nombre, nombrePerro);
+
+        string mensaje = $"Hola {to.Nombre}! Este es un correo automatico de Oh My Dog!\n" +
+        $"Mi nombre es {from.Nombre} y creo haber visto a {nombrePerro}.\n" +
+        $"Por favor contactame a el siguiente correo: {from.Email}\n" +
+        "Espero tu respuesta con ansias.\n " +
+        "Saludos!";
+
+        CorreoElectronico.enviarCorreoGenerico(from.Email, to.Email, to.Nombre, nombrePerro, mensaje);
         avisoEnvio.Open();
     }
 
@@ -244,9 +251,17 @@ else
         ModalContrasenia.Close();
         //Usuario from = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{userId}");
         Usuario to = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{idUsuarioMail}");
-        CorreoElectronico.enviarCorreoDesdeHasta(userMail.Email, to.Email, to.Nombre, nombrePerro);
+
+        string mensaje = $"Hola {to.Nombre}! Este es un correo automatico de Oh My Dog!\n" + 
+        $"Creo haber visto a {nombrePerro}.\n" +
+        $"Por favor contactame a el siguiente correo: {userMail.Email}\n" +
+        "Espero tu respuesta con ansias.\n " +
+        "Saludos!";
+
+        CorreoElectronico.enviarCorreoGenerico(userMail.Email, to.Email, to.Nombre, nombrePerro, mensaje);
         avisoEnvio.Open();
     }
+
     public async Task abrirModal(string id, string nombrePerro)
     {
         this.nombrePerro = nombrePerro;
