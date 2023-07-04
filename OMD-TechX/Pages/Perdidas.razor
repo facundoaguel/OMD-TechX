@@ -70,7 +70,7 @@ else
                                     <h5>Color: @a.Color </h5>
                                     <h5>Raza: @a.Raza</h5>
                                     <h5>Sexo: @a.Sexo</h5>
-                                    <h5>Edad: @a.calcularEdad()</h5>
+                                    <h5>Edad: @a.calcularEdad() años</h5>
                                     <h5>Comentarios: @a.comentarios</h5>
                                     <h5>Si me ves, por favor contactate con mi familia:</h5>
                                     <h5>Tel @usuario.Telefono - Email @usuario.Email</h5>
@@ -78,7 +78,7 @@ else
                                 <div class="card-body">
                                     @if (a.completado)
                                     {
-                                        <h5 class="card-text text-danger">Encontrado</h5>
+                                        <h5 class="card-text text-danger" style="-webkit-text-stroke-width:0.5px">Encontrado</h5>
                                     }
                                     else
                                     {
@@ -86,7 +86,7 @@ else
                                             <Authorized>
                                                 @if (a.UsuarioId.Equals(userId))
                                                 {
-                                                    <button type="button" class="btn" style="float: right; background-color:#FFA75A; color:maroon;font-style:italic;font-weight:30px">Marcar como encontrado</button>
+                                                    <button type="button" class="btn" @onclick="@(()=>marcarEncontrado(a.Id))" style="float: right; background-color:#FFA75A; color:maroon;font-style:italic;font-weight:30px">Marcar como encontrado</button>
                                                     <button class="btn" @onclick="@(()=>borrarPerdida(a.Id))" style="float:right;background-color:#F0F0F0;color: #28567A; margin-right:10px"><i class="oi oi-trash"></i></button>
                                                 }
                                                 else
@@ -270,11 +270,11 @@ else
         ModalContrasenia.Open();
     }
 
-    /*public async Task adoptar(int id)
+    public async Task marcarEncontrado(int id)
     {
-        Adopcion adopcion = adopciones.FirstOrDefault(a => a.Id == id);
-        adopcion.completado = true;
-        await http.PutAsJsonAsync<Publicacion>("https://localhost:7083/api/publicaciones", adopcion);
+        Perdida perdida = perdidas.FirstOrDefault(p => p.Id == id);
+        perdida.completado = true;
+        await http.PutAsJsonAsync<Publicacion>("https://localhost:7083/api/publicaciones", perdida);
         if (!this.filtro)
         {
             await cargarPerdidas();
@@ -283,7 +283,7 @@ else
         {
             await cargarPerdidasUsuario();
         }
-    }*/
+    }
 
     public async Task borrarPerdida(int id)
     {

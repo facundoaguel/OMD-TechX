@@ -18,8 +18,9 @@ namespace OMD_TechX.Data
             modelBuilder.Entity<Publicacion>()
                 .HasDiscriminator<string>("Discriminator")
                 .HasValue<Adopcion>("Adopcion")
-                .HasValue<Perdida>("Perdida");
-            
+                .HasValue<Perdida>("Perdida")
+                .HasValue<Hallazgo>("Hallazgo");
+
         }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
