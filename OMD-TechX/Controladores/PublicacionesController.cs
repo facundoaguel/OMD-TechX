@@ -30,6 +30,31 @@ namespace OMD_TechX.Controladores
             return await context.Publicaciones.OfType<Adopcion>().Where(a => a.UsuarioId == id).ToListAsync();
         }
 
+        [HttpGet("perdidas")]
+        public async Task<ActionResult<List<Perdida>>> GetPerdidas()
+        {
+            return await context.Publicaciones.OfType<Perdida>().ToListAsync();
+        }
+
+        //get adopciones by userId
+        [HttpGet("perdidas/{id}")]
+        public async Task<ActionResult<List<Perdida>>> GetPerdidasByUserId(string id)
+        {
+            return await context.Publicaciones.OfType<Perdida>().Where(a => a.UsuarioId == id).ToListAsync();
+        }
+
+        [HttpGet("hallazgos")]
+        public async Task<ActionResult<List<Hallazgo>>> GetHallazgos()
+        {
+            return await context.Publicaciones.OfType<Hallazgo>().ToListAsync();
+        }
+
+        //get adopciones by userId
+        [HttpGet("hallazgos/{id}")]
+        public async Task<ActionResult<List<Hallazgo>>> GetHallazgosByUserId(string id)
+        {
+            return await context.Publicaciones.OfType<Hallazgo>().Where(a => a.UsuarioId == id).ToListAsync();
+        }
 
         [HttpGet("usuario/{id}")]
         public async Task<ActionResult<List<Publicacion>>> GetPublicacionesByUserId(string id)
@@ -51,7 +76,25 @@ namespace OMD_TechX.Controladores
             return new CreatedAtRouteResult("getPublicacion", new { id = publicacion.Id }, publicacion); ;
 
         }
-      
+
+        [HttpPost("perdidas")]
+        public async Task<ActionResult> PostPerdida(Perdida publicacion)
+        {
+            context.Add(publicacion);
+            await context.SaveChangesAsync();
+            return new CreatedAtRouteResult("getPublicacion", new { id = publicacion.Id }, publicacion); ;
+
+        }
+
+        [HttpPost("hallazgos")]
+        public async Task<ActionResult> PostHallazgo(Hallazgo publicacion)
+        {
+            context.Add(publicacion);
+            await context.SaveChangesAsync();
+            return new CreatedAtRouteResult("getPublicacion", new { id = publicacion.Id }, publicacion); ;
+
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

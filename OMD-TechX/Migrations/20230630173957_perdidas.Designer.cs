@@ -12,8 +12,8 @@ using OMD_TechX.Data;
 namespace OMD_TechX.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230621203441_servicios")]
-    partial class servicios
+    [Migration("20230630173957_perdidas")]
+    partial class perdidas
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -547,7 +547,27 @@ namespace OMD_TechX.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.ToTable("Publicaciones", t =>
+                        {
+                            t.Property("comentarios")
+                                .HasColumnName("Adopcion_comentarios");
+                        });
+
                     b.HasDiscriminator().HasValue("Adopcion");
+                });
+
+            modelBuilder.Entity("OMD_TechX.Modelos.Perdida", b =>
+                {
+                    b.HasBaseType("OMD_TechX.Modelos.Publicacion");
+
+                    b.Property<byte[]>("Foto")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("comentarios")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("Perdida");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -10,8 +10,20 @@
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 <div class="d-flex">
     <div class="p-2 w-100"><h1>Turnos</h1></div>
-    <div class="p-2 flex-shrink-1">
-        <input type="button" class="btn btn-success" style="background-color: #28567A" value="Sacar Turno" @onclick="() => ModalCrearTurno.Open(userId)">
+    <div class="d-flex flex-row align-items-center">
+        <div style="text-align:right">
+            <select class="form-select" @onchange="filtrarTurnos" style="width:200px; height:40px">
+                <option value="">Todos</option>
+                <option value="/aceptados">Aceptados</option>
+                <option value="/pendientes">Pendientes</option>
+                <option value="/cancelados">Cancelados</option>
+                <option value="/rechazados">Rechazados</option>
+                <option value="/inasistidos">Inasistidos</option>
+            </select>
+        </div>
+        <div class="p-2 flex-shrink-1">
+            <input type="button" class="btn btn-success" style="background-color: #28567A" value="Sacar Turno" @onclick="() => ModalCrearTurno.Open(userId)">
+        </div>
     </div>
 </div>
 
@@ -48,7 +60,7 @@ else
         <tbody>
             @foreach (var turno in turnos)
             {
-                <tr>
+                <tr style="vertical-align:middle">
 
                     <td>@turno.Fecha.ToShortDateString()</td>
                     <td>@turno.Franja</td>
@@ -63,7 +75,7 @@ else
                     <td>@turno.motivo</td>
                     <td>@turno.Perro</td>
                     <td>@turno.estado</td>
-                    @if (!(turno.estado.Equals("Realizado") || turno.estado.Equals("Rechazado")))
+                    @if (turno.estado.Equals("Aceptado") || turno.estado.Equals("Pendiente"))
                     {
                         <td style="text-align:right; ">
                             <button class="btn btn-danger" @onclick="@(()=>CancelarTurno(turno.Id))" style="margin:5px"><i class="oi oi-x"></i></button>
@@ -128,6 +140,17 @@ else
         await cargarTurno();
     }
 
+    async Task filtrarTurnos(ChangeEventArgs valorSelect)
+    {
+        if (userId != null && !userId.Equals(""))
+        {
+            turnos = await http.GetFromJsonAsync<Turno[]>($"https://localhost:7083/api/turnos{valorSelect.Value}");
+        }
+        else
+        {
+            turnos = new List<Turno>().ToArray();
+        }
+    }
 
     async Task cargarTurno()
     {
@@ -299,8 +322,9 @@ else
             {
                 if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
                 {
-
-                    await http.DeleteAsync($"https://localhost:7083/api/turnos/{id}");
+                    turno.estado = "Cancelado";
+                    await http.PutAsJsonAsync("https://localhost:7083/api/turnos", turno);
+                    //await http.DeleteAsync($"https://localhost:7083/api/turnos/{id}");
                     await cargarTurno();
                 }
             }
@@ -313,8 +337,9 @@ else
         {
             if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
             {
-
-                await http.DeleteAsync($"https://localhost:7083/api/turnos/{id}");
+                turno.estado = "Cancelado";
+                await http.PutAsJsonAsync("https://localhost:7083/api/turnos", turno);
+                //await http.DeleteAsync($"https://localhost:7083/api/turnos/{id}");
                 await cargarTurno();
             }
         }

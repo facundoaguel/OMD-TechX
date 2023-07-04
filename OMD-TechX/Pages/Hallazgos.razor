@@ -1,7 +1,290 @@
 ﻿@page "/hallazgos"
 
-<h1>Hallazgos</h1>
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Identity.UI.Services;
+@inject HttpClient http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject UserManager<IdentityUser> UserManager
+@using OMD_TechX.Helpers;
+@inject IJSRuntime JS
+
+<div class="row align-items-center">
+    <div class="col">
+        <h1>Hallazgos</h1>
+
+    </div>
+    <AuthorizeView Roles="Normal">
+        <Authorized>
+            <!--<div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="display:flex; width:50%">
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" @onclick="@(() => cargarAdopciones())" checked>
+                <label class="btn btn-outline-primary" for="btnradio1" style="display:1; width:50%">Todo</label>
+
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" @onclick="@(() => cargarAdopcionesUsuario())">
+                <label class="btn btn-outline-primary" for="btnradio2" style="display:1; width:50%">Mis publicaciones</label>
+            </div>-->
+            <div class="col-md-auto">
+                <div class="form-check form-check-inline" style="font-size:18px">
+                    <label class="form-check-label" for="defaultCheck1">
+                        Mis publicaciones
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" style="margin-top:7px" id="defaultCheck1" @onclick=@(()=> filtrarPublicaciones())>
+                </div>
+            </div>
+            <div class="col col-lg-2" style="text-align:right">
+                <input type="button" class="btn btn-success" style="background-color: #28567A" value="Publicar un hallazgo" @onclick="() => ModalCrearPublicacionHallazgo.Open()">
+            </div>
+        </Authorized>
+    </AuthorizeView>
+
+</div>
+<hr />
+@if (hallazgos == null)
+{
+    <h4>Cargando...</h4>
+}
+else if (hallazgos.Count == 0)
+{
+    <h4>No hay publicaciones</h4>
+}
+else
+{
+
+    <div class="container">
+        @for (int i = 0; i < hallazgos.Count; i += 2)
+        {
+            <div class="row">
+                @for (int j = i; j < Math.Min(i + 2, hallazgos.Count); j++)
+                {
+                    Hallazgo a = hallazgos[j];
+                    usuario = usuarios.FirstOrDefault(u => u.Id == a.UsuarioId);
+                    if (usuario != null)
+                    {
+                        urlImagen = "data:image /jpeg;base64," + Convert.ToBase64String(a.Foto);
+                        <div class="col-md-6 mb-4">
+                            <div class="card border border-danger border-2" style="width: 30rem; background: linear-gradient(to bottom right, #A89BEF 30%, #F15A13 90%);">
+                                <img src="@urlImagen" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <h4 class="card-title">@usuario.Nombre @usuario.Apellido encontró un perro...</h4>
+                                    <hr />
+                                    <h5 class="card-text">Hola, encontré a este perrito al que llamé @a.Nombre y estoy buscando a sus dueños. Características:</h5>
+                                    <h5>Color: @a.Color </h5>
+                                    <h5>Raza: @a.Raza</h5>
+                                    <h5>Sexo: @a.Sexo</h5>
+                                    <h5>Comentarios: @a.comentarios</h5>
+                                    <h5>Si sos su dueño/a o lo/la conoces, por favor contactate conmigo:</h5>
+                                    <br />
+                                    <h5>Tel @usuario.Telefono - Email @usuario.Email</h5>
+                                </div>
+                                <div class="card-body">
+                                    @if (a.completado)
+                                    {
+                                        <h5 class="card-text text-danger" style="-webkit-text-stroke-width:0.5px">Dueño encontrado</h5>
+                                    }
+                                    else
+                                    {
+                                        <AuthorizeView Roles="Normal">
+                                            <Authorized>
+                                                @if (a.UsuarioId.Equals(userId))
+                                                {
+                                                    <button type="button" class="btn" @onclick="@(()=>marcarDueñoEncontrado(a.Id))" style="float: right; background-color:#FFA75A; color:maroon;font-style:italic;font-weight:30px">Dueño encontrado</button>
+                                                    <button class="btn" @onclick="@(()=>borrarHallazgo(a.Id))" style="float:right;background-color:#F0F0F0;color: #28567A; margin-right:10px"><i class="oi oi-trash"></i></button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" @onclick="@(() => mandarMail(a.UsuarioId, a.Nombre))" class="btn rounded" style="float: right;background-color:#28567A;color:darkorange;border: 2px solid #F0F0F0"><i class="oi oi-envelope-open"></i></button>
+                                                }
+                                            </Authorized>
+                                            <NotAuthorized>
+
+                                                <button type="button" @onclick="@(() => abrirModal(a.UsuarioId, a.Nombre))" class="btn rounded" style="float: right;background-color:#28567A;color:darkorange;border: 1px solid darkorange;"><i class="oi oi-envelope-open"></i></button>
+                                            </NotAuthorized>
+                                        </AuthorizeView>
+                                    }
+                                </div>
+                            </div>
+                            <br />
+                        </div>
+                    }
+                }
+            </div>
+        }
+    </div>
+}
+
+<ModalPublicacionHallazgo @ref="@ModalCrearPublicacionHallazgo" TextoBoton="Crear publicacion" Titulo="Crear publicacion" OnValidSubmit="(() => crearPublicacionHallazgo())" Hallazgo="@hallazgo">
+</ModalPublicacionHallazgo>
+<ModalContrasenia @ref="@ModalContrasenia" TextoBoton="Confirmar" Titulo="Enviar Mail de contacto" OnValidSubmit="(() => mandarMailNoAutorizado())" User="@userMail">
+</ModalContrasenia>
+<ModalDialog @ref="@avisoEnvio" Titulo="Mail enviado">
+    <h4>Hemos enviado un mail automatico al creador de la publicacion especificando que se contacte a tu mail.</h4>
+    <h5>Gracias por ayudar en la búsqueda.</h5>
+</ModalDialog>
 
 @code {
+    List<Hallazgo> hallazgos { get; set; }
 
+    Hallazgo hallazgo { get; set; } = new Hallazgo();
+    ModalPublicacionHallazgo ModalCrearPublicacionHallazgo { get; set; }
+    ModalContrasenia ModalContrasenia { get; set; }
+    ModalDialog avisoEnvio { get; set; }
+
+    Usuario userMail { get; set; } = new Usuario();
+
+    List<Usuario> usuarios { get; set; } = new List<Usuario>();
+    Usuario usuario { get; set; } = new Usuario();
+
+    private bool filtro = false;
+
+    private string userId;
+    string nombrePerro;
+    string idUsuarioMail;
+    string urlImagen;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
+        http.BaseAddress = new Uri("https://localhost:7083/");
+        await cargarHallazgos();
+        await cargarUsuarios();
+    }
+
+
+
+    async Task cargarUsuarios()
+    {
+        usuarios = await http.GetFromJsonAsync<List<Usuario>>($"https://localhost:7083/api/usuarios/actuales");
+    }
+
+    public async Task cargarHallazgos() => hallazgos = await http.GetFromJsonAsync<List<Hallazgo>>("api/publicaciones/hallazgos");
+
+    public async Task cargarHallazgosUsuario()
+    {
+        string usuarioId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
+        hallazgos = await http.GetFromJsonAsync<List<Hallazgo>>($"api/publicaciones/hallazgos/{usuarioId}");
+    }
+
+    public async Task filtrarPublicaciones()
+    {
+        if (this.filtro)
+        {
+            this.filtro = false;
+            await cargarHallazgos();
+        }
+        else
+        {
+            this.filtro = true;
+            await cargarHallazgosUsuario();
+        }
+    }
+
+    async Task crearPublicacionHallazgo()
+    {
+        hallazgo.UsuarioId = userId;
+        List<Hallazgo> hallazgosUser = await http.GetFromJsonAsync<List<Hallazgo>>($"https://localhost:7083/api/publicaciones/hallazgos/{userId}");
+        bool nombreEnUso = hallazgosUser.Any(a => a.Nombre.Equals(hallazgo.Nombre) && a.completado == false);
+
+        if (!nombreEnUso)
+        {
+            ModalCrearPublicacionHallazgo.textoNombre = "";
+            var res = await http.PostAsJsonAsync("https://localhost:7083/api/publicaciones/hallazgos", hallazgo);
+            ModalCrearPublicacionHallazgo.Close();
+            await cargarHallazgos();
+        }
+        else
+        {
+            ModalCrearPublicacionHallazgo.textoNombre = "Ya tenes una publicacion de un perro con este nombre.";
+        }
+
+        /*var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{perro.UsuarioId}");
+        bool nombreEnUso = existentes.Any(p => p.Nombre.Equals(perro.Nombre));
+            if (!nombreEnUso)
+            {
+            ModalCrearPerro.labelNombreEnUso = "";
+            await http.PostAsJsonAsync("https://localhost:7083/api/perros", perro);
+            ModalCrearPerro.Close();
+            await cargarPerros();
+            }
+            else
+            {
+            ModalCrearPerro.labelNombreEnUso = "El dueño ya tiene un perro asociado con ese nombre. Por favor, ingrese otro";
+        }*/
+
+    }
+
+    public async Task mostrarPublicaciones()
+    {
+
+    }
+
+    public void cerrar()
+    {
+        ModalContrasenia.Close();
+    }
+
+    public async Task mandarMail(string id, string nombrePerro)
+    {
+        Usuario from = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{userId}");
+        Usuario to = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{id}");
+
+        string mensaje = $"Hola {to.Nombre}! Este es un correo automatico de Oh My Dog!\n" +
+        $"Mi nombre es {from.Nombre} y soy dueño/a de {nombrePerro}.\n" +
+        $"Por favor contactame al siguiente correo para poder ir a buscarlo: {from.Email}\n" +
+        "Muchas gracias por haber cuidado de el/ella, espero tu respuesta con ansias.\n " +
+        "Saludos!";
+
+        CorreoElectronico.enviarCorreoGenerico(from.Email, to.Email, to.Nombre, nombrePerro, mensaje);
+        avisoEnvio.Open();
+    }
+
+    public async Task mandarMailNoAutorizado()
+    {
+        ModalContrasenia.Close();
+        //Usuario from = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{userId}");
+        Usuario to = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{idUsuarioMail}");
+
+        string mensaje = $"Hola {to.Nombre}! Este es un correo automatico de Oh My Dog!\n" +
+        $"Soy dueño/a de {nombrePerro}.\n" +
+        $"Por favor contactame al siguiente correo para poder ir a buscarlo: {userMail.Email}\n" +
+        "Muchas gracias por haber cuidado de el/ella, espero tu respuesta con ansias.\n " +
+        "Saludos!";
+
+        CorreoElectronico.enviarCorreoGenerico(userMail.Email, to.Email, to.Nombre, nombrePerro, mensaje);
+        avisoEnvio.Open();
+    }
+
+    public async Task abrirModal(string id, string nombrePerro)
+    {
+        this.nombrePerro = nombrePerro;
+        this.idUsuarioMail = id;
+
+        ModalContrasenia.Open();
+    }
+
+    public async Task marcarDueñoEncontrado(int id)
+    {
+        Hallazgo hallazgo = hallazgos.FirstOrDefault(p => p.Id == id);
+        hallazgo.completado = true;
+        await http.PutAsJsonAsync<Publicacion>("https://localhost:7083/api/publicaciones", hallazgo);
+        if (!this.filtro)
+        {
+            await cargarHallazgos();
+        }
+        else
+        {
+            await cargarHallazgosUsuario();
+        }
+    }
+
+    public async Task borrarHallazgo(int id)
+    {
+        var hallazgo = hallazgos.FirstOrDefault(a => a.Id == id);
+
+        string mensajeconfirmacion = $"¿Desea borrar la publicacion de {hallazgo.Nombre}?";
+        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        {
+            await http.DeleteAsync($"https://localhost:7083/api/publicaciones/{id}");
+            await cargarHallazgos();
+        }
+    }
 }

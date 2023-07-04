@@ -61,6 +61,13 @@
                                 </span> Pendientes
                             </NavLink>
                         </div>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="turnosCancelados">
+                                <span class="material-icons iconos">
+                                    cancel
+                                </span> Cancelados
+                            </NavLink>
+                        </div>
                     </div>
                     
                     }
@@ -96,14 +103,14 @@
             <NavLink class="nav-link" href="perdidas">
                 <span class="material-icons iconos">
                     search_off
-                </span> Perdidas (proximamente)
+                </span> Perdidas
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="hallazgos">
                 <span class="material-icons iconos">
                     zoom_in
-                </span> Hallazgos (proximamente)
+                </span> Hallazgos
             </NavLink>
         </div>
         <AuthorizeView Roles="Admin,Normal">
@@ -139,6 +146,15 @@
                     <span class="iconos material-icons">
                         manage_accounts
                     </span> Usuarios
+                </NavLink>
+            </div>
+        </AuthorizeView>
+        <AuthorizeView Roles="Admin,Normal">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="guardias">
+                    <span class="iconos material-icons">
+                        manage_accounts
+                    </span> Guardias
                 </NavLink>
             </div>
         </AuthorizeView>

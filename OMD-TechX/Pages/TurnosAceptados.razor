@@ -28,7 +28,7 @@ else
         <tbody>
             @foreach (var turno in turnosAceptados)
             {
-                <tr>
+                <tr style="vertical-align:middle">
 
                     <td>@turno.Fecha.ToShortDateString()</td>
                     <td>@turno.Franja</td>
@@ -36,6 +36,7 @@ else
                     <td>@turno.motivo</td>
                     <td>@turno.Perro</td>
                     <td style="text-align: right">
+                        <button class="btn btn-danger" @onclick="@(()=>noRealizado(turno.Id))"><i class="oi oi-x"></i></button>
                         <button class="btn btn-success" @onclick="@(()=>libretaSanitaria(turno.Id))"><i class="oi oi-check"></i></button>
                     </td>
                 </tr>
@@ -69,4 +70,15 @@ else
         }     
     }
 
+    async Task noRealizado(int turnoId)
+    {
+        string mensajeconfirmacion = "¿Está seguro que desea marcar este turno como no realizado y pasarlo al historial de turnos rechazados?";
+        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        {
+            Turno turno = await http.GetFromJsonAsync<Turno>($"https://localhost:7083/api/turnos/{turnoId}");
+            turno.estado = "Inasistido";
+            await http.PutAsJsonAsync($"https://localhost:7083/api/turnos", turno);
+            await cargarTurnosAceptados();
+        }
+    }
 }

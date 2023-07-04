@@ -26,6 +26,27 @@ namespace OMD_TechX.Controladores
             return await context.Turnos.Where(t => t.estado.Equals("Aceptado")).ToListAsync();
         }
 
+        [HttpGet("cancelados")]
+        public async Task<ActionResult<List<Turno>>> GetCancelados()
+        {
+            return await context.Turnos.Where(t => t.estado.Equals("Cancelado")).ToListAsync();
+        }
+        [HttpGet("rechazados")]
+        public async Task<ActionResult<List<Turno>>> GetRechazados()
+        {
+            return await context.Turnos.Where(t => t.estado.Equals("Rechazado")).ToListAsync();
+        }
+        [HttpGet("inasistidos")]
+        public async Task<ActionResult<List<Turno>>> GetInasistidos()
+        {
+            return await context.Turnos.Where(t => t.estado.Equals("Inasistido")).ToListAsync();
+        }
+        [HttpGet("todosCancelados")]
+        public async Task<ActionResult<List<Turno>>> GetTodosCancelados()
+        {
+            return await context.Turnos.Where(t => t.estado.Equals("Inasistido") || t.estado.Equals("Cancelado") || t.estado.Equals("Rechazado")).ToListAsync();
+        }
+
         [HttpGet]
         public async Task<ActionResult<List<Turno>>> Get()
         {
