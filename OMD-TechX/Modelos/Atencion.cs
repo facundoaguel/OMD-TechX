@@ -23,7 +23,7 @@ namespace OMD_TechX.Modelos
 
         public Boolean EsOriginal()
         {
-            return (this.Nombre.Equals("Vacuna antirrabica") || this.Nombre.Equals("Castración") || this.Nombre.Equals("Consulta general") || this.Nombre.Equals("Desparasitario") || this.Nombre.Equals("Vacuna por enfermedad"));
+            return (this.Nombre.Equals("Vacuna antirrabica") || this.Nombre.Equals("Castracion") || this.Nombre.Equals("Consulta general") || this.Nombre.Equals("Desparasitario") || this.Nombre.Equals("Vacuna por enfermedad"));
         }
     }
 }
