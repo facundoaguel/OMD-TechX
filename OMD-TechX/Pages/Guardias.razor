@@ -11,7 +11,7 @@
 @using System.Globalization
 
 <div class="row align-items-center">
-    <div class="col-8">
+    <div class="col">
         <h1>Guardias</h1>
         
     </div>
@@ -23,9 +23,13 @@
             }
         </select>
     </div>-->
-    <div class="col" style="text-align:right">
-        <input type="button" class="btn btn-success" style="background-color: #28567A" value="Actualizar" @onclick ="() => ActualizarCalendario()">
-    </div>
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <div class="col-md-auto" style="text-align:right; display:flex">
+                <input type="button" class="btn btn-success" style="background-color: #28567A" value="Actualizar" @onclick="() => ActualizarCalendario()">
+            </div>
+        </Authorized>
+    </AuthorizeView> 
 </div>
 <hr />
 

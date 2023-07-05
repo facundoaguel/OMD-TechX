@@ -1,6 +1,35 @@
 ﻿@page "/cruzas"
-<h1>Cruzas</h1>
+<div class="row align-items-center">
+    <div class="col">
+        <h1>Cruzas</h1>
+
+    </div>
+    <AuthorizeView Roles="Normal">
+        <Authorized>
+            <!--<div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="display:flex; width:50%">
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" @onclick="@(() => cargarAdopciones())" checked>
+                <label class="btn btn-outline-primary" for="btnradio1" style="display:1; width:50%">Todo</label>
+
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" @onclick="@(() => cargarAdopcionesUsuario())">
+                <label class="btn btn-outline-primary" for="btnradio2" style="display:1; width:50%">Mis publicaciones</label>
+            </div>-->
+            <div class="col-md-auto">
+                <div class="form-check form-check-inline" style="font-size:18px">
+                    <label class="form-check-label" for="defaultCheck1">
+                        Mis publicaciones
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" style="margin-top:7px" id="defaultCheck1" >
+                </div>
+            </div>
+            <div class="col col-lg-2" style="text-align:right">
+                <input type="button" class="btn btn-success" style="background-color: #28567A" value="Publicar anuncio" >
+            </div>
+        </Authorized>
+    </AuthorizeView>
+</div>
+<hr />
 
 @code {
-
+    //@onclick=@(()=> filtrarPublicaciones())
+    //@onclick="() => ModalCrearPublicacionPerdida.Open()"
 }
