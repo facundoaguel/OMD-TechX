@@ -87,16 +87,16 @@
 
     public async Task cargarDatosBd()
     {
-        Calendario cal = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
+        /*Calendario cal = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
         if(cal == null)
         {
-            await randomCalendario();
+            await randomCalendario();*/
             calendario = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
-        }
+        /*}
         else
         {
             calendario = cal;
-        }
+        }*/
     }
 
     /*public async Task CargarCalendario(ChangeEventArgs e)
@@ -244,6 +244,7 @@
 
     public async Task ActualizarCalendario()
     {
+        calendario = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
         Console.WriteLine("mes calendario:" + calendario.Mes);
         Console.WriteLine("mes actual:" + DateTime.Now.ToString("MMMM"));
         if (calendario.Mes.Equals(DateTime.Now.ToString("MMMM")))
@@ -252,8 +253,9 @@
         }
         else
         {
-            await http.DeleteAsync($"https://localhost:7083/api/calendario/{calendario.Id}");
+            var res = await http.DeleteAsync($"https://localhost:7083/api/calendario/{calendario.Id}");
             await randomCalendario();
+            calendario = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
             await CargarCalendarioHead();
             await CargarCalendarioBody();
         }
