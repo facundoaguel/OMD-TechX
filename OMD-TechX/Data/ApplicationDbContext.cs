@@ -20,7 +20,6 @@ namespace OMD_TechX.Data
                 .HasValue<Adopcion>("Adopcion")
                 .HasValue<Perdida>("Perdida")
                 .HasValue<Hallazgo>("Hallazgo");
-
         }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -44,5 +43,6 @@ namespace OMD_TechX.Data
         public DbSet<Servicio> Servicios => Set<Servicio>();
 
         public DbSet<Calendario> Calendario => Set<Calendario>();
+        public DbSet<Cruza> Cruzas => Set<Cruza>();
     }
 }
