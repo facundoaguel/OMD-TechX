@@ -9,6 +9,7 @@ namespace OMD_TechX.Modelos
         public string UsuarioId { get; set; }
 
         [Required(ErrorMessage = "Por favor seleccione un perro.")]
+        [Range(1, 35000, ErrorMessage = "Por favor, seleccione un perro")]
         public int PerroId { get; set; }
 
         public Cruza()

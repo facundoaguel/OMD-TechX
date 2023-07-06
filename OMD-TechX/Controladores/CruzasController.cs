@@ -6,7 +6,7 @@ using OMD_TechX.Modelos;
 namespace OMD_TechX.Controladores
 {
     [ApiController]
-    [Route("api/publicaciones")]
+    [Route("api/cruzas")]
     public class CruzasController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -22,13 +22,13 @@ namespace OMD_TechX.Controladores
             return await context.Cruzas.ToListAsync();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("byUser/{id}")]
         public async Task<ActionResult<List<Cruza>>> GetByUserId(string id)
         {
             return await context.Cruzas.Where(c => c.UsuarioId == id).ToListAsync();
         }
 
-        [HttpGet("{id}", Name = "getPublicacion")]
+        [HttpGet("{id}", Name = "getCruza")]
         public async Task<ActionResult<Cruza>> Get(int id)
         {
             return await context.Cruzas.FirstOrDefaultAsync(c => c.Id == id);
@@ -39,7 +39,7 @@ namespace OMD_TechX.Controladores
         {
             context.Add(cruza);
             await context.SaveChangesAsync();
-            return new CreatedAtRouteResult("getPublicacion", new { id = cruza.Id }, cruza);
+            return new CreatedAtRouteResult("getCruza", new { id = cruza.Id }, cruza);
         }
 
         [HttpDelete("{id}")]

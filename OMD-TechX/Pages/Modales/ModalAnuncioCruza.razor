@@ -33,8 +33,9 @@
 
                     <!-- campos -->
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col">
                             <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <text>@textoNombre</text>
                                 <ValidationMessage For="@(() => Cruza.PerroId)"></ValidationMessage>
                             </label>
                             <div class="input-group mb-3">
@@ -52,6 +53,14 @@
                             </div>
                         </div>
                     </div>
+
+
+                    <div class="row">
+                        <div class="col">
+                            <button type="submit" style="background-color:#21618C;" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
+                        </div>
+                    </div>
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
                 </EditForm>
             </div>
         </div>
@@ -89,16 +98,8 @@
     private List<Perro> perros = new List<Perro>();
 
 
-    private void ClearInputFile()
-    {
-        limpiarInputFile = true;
-        StateHasChanged();
-        limpiarInputFile = false;
-        StateHasChanged();
-    }
-
     
-    public async Task Open() //cuando se abre para crear la idea es que los campos esten vacios
+    public async Task Open(string userId) //cuando se abre para crear la idea es que los campos esten vacios
     {
         modalClass = "show";
         modalDisplay = "block";
@@ -113,7 +114,7 @@
         Cruza.PerroId = 0;
         Cruza.UsuarioId = "";
 
-        ClearInputFile();
+      
     }
 
     public async Task Close()
