@@ -1,6 +1,357 @@
 ﻿@page "/cruzas"
-<h1>Cruzas</h1>
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Identity.UI.Services;
+@inject HttpClient http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject UserManager<IdentityUser> UserManager
+@using OMD_TechX.Helpers;
+@inject IJSRuntime JS
+
+<div class="row align-items-center">
+    <div class="col">
+        <h1>Cruzas</h1>
+
+    </div>
+    <AuthorizeView Roles="Normal">
+        <Authorized>
+            <!--<div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="display:flex; width:50%">
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" @onclick="@(() => cargarAdopciones())" checked>
+                <label class="btn btn-outline-primary" for="btnradio1" style="display:1; width:50%">Todo</label>
+
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" @onclick="@(() => cargarAdopcionesUsuario())">
+                <label class="btn btn-outline-primary" for="btnradio2" style="display:1; width:50%">Mis publicaciones</label>
+            </div>-->
+            <div class="col-md-auto">
+                <div class="form-check form-check-inline" style="font-size:18px">
+                    <label class="form-check-label" for="defaultCheck1">
+                        Mis publicaciones
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" style="margin-top:7px" id="defaultCheck1" @onclick=@(()=> filtrarPublicaciones())>
+                </div>
+            </div>
+            <div class="col col-lg-2" style="text-align:right">
+                <input type="button" class="btn btn-success" style="background-color: #28567A" value="Publicar anuncio" @onclick="() => modalAnuncioCruza.Open()">
+
+            </div>
+        </Authorized>
+    </AuthorizeView>
+</div>
+<hr />
+
+@if (cruzas == null)
+{
+    <h4>Cargando...</h4>
+}
+else if (cruzas.Count == 0)
+{
+    <h4>No hay publicaciones</h4>
+}
+else
+{
+    @foreach(Cruza c in cruzas)
+    {
+        usuario = usuarios.FirstOrDefault(u => u.Id == c.UsuarioId);
+        if (usuario != null)
+        {
+            perro = perros.FirstOrDefault(p => p.Id == c.PerroId);
+            if(perro != null)
+            {
+                urlImagen = "data:image /jpeg;base64," + Convert.ToBase64String(perro.Foto);
+
+                <div class="card mb-3" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="@urlImagen" class="img-fluid rounded-start" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h4 class="card-title">@perro.Nombre</h4>
+                                @if (perro.Sexo.Equals("Masculino"))
+                                {
+                                    <h5 class="card-text">@perro.Nombre es un macho de raza @perro.Raza y estamos buscando la cruza perfecta para el.</h5>
+                                }
+                                else
+                                {
+                                    <h5 class="card-text">@perro.Nombre es una hembra de raza @perro.Raza y estamos buscando la cruza perfecta para ella.</h5>
+                                }
+                                <AuthorizeView Roles="Normal">
+                                    <Authorized>
+                                        @if (c.UsuarioId.Equals(userId))
+                                        {
+                                            <button class="btn" @onclick="@(()=>recomendar(c.Id))" style="float:right;background-color:#F0F0F0;color: #28567A; margin-right:10px">Ver recomendados</button>
+                                            <button class="btn" @onclick="@(()=>borrarCruza(c.Id))" style="float:right;background-color:#F0F0F0;color: #28567A; margin-right:10px"><i class="oi oi-trash"></i></button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" @onclick="@(() => mandarMail(c.UsuarioId, perro.Nombre))" class="btn rounded" style="float: right;background-color:#28567A;color:darkorange;border: 2px solid #F0F0F0"><i class="oi oi-envelope-open"></i></button>
+                                        }
+                                    </Authorized>
+                                    <NotAuthorized>
+
+                                        <button type="button" @onclick="@(() => abrirModal(c.UsuarioId, perro.Nombre))" class="btn rounded" style="float: right;background-color:#28567A;color:darkorange;border: 1px solid darkorange;"><i class="oi oi-envelope-open"></i></button>
+                                    </NotAuthorized>
+                                </AuthorizeView>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+            }  
+        }
+    }
+}
+<ModalAnuncioCruza @ref="@modalAnuncioCruza" TextoBoton="Crear anuncio" Titulo="Crear anuncio de cruza" OnValidSubmit="(() => CrearAnuncioCruza())" Cruza="@cruza">
+</ModalAnuncioCruza>
+
+<ModalDialog @ref="@recomendados" Titulo="Perros recomendados">
+    @if (recomendadas == null)
+    {
+        <h4>Cargando...</h4>
+    }
+    else if (recomendadas.Count == 0)
+    {
+        <h4>No hay publicaciones</h4>
+    }
+    else
+    {
+        @foreach (Cruza c in recomendadas)
+        {
+            usuario = usuarios.FirstOrDefault(u => u.Id == c.UsuarioId);
+            if (usuario != null)
+            {
+                perro = perros.FirstOrDefault(p => p.Id == c.PerroId);
+                if (perro != null)
+                {
+                    urlImagen = "data:image /jpeg;base64," + Convert.ToBase64String(perro.Foto);
+
+                    <div class="card mb-3" style="max-width: 540px;">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="@urlImagen" class="img-fluid rounded-start" alt="...">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h4 class="card-title">@perro.Nombre</h4>
+                                    @if (perro.Sexo.Equals("Masculino"))
+                                    {
+                                        <h5 class="card-text">@perro.Nombre es un macho de raza @perro.Raza y estamos buscando la cruza perfecta para el.</h5>
+                                    }
+                                    else
+                                    {
+                                        <h5 class="card-text">@perro.Nombre es una hembra de raza @perro.Raza y estamos buscando la cruza perfecta para ella.</h5>
+                                    }
+                                    <AuthorizeView Roles="Normal">
+                                        <Authorized>
+                                            @if (c.UsuarioId.Equals(userId))
+                                            {
+                                                <button class="btn" @onclick="@(()=>borrarCruza(c.Id))" style="float:right;background-color:#F0F0F0;color: #28567A; margin-right:10px"><i class="oi oi-trash"></i></button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" @onclick="@(() => mandarMail(c.UsuarioId, perro.Nombre))" class="btn rounded" style="float: right;background-color:#28567A;color:darkorange;border: 2px solid #F0F0F0"><i class="oi oi-envelope-open"></i></button>
+                                            }
+                                        </Authorized>
+                                        <NotAuthorized>
+
+                                            <button type="button" @onclick="@(() => abrirModal(c.UsuarioId, perro.Nombre))" class="btn rounded" style="float: right;background-color:#28567A;color:darkorange;border: 1px solid darkorange;"><i class="oi oi-envelope-open"></i></button>
+                                        </NotAuthorized>
+                                    </AuthorizeView>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                }
+            }
+        }
+    }
+</ModalDialog>
+
+<ModalDialog @ref="@concientizacion" Titulo="Mensaje importante">
+    <h4>Como veterinarios no avalamos la cruza de perros.</h4>
+</ModalDialog>
+
+<ModalContrasenia @ref="@ModalContrasenia" TextoBoton="Confirmar" Titulo="Enviar Mail de contacto" OnValidSubmit="(() => mandarMailNoAutorizado())" User="@userMail">
+</ModalContrasenia>
+<ModalDialog @ref="@avisoEnvio" Titulo="Mail enviado">
+    <h4>Hemos enviado un mail automatico al creador de la publicacion especificando que se contacte a tu mail.</h4>
+    <h5>Gracias por ayudar en la búsqueda.</h5>
+</ModalDialog>
 
 @code {
+    List<Cruza> cruzas { get; set; }
+    List<Cruza> recomendadas { get; set; }
 
+    Cruza cruza = new Cruza();
+    ModalDialog recomendados { get; set; }
+    ModalDialog concientizacion { get; set; }
+    ModalAnuncioCruza modalAnuncioCruza { get; set; }
+    ModalContrasenia ModalContrasenia { get; set; }
+    ModalDialog avisoEnvio { get; set; }
+
+    List<Usuario> usuarios { get; set; } = new List<Usuario>();
+    Usuario usuario { get; set; } = new Usuario();
+    Usuario userMail { get; set; } = new Usuario();
+
+    List<Perro> perros { get; set; } = new List<Perro>();
+    Perro perro { get; set; } = new Perro();
+
+    private string userId;
+    private bool filtro = false;
+    string urlImagen;
+    string nombrePerro;
+    string idUsuarioMail;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
+        http.BaseAddress = new Uri("https://localhost:7083/");
+        await cargarCruzas();
+        await cargarUsuarios();
+        await cargarPerros();
+    }
+
+    async Task cargarUsuarios()
+    {
+        usuarios = await http.GetFromJsonAsync<List<Usuario>>($"https://localhost:7083/api/usuarios/actuales");
+    }
+
+    async Task cargarPerros()
+    {
+        perros = await http.GetFromJsonAsync<List<Perro>>("https://localhost:7083/api/perros");
+    }
+
+    public async Task cargarCruzas() => cruzas = await http.GetFromJsonAsync<List<Cruza>>("api/cruzas");
+
+    public async Task cargarCruzasUsuario()
+    {
+        string usuarioId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
+        cruzas = await http.GetFromJsonAsync<List<Cruza>>($"api/cruzas/{usuarioId}");
+    }
+
+    public async Task filtrarPublicaciones()
+    {
+        if (this.filtro)
+        {
+            this.filtro = false;
+            await cargarCruzas();
+        }
+        else
+        {
+            this.filtro = true;
+            await cargarCruzasUsuario();
+        }
+    }
+
+    async Task CrearAnuncioCruza()
+    {
+        cruza.UsuarioId = userId;
+        List<Cruza> cruzasUser = await http.GetFromJsonAsync<List<Cruza>>($"https://localhost:7083/api/cruzas/getPublicacion/{userId}");
+        bool perroYaPublicado = cruzasUser.Any(a => a.PerroId.Equals(cruza.PerroId));
+
+        if (!perroYaPublicado)
+        {
+            Perro perro = perros.FirstOrDefault(p => p.Id == cruza.PerroId);
+            bool castrado = perro.PerroAtencion.Any(a => a.Atencion.Equals("Castracion"));
+            if (!castrado)
+            {
+                modalAnuncioCruza.textoNombre = "";
+                var res = await http.PostAsJsonAsync("https://localhost:7083/api/cruzas", cruza);
+                modalAnuncioCruza.Close();
+                recomendados.Open(); //ni bien lo cargo le muestro sus recomendados(tal vez deberia ir desp de cargar las cruzas)
+                await cargarCruzas();
+                
+            }
+            else
+            {
+                modalAnuncioCruza.textoNombre = "No se puede realizar un anuncion de cruza de un perro castrado.";
+            }
+        }
+        else
+        {
+            modalAnuncioCruza.textoNombre = "Ya tenes una publicacion de un perro con este nombre.";
+        }
+    }
+
+    public void cerrar()
+    {
+        ModalContrasenia.Close();
+    }
+    public async Task mandarMail(string id, string nombrePerro)
+    {
+        Usuario from = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{userId}");
+        Usuario to = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{id}");
+
+        string mensaje = $"Hola {to.Nombre}! Este es un correo automatico de Oh My Dog!\n" +
+        $"Mi nombre es {from.Nombre} y creo haber visto a {nombrePerro}.\n" +
+        $"Por favor contactame al siguiente correo: {from.Email}\n" +
+        "Espero tu respuesta con ansias.\n " +
+        "Saludos!";
+
+        CorreoElectronico.enviarCorreoGenerico(from.Email, to.Email, to.Nombre, nombrePerro, mensaje);
+        avisoEnvio.Open();
+    }
+
+    public async Task mandarMailNoAutorizado()
+    {
+        ModalContrasenia.Close();
+        //Usuario from = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{userId}");
+        Usuario to = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{idUsuarioMail}");
+
+        string mensaje = $"Hola {to.Nombre}! Este es un correo automatico de Oh My Dog!\n" +
+        $"Creo haber visto a {nombrePerro}.\n" +
+        $"Por favor contactame al siguiente correo: {userMail.Email}\n" +
+        "Espero tu respuesta con ansias.\n " +
+        "Saludos!";
+
+        CorreoElectronico.enviarCorreoGenerico(userMail.Email, to.Email, to.Nombre, nombrePerro, mensaje);
+        avisoEnvio.Open();
+    }
+
+    public async Task abrirModal(string id, string nombrePerro)
+    {
+        this.nombrePerro = nombrePerro;
+        this.idUsuarioMail = id;
+
+        ModalContrasenia.Open();
+    }
+
+    public async Task recomendar(int id)
+    {
+        recomendadas = new List<Cruza>();
+        var perro = perros.FirstOrDefault(p => p.Id == id);
+        Perro cruzaP = new Perro();
+        foreach(Cruza c in cruzas)
+        {
+            cruzaP = perros.FirstOrDefault(p => p.Id == c.PerroId);
+            if (cruzaP.Raza.ToLower().Equals(perro.Sexo.ToLower()))
+            {
+                if (perro.Sexo.Equals("Maculino") && cruzaP.Sexo.Equals("Femenino"))
+                {
+                    recomendadas.Add(c);
+                }
+                else
+                {
+                    if (perro.Sexo.Equals("Femenino") && cruzaP.Sexo.Equals("Masculino"))
+                    {
+                        recomendadas.Add(c);
+                    }
+                }
+            }
+        }
+        recomendados.Open();
+    }
+
+    public async Task borrarCruza(int id)
+    {
+        var cruza = cruzas.FirstOrDefault(a => a.Id == id);
+
+        string mensajeconfirmacion = $"¿Desea borrar este anuncio de cruza?";
+        if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
+        {
+            await http.DeleteAsync($"https://localhost:7083/api/cruzas/{id}");
+            await cargarCruzas();
+        }
+    }
 }

@@ -1,0 +1,131 @@
+﻿@inject HttpClient http;
+@inject UserManager<IdentityUser> UserManager
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.Forms;
+@using Microsoft.AspNetCore.Identity;
+@using OMD_TechX.Modelos;
+
+<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow:auto;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: darkorange">
+                <h5 class="modal-title">@Titulo</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @onclick="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- comienzo del formulario-->
+                <EditForm @ref="formRef" Model="@Cruza" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="error">
+                    <!-- header -->
+
+                    <div class="row">
+                        <div class="d-flex align-items-center">
+                            <h2>¡Oh My Dog!</h2>
+                            <div class="ms-auto">
+                                <img src="/imagenes/Logo2.png" class="rounded float-end img-fluid" width="50px" height="50px" alt="omd-logo">
+                            </div>
+                        </div>
+                        <hr />
+                    </div>
+
+
+
+                    <!-- campos -->
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Cruza.PerroId)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Perro</span>
+                                <InputSelect @bind-Value="@Cruza.PerroId" class="form-select rounded">
+                                    <option value="0" selected>Seleccione perro/a</option>
+                                    @foreach (var perro in perros)
+                                    {
+                                        if(perro.eliminado == false)
+                                        {
+                                            <option value="@perro.Id">@perro.Nombre</option>
+                                        }
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter]
+    public string Titulo { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public Cruza Cruza { get; set; }
+    [Parameter]
+    public string TextoBoton { get; set; } = "Listo";
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    private EditForm formRef;
+
+    private string modalDisplay = "none";
+    private string modalClass = string.Empty;
+    private bool showBackdrop = false;
+
+    private bool limpiarInputFile { get; set; }
+
+    public string textoNombre = "";
+
+    private HttpContext context { get; set; }
+    private List<Perro> perros = new List<Perro>();
+
+
+    private void ClearInputFile()
+    {
+        limpiarInputFile = true;
+        StateHasChanged();
+        limpiarInputFile = false;
+        StateHasChanged();
+    }
+
+    
+    public async Task Open() //cuando se abre para crear la idea es que los campos esten vacios
+    {
+        modalClass = "show";
+        modalDisplay = "block";
+        showBackdrop = true;
+
+        var usuario = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{userId}");
+        perros = usuario.Perros;
+
+        textoNombre = "";
+
+        Cruza.Id = 0;
+        Cruza.PerroId = 0;
+        Cruza.UsuarioId = "";
+
+        ClearInputFile();
+    }
+
+    public async Task Close()
+    {
+        modalDisplay = "none";
+        modalClass = string.Empty;
+        showBackdrop = false;
+    }
+    public void error()
+    {
+        Console.WriteLine("Invalid submit");
+    }
+
+}
+

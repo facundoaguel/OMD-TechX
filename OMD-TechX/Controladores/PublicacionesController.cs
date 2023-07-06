@@ -73,7 +73,7 @@ namespace OMD_TechX.Controladores
         {
             context.Add(publicacion);
             await context.SaveChangesAsync();
-            return new CreatedAtRouteResult("getPublicacion", new { id = publicacion.Id }, publicacion); ;
+            return new CreatedAtRouteResult("getPublicacion", new { id = publicacion.Id }, publicacion);
 
         }
 
