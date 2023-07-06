@@ -43,6 +43,8 @@ namespace OMD_TechX.Data
         public DbSet<Servicio> Servicios => Set<Servicio>();
 
         public DbSet<Calendario> Calendario => Set<Calendario>();
+
         public DbSet<Cruza> Cruzas => Set<Cruza>();
+
     }
 }
