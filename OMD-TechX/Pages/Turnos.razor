@@ -144,7 +144,8 @@ else
     {
         if (userId != null && !userId.Equals(""))
         {
-            turnos = await http.GetFromJsonAsync<Turno[]>($"https://localhost:7083/api/turnos{valorSelect.Value}");
+            Turno[] todos = await http.GetFromJsonAsync<Turno[]>($"https://localhost:7083/api/turnos{valorSelect.Value}");
+            turnos = todos.Where(t => t.usuarioId == userId && ((t.Fecha.Date >= DateTime.Now.Date && t.estado.Equals("Pendiente")) || (!t.estado.Equals("Pendiente")))).ToArray();
         }
         else
         {
