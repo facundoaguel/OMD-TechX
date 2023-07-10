@@ -12,8 +12,8 @@ using OMD_TechX.Data;
 namespace OMD_TechX.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230630173957_perdidas")]
-    partial class perdidas
+    [Migration("20230707150938_inicial")]
+    partial class inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -245,6 +245,71 @@ namespace OMD_TechX.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Atenciones");
+                });
+
+            modelBuilder.Entity("OMD_TechX.Modelos.Calendario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Mes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("domingo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("jueves")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("lunes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("martes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("miércoles")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("sábado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("viernes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Calendario");
+                });
+
+            modelBuilder.Entity("OMD_TechX.Modelos.Cruza", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PerroId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UsuarioId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cruzas");
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Disponibilidad", b =>
@@ -554,6 +619,29 @@ namespace OMD_TechX.Migrations
                         });
 
                     b.HasDiscriminator().HasValue("Adopcion");
+                });
+
+            modelBuilder.Entity("OMD_TechX.Modelos.Hallazgo", b =>
+                {
+                    b.HasBaseType("OMD_TechX.Modelos.Publicacion");
+
+                    b.Property<byte[]>("Foto")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("comentarios")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("Publicaciones", t =>
+                        {
+                            t.Property("Foto")
+                                .HasColumnName("Hallazgo_Foto");
+
+                            t.Property("comentarios")
+                                .HasColumnName("Hallazgo_comentarios");
+                        });
+
+                    b.HasDiscriminator().HasValue("Hallazgo");
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Perdida", b =>
