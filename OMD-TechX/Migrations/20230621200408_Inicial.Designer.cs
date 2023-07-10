@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OMD_TechX.Data;
 
@@ -11,9 +12,11 @@ using OMD_TechX.Data;
 namespace OMD_TechX.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230621200408_Inicial")]
+    partial class Inicial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -244,71 +247,6 @@ namespace OMD_TechX.Migrations
                     b.ToTable("Atenciones");
                 });
 
-            modelBuilder.Entity("OMD_TechX.Modelos.Calendario", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Mes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("domingo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("jueves")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("lunes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("martes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("miércoles")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("sábado")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("viernes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Calendario");
-                });
-
-            modelBuilder.Entity("OMD_TechX.Modelos.Cruza", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("PerroId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UsuarioId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Cruzas");
-                });
-
             modelBuilder.Entity("OMD_TechX.Modelos.Disponibilidad", b =>
                 {
                     b.Property<int>("Id")
@@ -330,33 +268,6 @@ namespace OMD_TechX.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Disponibilidades");
-                });
-
-            modelBuilder.Entity("OMD_TechX.Modelos.Donacion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Apellido")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Donado")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RefugioId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Donaciones");
                 });
 
             modelBuilder.Entity("OMD_TechX.Modelos.Perro", b =>
@@ -504,36 +415,6 @@ namespace OMD_TechX.Migrations
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("OMD_TechX.Modelos.Refugio", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CBU")
-                        .IsRequired()
-                        .HasMaxLength(22)
-                        .HasColumnType("nvarchar(22)");
-
-                    b.Property<string>("Descripcion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Direccion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Refugios");
-                });
-
             modelBuilder.Entity("OMD_TechX.Modelos.Servicio", b =>
                 {
                     b.Property<int>("Id")
@@ -666,50 +547,7 @@ namespace OMD_TechX.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("Publicaciones", t =>
-                        {
-                            t.Property("comentarios")
-                                .HasColumnName("Adopcion_comentarios");
-                        });
-
                     b.HasDiscriminator().HasValue("Adopcion");
-                });
-
-            modelBuilder.Entity("OMD_TechX.Modelos.Hallazgo", b =>
-                {
-                    b.HasBaseType("OMD_TechX.Modelos.Publicacion");
-
-                    b.Property<byte[]>("Foto")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("comentarios")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable("Publicaciones", t =>
-                        {
-                            t.Property("Foto")
-                                .HasColumnName("Hallazgo_Foto");
-
-                            t.Property("comentarios")
-                                .HasColumnName("Hallazgo_comentarios");
-                        });
-
-                    b.HasDiscriminator().HasValue("Hallazgo");
-                });
-
-            modelBuilder.Entity("OMD_TechX.Modelos.Perdida", b =>
-                {
-                    b.HasBaseType("OMD_TechX.Modelos.Publicacion");
-
-                    b.Property<byte[]>("Foto")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("comentarios")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasDiscriminator().HasValue("Perdida");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

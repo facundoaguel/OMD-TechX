@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OMD_TechX.Data;
 using OMD_TechX.Modelos;
-using System.Linq.Dynamic.Core;
 
 namespace OMD_TechX.Controladores
 {
