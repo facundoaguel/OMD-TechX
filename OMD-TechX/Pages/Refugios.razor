@@ -28,7 +28,7 @@
 
 @if (refugios == null)
 {
-    <h4>cargando...</h4>
+    <h4>Cargando...</h4>
 }
 else if (refugios.Count == 0)
 {
@@ -53,8 +53,8 @@ else
                         <button class="btn" @onclick="@(()=>borrarRefugio(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A"><i class="oi oi-trash"></i></button>
                     </Authorized>
                 </AuthorizeView>
-                <button class="btn" @onclick="@(()=>verListaDonadores(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A"><i class="oi oi-trash"></i></button>
-                <button class="btn" @onclick="@(()=>modalDonaciones.Open(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A"><i class="oi oi-payments"></i></button>
+                <button class="btn" @onclick="@(()=>verListaDonadores(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A;margin-right:10px"><i class="">Ver donadores</i></button>
+                <button class="btn" @onclick="@(()=>modalDonaciones.Open(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A;margin-right:10px"><i class="">Donar</i></button>
             </div>
         </div>
         <br>
@@ -62,7 +62,11 @@ else
 
 }
 <ModalDialog @ref="@listadoDonaciones" Titulo="Listado de donaciones">
-    @if (donaciones.Count == 0)
+    @if (donaciones == null)
+    {
+        <h4>Cargando...</h4>
+    }
+    else if (donaciones.Count == 0)
     {
         <h4>Nadie dono por el momento.</h4>
     }

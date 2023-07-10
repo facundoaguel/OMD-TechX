@@ -68,7 +68,7 @@
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Codigo de seguridad</span>
-                                <InputNumber @bind-Value="@DonacionFormulario.CodigoDeSeguridad" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="0" />
+                                <InputText @bind-Value="@DonacionFormulario.CodigoDeSeguridad" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="0" />
                             </div>
                         </div>
                         <div class="col-3">
@@ -77,7 +77,7 @@
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Fecha de expiración</span>
-                                <InputDate max="@DateTime.Now.ToString("yyyy-MM-dd")" @bind-Value="@DonacionFormulario.FechaVencimiento" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
+                                <InputDate min="@DateTime.Now.ToString("yyyy-MM")" @bind-Value="@DonacionFormulario.FechaVencimiento" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
                             </div>
                         </div>
                     </div>
