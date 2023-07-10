@@ -70,9 +70,13 @@
 <ModalDialog @ref="@actualizacion" Titulo="Error">
     <h4>No se puede actualizar el calendario mas de una vez al mes.</h4>
 </ModalDialog>
+<ModalDialog @ref="@modalActualizar" Titulo="Error">
+    <h4>Fallo en la conexion con el servidor de calendario. Por favor, intente mas tarde.</h4>
+</ModalDialog>
 
 @code{
     ModalDialog actualizacion { get; set; }
+    ModalDialog modalActualizar { get; set; }
     Calendario calendario { get; set; } = new Calendario();
     List<string> veterinarias = new List<string>();
     List<string> mesesNames = new List<string>();
@@ -81,8 +85,11 @@
     DateTime fechaInicio = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
     DateTime fechaFin = (new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1)).AddMonths(1).AddDays(-1);
 
+    private bool actualizar = false;
+
     protected override async Task OnInitializedAsync()
     {
+        actualizar = false;
         mesesNames = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.MonthGenitiveNames.ToList();
         await cargarDatosBd();
         await CargarCalendarioHead();
@@ -91,16 +98,16 @@
 
     public async Task cargarDatosBd()
     {
-        /*Calendario cal = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
-        if(cal == null)
+        Calendario cal = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
+        if (cal == null)
         {
-            await randomCalendario();*/
+            await randomCalendario();
             calendario = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
-        /*}
+        }
         else
         {
             calendario = cal;
-        }*/
+        }
     }
 
     /*public async Task CargarCalendario(ChangeEventArgs e)
@@ -248,20 +255,29 @@
 
     public async Task ActualizarCalendario()
     {
-        calendario = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
-        Console.WriteLine("mes calendario:" + calendario.Mes);
-        Console.WriteLine("mes actual:" + DateTime.Now.ToString("MMMM"));
-        if (calendario.Mes.Equals(DateTime.Now.ToString("MMMM")))
+        if (actualizar)
         {
-            actualizacion.Open();
+            calendario = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
+            Console.WriteLine("mes calendario:" + calendario.Mes);
+            Console.WriteLine("mes actual:" + DateTime.Now.ToString("MMMM"));
+            if (calendario.Mes.Equals(DateTime.Now.ToString("MMMM")))
+            {
+                actualizacion.Open();
+            }
+            else
+            {
+                var res = await http.DeleteAsync($"https://localhost:7083/api/calendario/{calendario.Id}");
+                await randomCalendario();
+                calendario = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
+                await CargarCalendarioHead();
+                await CargarCalendarioBody();
+            }
         }
         else
         {
-            var res = await http.DeleteAsync($"https://localhost:7083/api/calendario/{calendario.Id}");
-            await randomCalendario();
-            calendario = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
-            await CargarCalendarioHead();
-            await CargarCalendarioBody();
+            modalActualizar.Open();
+            actualizar = !actualizar;
         }
+
     }
 }
