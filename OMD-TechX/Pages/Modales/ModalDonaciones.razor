@@ -1,0 +1,173 @@
+﻿@inject HttpClient http;
+@inject UserManager<IdentityUser> UserManager
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.Forms;
+@using Microsoft.AspNetCore.Identity;
+@using OMD_TechX.Modelos;
+
+<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow:auto;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: darkorange">
+                <h5 class="modal-title">@Titulo</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @onclick="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- comienzo del formulario-->
+                <EditForm @ref="formRef" Model="@DonacionFormulario" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="error">
+                    <!-- header -->
+
+
+                    <div class="row">
+                        <div class="d-flex align-items-center">
+                            <h2>¡Oh My Dog!</h2>
+                            <div class="ms-auto">
+                                <img src="/imagenes/Logo2.png" class="rounded float-end img-fluid" width="50px" height="50px" alt="omd-logo">
+                            </div>
+                        </div>
+                        <hr />
+                    </div>
+
+                    <!-- campos -->
+
+
+                    <div class="row">
+                        <div class="col">
+
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => DonacionFormulario.NombreTitular)" class=""></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Nombre del titular</span>
+                                <InputText @bind-Value="@DonacionFormulario.NombreTitular" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Martin" />
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <text>@errorNumero</text>
+                                <ValidationMessage For="@(() => DonacionFormulario.Numero)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Numero de tarjeta</span>
+                                <InputText @bind-Value="@DonacionFormulario.Numero" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Perez" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-6">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => DonacionFormulario.CodigoDeSeguridad)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Codigo de seguridad</span>
+                                <InputNumber @bind-Value="@DonacionFormulario.CodigoDeSeguridad" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="0" />
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => DonacionFormulario.FechaVencimiento)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Fecha de expiración</span>
+                                <InputDate max="@DateTime.Now.ToString("yyyy-MM-dd")" @bind-Value="@DonacionFormulario.FechaVencimiento" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <text>@errorSaldo</text>
+                                <ValidationMessage For="@(() => DonacionFormulario.MontoADonar)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Monto a donar</span>
+                                <InputNumber @bind-Value="@DonacionFormulario.MontoADonar" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="0" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <button type="submit" style="background-color:#21618C" class="w-100 btn btn-lg btn-primary text-white">@TextoBoton</button>
+                        </div>
+                    </div>
+
+                    <DataAnnotationsValidator> </DataAnnotationsValidator>
+
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter]
+    public string Titulo { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public DonacionFormulario DonacionFormulario { get; set; }
+    [Parameter]
+    public string TextoBoton { get; set; } = "Listo";
+    [Parameter]
+
+    public EventCallback OnValidSubmit { get; set; }
+
+    private EditForm formRef;
+
+    private string modalDisplay = "none";
+    private string modalClass = string.Empty;
+    private bool showBackdrop = false;
+
+    public string errorNumero = "";
+    public string errorSaldo = "";
+    public int idRefugio = 0;
+
+    private HttpContext context { get; set; }
+
+
+
+    public async Task Open(int id) //cuando se abre para crear la idea es que los campos esten vacios
+    {
+        modalClass = "show";
+        modalDisplay = "block";
+        showBackdrop = true;
+
+        errorNumero = "";
+        errorSaldo = "";
+        idRefugio = id;
+
+        DonacionFormulario.NombreTitular = "";
+        DonacionFormulario.Numero = "";
+        DonacionFormulario.MontoADonar = 0;
+
+        DonacionFormulario.Id = 0;
+        DonacionFormulario.CodigoDeSeguridad = "";
+        DonacionFormulario.FechaVencimiento = DateTime.Now;
+    }
+    public async Task Close()
+    {
+        modalDisplay = "none";
+        modalClass = string.Empty;
+        showBackdrop = false;
+    }
+    public void error()
+    {
+        Console.WriteLine("Invalid submit");
+    }
+
+}

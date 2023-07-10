@@ -1,4 +1,4 @@
-﻿@page "/Refugios"
+﻿@page "/refugios"
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.Identity.UI.Services;
 @inject HttpClient http
@@ -13,37 +13,18 @@
         <h1>Refugios</h1>
 
     </div>
-
-
-
     <AuthorizeView Roles="Admin">
         <Authorized>
             <div class="col col-lg-2" style="text-align:right">
                 <input type="button" class="btn btn-success" style="background-color: #28567A" value="Cargar refugio" @onclick="()=> ModalFormularioRefugio.Open()">
             </div>
-
-
         </Authorized>
     </AuthorizeView>
 
-
 </div>
+
 <hr />
-<ModalDialog @ref="@listadoDonaciones" Titulo="Listado de donaciones">
-    @if(donaciones.Count == 0)
-    {
-         <h4>Nadie dono por el momento.</h4>
-    }
-    else
-    {
-        foreach (Donacion d in donaciones)
-        {
-            <h5> @d.Nombre @d.Apellido @d.Donado. </h5>
-        }
-    }
-</ModalDialog>
-<ModalFormularioRefugio @ref="@ModalFormularioRefugio" TextoBoton="Aceptar" Titulo="Subir refugio" OnValidSubmit="(() => crearRefugio())" Refugio="@Refugio">
-</ModalFormularioRefugio>
+
 
 @if (refugios == null)
 {
@@ -51,7 +32,7 @@
 }
 else if (refugios.Count == 0)
 {
-    <h4>No hay Refugios.</h4>
+    <h4>No hay refugios.</h4>
 }
 else
 
@@ -73,22 +54,63 @@ else
                     </Authorized>
                 </AuthorizeView>
                 <button class="btn" @onclick="@(()=>verListaDonadores(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A"><i class="oi oi-trash"></i></button>
-                <!--<button class="btn" @onclick="@(()=>donar(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A"><i class="oi oi-trash"></i></button>-->
+                <button class="btn" @onclick="@(()=>modalDonaciones.Open(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A"><i class="oi oi-payments"></i></button>
             </div>
         </div>
         <br>
     }
 
 }
+<ModalDialog @ref="@listadoDonaciones" Titulo="Listado de donaciones">
+    @if (donaciones.Count == 0)
+    {
+        <h4>Nadie dono por el momento.</h4>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Dinero donado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Donacion d in donaciones)
+                {
+                    <tr style="vertical-align:middle">
 
+                        <td>@d.Nombre</td>
+                        <td>@d.Apellido</td>
+                        <td>$@d.Donado</td>
+                        <td></td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>     
+    }
+</ModalDialog>
+<ModalFormularioRefugio @ref="@ModalFormularioRefugio" TextoBoton="Publicar" Titulo="Publicar un refugio" OnValidSubmit="(() => crearRefugio())" Refugio="@refugio">
+</ModalFormularioRefugio>
+
+<ModalDonaciones @ref="@modalDonaciones" TextoBoton="Donar" Titulo="Donar a un refugio" OnValidSubmit="(() => donar())" DonacionFormulario="@donacionFormulario">
+</ModalDonaciones>
 @code
 {
-
     List<Refugio> refugios { get; set; }
-    Refugio Refugio { get; set; } = new Refugio();
+    Refugio refugio { get; set; } = new Refugio();
+    List<Donacion> donaciones { get; set; }
+    Donacion donacion { get; set; } = new Donacion();
+    List<Tarjeta> tarjetasValidas { get; set; }
+    Tarjeta tarjeta { get; set; } = new Tarjeta();
+    DonacionFormulario donacionFormulario { get; set; } = new DonacionFormulario();
+
     ModalFormularioRefugio ModalFormularioRefugio { get; set; }
     ModalDialog listadoDonaciones { get; set; }
-    List<Donacion> donaciones { get; set; }
+    ModalDonaciones modalDonaciones{ get; set; }
 
     private string userId;
     private string mostrar;
@@ -97,8 +119,8 @@ else
     {
         userId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
         http.BaseAddress = new Uri("https://localhost:7083/");
-        //await prueba();
         await cargarRefugios();
+        await cargarTarjetas();
     }
 
     public async Task cargarRefugios()
@@ -106,38 +128,74 @@ else
         refugios = await http.GetFromJsonAsync<List<Refugio>>("api/refugios");
     }
 
+    public async Task cargarTarjetas()
+    {
+        tarjetasValidas = await http.GetFromJsonAsync<List<Tarjeta>>("api/tarjetas");
+    }
+
     public async Task verListaDonadores(int id)
     {
 
-        var refugio = refugios.FirstOrDefault(a => a.Id == id);
+        refugio = refugios.FirstOrDefault(a => a.Id == id);
         donaciones = await http.GetFromJsonAsync<List<Donacion>>($"api/donaciones/byRefugio/{refugio.Id}");
 
         listadoDonaciones.Open(); 
     }
 
-    
+
 
     public async Task crearRefugio()
     {
-        bool existe = refugios.Any(r => r.Nombre.ToLower().Equals(Refugio.Nombre.ToLower()) && r.Direccion.ToLower().Equals(Refugio.Direccion.ToLower()));
+        bool existe = refugios.Any(r => r.Nombre.ToLower().Equals(refugio.Nombre.ToLower()) && r.Direccion.ToLower().Equals(refugio.Direccion.ToLower()));
+
         if (!existe)
         {
             ModalFormularioRefugio.textoNombre = "";
             ModalFormularioRefugio.Close();
-            var res = await http.PostAsJsonAsync<Refugio>("api/refugios", Refugio);
+            var res = await http.PostAsJsonAsync<Refugio>("api/refugios", refugio);
             await cargarRefugios();
         }
         else
         {
-            ModalFormularioRefugio.textoNombre = $"El refugo {Refugio.Nombre} ya esta cargado";
+            ModalFormularioRefugio.textoNombre = $"El refugio {refugio.Nombre} ya esta cargado";
+        }
+    }
+
+    public async Task donar()
+    {
+        tarjeta = tarjetasValidas.FirstOrDefault(t => t.Numero.Equals(donacionFormulario.Numero));
+        Usuario usuario = await http.GetFromJsonAsync<Usuario>($"api/usuarios/{userId}");
+        if (tarjeta != null)
+        {
+            modalDonaciones.errorNumero = "";
+
+            if(tarjeta.Monto >= donacionFormulario.MontoADonar)
+            {
+                modalDonaciones.errorSaldo = "";
+                modalDonaciones.Close();
+
+                donacion.Donado = donacionFormulario.MontoADonar;
+                donacion.Nombre = usuario.Nombre;
+                donacion.Apellido = usuario.Apellido;
+                donacion.RefugioId = modalDonaciones.idRefugio;
+                var res = await http.PostAsJsonAsync<Donacion>("api/donaciones", donacion);
+            }
+            else
+            {
+                modalDonaciones.errorSaldo = "La tarjeta ingresada no tiene saldo suficiente";
+            }
+        }
+        else
+        {
+            modalDonaciones.errorNumero = "El numero de tarjeta es inválido";
         }
     }
 
     public async Task borrarRefugio(int id)
     {
-        var Refugio = refugios.FirstOrDefault(a => a.Id == id);
+        refugio = refugios.FirstOrDefault(a => a.Id == id);
 
-        string mensajeconfirmacion = $"¿Desea borrar la publicacion de {Refugio.Nombre}?";
+        string mensajeconfirmacion = $"¿Desea borrar la publicacion de {refugio.Nombre}?";
         if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
         {
             await http.DeleteAsync($"https://localhost:7083/api/refugios/{id}");

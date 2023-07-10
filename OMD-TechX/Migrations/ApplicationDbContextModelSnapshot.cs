@@ -575,6 +575,39 @@ namespace OMD_TechX.Migrations
                     b.ToTable("Servicios");
                 });
 
+            modelBuilder.Entity("OMD_TechX.Modelos.Tarjeta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CodigoDeSeguridad")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FechaVencimiento")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("Monto")
+                        .HasColumnType("float");
+
+                    b.Property<string>("NombreTitular")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Numero")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tarjetas");
+                });
+
             modelBuilder.Entity("OMD_TechX.Modelos.Turno", b =>
                 {
                     b.Property<int>("Id")

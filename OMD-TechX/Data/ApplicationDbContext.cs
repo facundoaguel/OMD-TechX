@@ -49,6 +49,6 @@ namespace OMD_TechX.Data
         public DbSet<Refugio> Refugios => Set<Refugio>();
         public DbSet<Donacion> Donaciones => Set<Donacion>();
 
-
+        public DbSet<Tarjeta> Tarjetas => Set<Tarjeta>();
     }
 }
