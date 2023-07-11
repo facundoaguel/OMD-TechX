@@ -42,19 +42,34 @@ else
         <div class="card">
             <div class="card-header" style="background-color:#28567A;color:lightcyan">
                 <img src="/imagenes/Logo2-removebg-preview.png" class="rounded float-end img-fluid" width="45px" height="45px" alt="omd-logo">
-                <h5>@r.Nombre</h5>
+                <h4>@r.Nombre</h4>
             </div>
             <div class="card-body" style="background: linear-gradient(to bottom right, #F8F9FA 30%, #28567A 90%);color:#28567A">
                 <br>
-                <h6 class="card-text">Direccion: @r.Direccion</h6>
-                <h6 class="card-text">Descripcion: @r.Descripcion</h6>
-                <AuthorizeView Roles="Admin">
-                    <Authorized>
-                        <button class="btn" @onclick="@(()=>borrarRefugio(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A"><i class="oi oi-trash"></i></button>
-                    </Authorized>
-                </AuthorizeView>
-                <button class="btn" @onclick="@(()=>verListaDonadores(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A;margin-right:10px"><i class="">Ver donadores</i></button>
-                <button class="btn" @onclick="@(()=>modalDonaciones.Open(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A;margin-right:10px"><i class="">Donar</i></button>
+                <h5 class="card-text">Direccion: @r.Direccion</h5>
+                <h5 class="card-text">Descripcion: @r.Descripcion</h5>
+                @if (r.EnCampania)
+                {
+                    <AuthorizeView Roles="Admin">
+                        <Authorized>
+                            <button class="btn" @onclick="@(()=>borrarRefugio(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A"><i class="oi oi-trash"></i></button>
+                            <button class="btn" @onclick="@(()=>verListaDonadores(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A;margin-right:10px"><i class="">Ver donadores</i></button>
+                            <button class="btn" @onclick="@(()=>finalizarCampania(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A;margin-right:10px"><i class="">Finalizar campaña</i></button>
+                        </Authorized>
+                        <NotAuthorized>
+                            <button class="btn" @onclick="@(()=>modalDonaciones.Open(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A;margin-right:10px"><i class="">Donar</i></button>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                }
+                else
+                {
+                    <h5 class="card-text text-danger" style="-webkit-text-stroke-width:0.5px">Campaña finalizada</h5>
+                    <AuthorizeView Roles="Admin">
+                        <Authorized>
+                            <button class="btn" @onclick="@(()=>verListaDonadores(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A;margin-right:10px"><i class="">Ver donadores</i></button>
+                        </Authorized>
+                    </AuthorizeView>
+                }
             </div>
         </div>
         <br>
@@ -68,7 +83,7 @@ else
     }
     else if (donaciones.Count == 0)
     {
-        <h4>Nadie dono por el momento.</h4>
+        <h4>Nadie donó por el momento.</h4>
     }
     else
     {
@@ -112,6 +127,8 @@ else
     Tarjeta tarjeta { get; set; } = new Tarjeta();
     DonacionFormulario donacionFormulario { get; set; } = new DonacionFormulario();
 
+    List<Usuario> usuarios { get; set; }
+
     ModalFormularioRefugio ModalFormularioRefugio { get; set; }
     ModalDialog listadoDonaciones { get; set; }
     ModalDonaciones modalDonaciones{ get; set; }
@@ -125,6 +142,7 @@ else
         http.BaseAddress = new Uri("https://localhost:7083/");
         await cargarRefugios();
         await cargarTarjetas();
+        await cargarUsuarios();
     }
 
     public async Task cargarRefugios()
@@ -135,6 +153,11 @@ else
     public async Task cargarTarjetas()
     {
         tarjetasValidas = await http.GetFromJsonAsync<List<Tarjeta>>("api/tarjetas");
+    }
+
+    public async Task cargarUsuarios()
+    {
+        usuarios = await http.GetFromJsonAsync<List<Usuario>>("api/usuarios");   
     }
 
     public async Task verListaDonadores(int id)
@@ -154,6 +177,7 @@ else
 
         if (!existe)
         {
+            refugio.EnCampania = true;
             ModalFormularioRefugio.textoNombre = "";
             ModalFormularioRefugio.Close();
             var res = await http.PostAsJsonAsync<Refugio>("api/refugios", refugio);
@@ -168,31 +192,56 @@ else
     public async Task donar()
     {
         tarjeta = tarjetasValidas.FirstOrDefault(t => t.Numero.Equals(donacionFormulario.Numero));
-        Usuario usuario = await http.GetFromJsonAsync<Usuario>($"api/usuarios/{userId}");
+        Usuario usuario = usuarios.FirstOrDefault(u => u.Id.Equals(userId));
         if (tarjeta != null)
         {
             modalDonaciones.errorNumero = "";
-
-            if(tarjeta.Monto >= donacionFormulario.MontoADonar)
+            if (!(tarjeta.CodigoDeSeguridad.Equals(donacionFormulario.CodigoDeSeguridad))||!(tarjeta.NombreTitular.ToLower().Equals(donacionFormulario.NombreTitular.ToLower()))||!(tarjeta.FechaVencimiento.ToString("mm-YY").Equals(donacionFormulario.FechaVencimiento.ToString("mm-YY"))))
             {
-                modalDonaciones.errorSaldo = "";
-                modalDonaciones.Close();
-
-                donacion.Donado = donacionFormulario.MontoADonar;
-                donacion.Nombre = usuario.Nombre;
-                donacion.Apellido = usuario.Apellido;
-                donacion.RefugioId = modalDonaciones.idRefugio;
-                var res = await http.PostAsJsonAsync<Donacion>("api/donaciones", donacion);
+                modalDonaciones.errorDatos = "Hay problemas con los datos ingresados";
             }
             else
             {
-                modalDonaciones.errorSaldo = "La tarjeta ingresada no tiene saldo suficiente";
+                modalDonaciones.errorDatos = "";
+                if (tarjeta.Monto >= donacionFormulario.MontoADonar)
+                {
+                    modalDonaciones.errorSaldo = "";
+                    modalDonaciones.errorDatos = "";
+                    modalDonaciones.errorNumero = "";
+                    modalDonaciones.Close();
+
+                    donacion.Donado = donacionFormulario.MontoADonar;
+                    donacion.RefugioId = modalDonaciones.idRefugio;
+                    if (usuario != null)
+                    {
+                        donacion.Nombre = usuario.Nombre;
+                        donacion.Apellido = usuario.Apellido;
+                    }
+                    else
+                    {
+                        donacion.Nombre = "Anónimo";
+                        donacion.Apellido = "Anónimo";
+                    }
+                    var res = await http.PostAsJsonAsync<Donacion>("api/donaciones", donacion);
+                }
+                else
+                {
+                    modalDonaciones.errorSaldo = "La tarjeta ingresada no tiene saldo suficiente";
+                }
             }
         }
         else
         {
             modalDonaciones.errorNumero = "El numero de tarjeta es inválido";
         }
+    }
+
+    public async Task finalizarCampania(int refugioId)
+    {
+        refugio = refugios.FirstOrDefault(r => r.Id == refugioId);
+        refugio.EnCampania = false;
+        await http.PutAsJsonAsync<Refugio>("api/refugios",refugio);
+        await cargarRefugios();
     }
 
     public async Task borrarRefugio(int id)

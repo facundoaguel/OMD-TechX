@@ -22,6 +22,8 @@ namespace OMD_TechX.Modelos
         [Required(ErrorMessage = "El campo descripción es requerido")]
         public string Descripcion { get; set; }
 
+        public Boolean EnCampania { get; set; }
+
 
         public Refugio() { }
 
@@ -31,6 +33,7 @@ namespace OMD_TechX.Modelos
             this.Direccion = Direccion;
             this.CBU = CBU; 
             this.Descripcion = Descrpcion;
+            this.EnCampania = true;
         }
     }
 }

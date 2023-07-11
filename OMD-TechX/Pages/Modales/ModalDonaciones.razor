@@ -37,11 +37,12 @@
                         <div class="col">
 
                             <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <text>@errorDatos</text>
                                 <ValidationMessage For="@(() => DonacionFormulario.NombreTitular)" class=""></ValidationMessage>
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="inputGroup-sizing-default">Nombre del titular</span>
-                                <InputText @bind-Value="@DonacionFormulario.NombreTitular" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Martin" />
+                                <InputText @bind-Value="@DonacionFormulario.NombreTitular" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Martin Pérez" />
                             </div>
                         </div>
                     </div>
@@ -56,11 +57,9 @@
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Numero de tarjeta</span>
-                                <InputText @bind-Value="@DonacionFormulario.Numero" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Perez" />
+                                <InputText @bind-Value="@DonacionFormulario.Numero" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Sin espacios" />
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
 
                         <div class="col-6">
                             <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
@@ -68,16 +67,18 @@
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Codigo de seguridad</span>
-                                <InputText @bind-Value="@DonacionFormulario.CodigoDeSeguridad" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="0" />
+                                <InputText @bind-Value="@DonacionFormulario.CodigoDeSeguridad" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="De tres dígitos" />
                             </div>
                         </div>
-                        <div class="col-3">
+                    </div>
+                    <div class="row">          
+                        <div class="col-12">
                             <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
                                 <ValidationMessage For="@(() => DonacionFormulario.FechaVencimiento)"></ValidationMessage>
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Fecha de expiración</span>
-                                <InputDate min="@DateTime.Now.ToString("yyyy-MM")" @bind-Value="@DonacionFormulario.FechaVencimiento" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
+                                <InputDate  min="@DateTime.Now.ToString("yyyy-MM")" @bind-Value="@DonacionFormulario.FechaVencimiento" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
                             </div>
                         </div>
                     </div>
@@ -89,8 +90,9 @@
                                 <ValidationMessage For="@(() => DonacionFormulario.MontoADonar)"></ValidationMessage>
                             </label>
                             <div class="input-group mb-3">
-                                <span class="input-group-text">Monto a donar</span>
-                                <InputNumber @bind-Value="@DonacionFormulario.MontoADonar" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="0" />
+                                <span class="input-group-text">Monto a donar </span>
+                                <span class="input-group-text">$</span>
+                                <InputNumber @bind-Value="@DonacionFormulario.MontoADonar" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="100"/>
                             </div>
                         </div>
                     </div>
@@ -135,6 +137,7 @@
 
     public string errorNumero = "";
     public string errorSaldo = "";
+    public string errorDatos = "";
     public int idRefugio = 0;
 
     private HttpContext context { get; set; }
@@ -149,6 +152,7 @@
 
         errorNumero = "";
         errorSaldo = "";
+        errorDatos = "";
         idRefugio = id;
 
         DonacionFormulario.NombreTitular = "";

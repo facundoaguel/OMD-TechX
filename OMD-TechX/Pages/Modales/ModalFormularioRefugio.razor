@@ -35,7 +35,7 @@
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="inputGroup-sizing-default">Nombre</span>
-                                <InputText @bind-Value="@Refugio.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Jorge" />
+                                <InputText @bind-Value="@Refugio.Nombre" id="floatingInputInvalid" class="form-control rounded float-end" aria-required="true" placeholder="Patitas suaves" />
                             </div>
                         </div>
                         <div class="col-6">
@@ -44,29 +44,30 @@
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Direccion</span>
-                                <InputText @bind-Value="@Refugio.Direccion" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Gonzalez" />
+                                <InputText @bind-Value="@Refugio.Direccion" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="50 y 122" />
                             </div>
                         </div>
-                        <div class="col-6">
+                        
+                       
+                        <div class="col-12">
                             <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
                                 <ValidationMessage For="@(() => Refugio.CBU)"></ValidationMessage>
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">CBU</span>
-                                <InputText @bind-Value="@Refugio.CBU" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Gonzalez" />
+                                <InputText @bind-Value="@Refugio.CBU" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Sin espacios" />
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
-                                    <ValidationMessage For="@(() => Refugio.Descripcion)"></ValidationMessage>
-                                </label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">Descripcion</span>
-                                    <InputText @bind-Value="@Refugio.Descripcion" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="" />
-                                </div>
+                        <div class="col-12">
+                            <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
+                                <ValidationMessage For="@(() => Refugio.Descripcion)"></ValidationMessage>
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Descripcion</span>
+                                <InputText @bind-Value="@Refugio.Descripcion" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="Para qué estan realizando esta campaña..." />
                             </div>
                         </div>
+                        
                     </div>
 
 
