@@ -15,7 +15,7 @@ namespace OMD_TechX.Modelos
         public string Direccion { get; set; }
 
         [Required(ErrorMessage = "El campo CBU es requerido")]
-        [StringLength(22, ErrorMessage = "El CBU solo admite hasta 50 caracteres")]
+        [StringLength(maximumLength: 22, MinimumLength = 22, ErrorMessage = "El CBU debe tener 22 caracteres")]
         [RegularExpression(@"^[0-9\s]+$", ErrorMessage = "Ingrese solo numeros")]
         public string CBU { get; set; }
 

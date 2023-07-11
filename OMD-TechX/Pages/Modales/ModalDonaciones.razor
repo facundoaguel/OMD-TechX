@@ -50,7 +50,7 @@
 
 
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-8">
                             <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
                                 <text>@errorNumero</text>
                                 <ValidationMessage For="@(() => DonacionFormulario.Numero)"></ValidationMessage>
@@ -61,24 +61,24 @@
                             </div>
                         </div>
 
-                        <div class="col-6">
+                        <div class="col-4">
                             <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
                                 <ValidationMessage For="@(() => DonacionFormulario.CodigoDeSeguridad)"></ValidationMessage>
                             </label>
                             <div class="input-group mb-3">
-                                <span class="input-group-text">Codigo de seguridad</span>
+                                <span class="input-group-text">CVV</span>
                                 <InputText @bind-Value="@DonacionFormulario.CodigoDeSeguridad" id="floatingInputInvalid" class="form-control rounded" aria-required="true" placeholder="De tres dígitos" />
                             </div>
                         </div>
                     </div>
                     <div class="row">          
-                        <div class="col-12">
+                        <div class="col">
                             <label for="floatingInputInvalid" class="text-danger" style="opacity: 75%">
                                 <ValidationMessage For="@(() => DonacionFormulario.FechaVencimiento)"></ValidationMessage>
                             </label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Fecha de expiración</span>
-                                <InputDate  min="@DateTime.Now.ToString("yyyy-MM")" @bind-Value="@DonacionFormulario.FechaVencimiento" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
+                                <InputDate min="@DateTime.Now.ToString("yyyy-MM-dd")" @bind-Value="@DonacionFormulario.FechaVencimiento" id="floatingInputInvalid" class="form-control rounded" aria-required="true" />
                             </div>
                         </div>
                     </div>
