@@ -1,0 +1,49 @@
+﻿<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow:auto;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #28567A">
+                <div class="d-flex align-items-center">
+                    <div class="ms-auto">
+                        <img src="/imagenes/Logo2-removebg-preview.png" class="rounded float-end img-fluid" width="70px" height="70px" alt="omd-logo">
+                    </div>
+                    <h2 style="color:darkorange; text-align: center; margin-left: 10px">@Titulo</h2>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" style="text-align:right" @onclick="Close"></button>
+                </div>
+                <hr />
+            </div>
+            <div class="modal-body">
+                @ChildContent
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter]
+    public string Titulo { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+
+    private string modalDisplay = "none";
+    private string modalClass = string.Empty;
+    private bool showBackdrop = false;
+
+    public void Open()
+    {
+        modalDisplay = "block";
+        modalClass = "show";
+        showBackdrop = true;
+    }
+    public void Close()
+    {
+        modalDisplay = "none";
+        modalClass = string.Empty;
+        showBackdrop = false;
+    }
+}

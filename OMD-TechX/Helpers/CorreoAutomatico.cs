@@ -91,5 +91,32 @@ namespace OMD_TechX.Helpers
 
                 smtp.Send(message);
         }
+
+        public static void enviarCorreoDescuento(string toAdresss, string name, string mensaje)
+        {
+            var fromAddress = new MailAddress("techxdevteam@gmail.com", "TechX Team");
+            var toAddress = new MailAddress(toAdresss, name);
+            const string fromPassword = "tknjoravwdnmxzrt";
+
+            const string subject = $"Gracias por tu donación en Oh My Dog!";
+            string body = mensaje;
+
+            var smtp = new SmtpClient
+            {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
+            };
+            using (var message = new MailMessage(fromAddress, toAddress)
+            {
+                Subject = subject,
+                Body = body
+            })
+
+                smtp.Send(message);
+        }
     }
 }

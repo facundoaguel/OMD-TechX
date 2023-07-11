@@ -57,7 +57,7 @@ else
                             <button class="btn" @onclick="@(()=>finalizarCampania(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A;margin-right:10px"><i class="">Finalizar campaña</i></button>
                         </Authorized>
                         <NotAuthorized>
-                            <button class="btn" @onclick="@(()=>modalDonaciones.Open(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A;margin-right:10px"><i class="">Donar</i></button>
+                            <button class="btn" @onclick="@(()=>evaluar(r.Id))" style="float:right;background-color: #F0F0F0; color: #28567A;margin-right:10px"><i class="">Donar</i></button>
                         </NotAuthorized>
                     </AuthorizeView>
                 }
@@ -117,6 +117,17 @@ else
 
 <ModalDonaciones @ref="@modalDonaciones" TextoBoton="Donar" Titulo="Donar a un refugio" OnValidSubmit="(() => donar())" DonacionFormulario="@donacionFormulario">
 </ModalDonaciones>
+
+<ModalDialog @ref="@avisoEnvio" Titulo="Mail enviado">
+    <h4>Te hemos enviado un mail que puedes mostrar en la vterinaria para obtener un descuento del 20% de lo donado en tu próxima compra.</h4>
+    <h5>Gracias por ayudarnos a cuidar de los perritos.</h5>
+</ModalDialog>
+
+<ModalNoDescuento @ref="@avisoNoDescuento" Titulo="Advertencia">
+    <h4>Usted no tiene una sesion iniciada por lo tanto su donación permanecerá anonima y no obtendrá el descuento del 20% de lo donado en su próxima compra en la veterinaria.</h4>
+    <button class="btn" @onclick="@(()=> cerrarYabrir())" style="float:right;background-color:darkorange;margin-right:10px">Donar de todos modos</button>
+</ModalNoDescuento>
+
 @code
 {
     List<Refugio> refugios { get; set; }
@@ -132,9 +143,12 @@ else
     ModalFormularioRefugio ModalFormularioRefugio { get; set; }
     ModalDialog listadoDonaciones { get; set; }
     ModalDonaciones modalDonaciones{ get; set; }
+    ModalDialog avisoEnvio { get; set; }
+    ModalNoDescuento avisoNoDescuento{ get; set; }
 
     private string userId;
     private string mostrar;
+    public int refId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -189,6 +203,26 @@ else
         }
     }
 
+    public void evaluar(int refugioId)
+    {
+        refId = refugioId;
+        bool usuarioReg = usuarios.Any(u => u.Id.Equals(userId));
+        if (usuarioReg)
+        {
+            modalDonaciones.Open(refugioId);
+        }
+        else
+        {
+            avisoNoDescuento.Open();
+        }
+    }
+
+    public void cerrarYabrir()
+    {
+        avisoNoDescuento.Close();
+        modalDonaciones.Open(refId);
+    }
+
     public async Task donar()
     {
         tarjeta = tarjetasValidas.FirstOrDefault(t => t.Numero.Equals(donacionFormulario.Numero));
@@ -216,13 +250,15 @@ else
                     {
                         donacion.Nombre = usuario.Nombre;
                         donacion.Apellido = usuario.Apellido;
+                        var res = await http.PostAsJsonAsync<Donacion>("api/donaciones", donacion);
+                        mandarMail(usuario.Nombre,usuario.Email, donacionFormulario.MontoADonar);
                     }
                     else
                     {
                         donacion.Nombre = "Anónimo";
                         donacion.Apellido = "Anónimo";
+                        var res = await http.PostAsJsonAsync<Donacion>("api/donaciones", donacion);
                     }
-                    var res = await http.PostAsJsonAsync<Donacion>("api/donaciones", donacion);
                 }
                 else
                 {
@@ -234,6 +270,25 @@ else
         {
             modalDonaciones.errorNumero = "El numero de tarjeta es inválido";
         }
+    }
+
+    public void mandarMail(string userName, string correo, double donado)
+    {
+        double descuento = donado * 0.2;
+        string hasta = DateTime.Now.AddDays(15).ToString("D");
+        Random random = new Random();
+        int randomNumber = random.Next(10000, 99999);
+
+        string mensaje = $"Hola {userName}! Este es un correo automático de Oh My Dog!\n" +
+        $"Por haber donado ${donado} a un refugio tendrás un descuento del 20% de lo donado en tu próxima compra en la veterinaria!!.\n" +
+        $"El descuento es entonces de ${descuento}\n" +
+        $"Este cupón es valido por 15 dias, es decir hasta el {hasta}.\n " +
+        $"Código unico de descuento: {randomNumber}.\n " +
+        "Saludos!";
+
+
+        CorreoElectronico.enviarCorreoDescuento(correo,userName,mensaje);
+        avisoEnvio.Open();
     }
 
     public async Task finalizarCampania(int refugioId)
