@@ -50,14 +50,14 @@ namespace OMD_TechX.Controladores
         [HttpGet]
         public async Task<ActionResult<List<Turno>>> Get()
         {
-            return await context.Turnos.ToListAsync();
+            return await context.Turnos.Where(t => !t.estado.Equals("Realizado")).ToListAsync();
         }
         [HttpGet("byUser/{userId}")]
         public async Task<ActionResult<List<Turno>>> Get(string userId)
         {
             if (userId != null)
             {
-                return await context.Turnos.Where(t => t.usuarioId == userId && ((t.Fecha.Date >= DateTime.Now.Date && t.estado.Equals("Pendiente"))||(!t.estado.Equals("Pendiente"))) ).ToListAsync();
+                return await context.Turnos.Where(t => t.usuarioId == userId && (!t.estado.Equals("Realizado")) &&((t.Fecha.Date >= DateTime.Now.Date && t.estado.Equals("Pendiente"))||(!t.estado.Equals("Pendiente"))) ).ToListAsync();
             }
             else
             {
