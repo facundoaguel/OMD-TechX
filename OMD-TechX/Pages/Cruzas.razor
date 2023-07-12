@@ -334,6 +334,8 @@ else
         var perro = perros.FirstOrDefault(p => p.Id == id);
         Perro cruzaP = new Perro();
 
+        //me aseguro de tener todas las cruzas a mano, ya que si el filtro esta activado
+        //nunca va encontrar recomendaciones.
         await cargarCruzas();
 
         foreach(Cruza c in cruzas)
@@ -357,6 +359,8 @@ else
         recomendadas = recomendadas.Where(r => !r.UsuarioId.Equals(perro.UsuarioId)).ToList();
         recomendados.Open();
 
+
+        //aca me fijo si el filtro esta activado, para no tener que filtrar al pedo.
         if (this.filtro)
         {
             await cargarCruzasUsuario();
