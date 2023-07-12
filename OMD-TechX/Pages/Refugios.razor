@@ -8,6 +8,10 @@
 @using OMD_TechX.Helpers;
 @inject IJSRuntime JS
 
+<head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
 <div class="row">
     <div class="col">
         <h1>Refugios</h1>
@@ -127,7 +131,9 @@ else
     <h4>Usted no tiene una sesion iniciada por lo tanto su donación permanecerá anonima y no obtendrá el descuento del 20% de lo donado en su próxima compra en la veterinaria.</h4>
     <button class="btn" @onclick="@(()=> cerrarYabrir())" style="float:right;background-color:darkorange;margin-right:10px">Donar de todos modos</button>
 </ModalNoDescuento>
-
+<ModalDialog @ref="@modalConexion" Titulo="Error">
+    <h4>Hubo un problema en la conexión con el servidor, intentalo más tarde.</h4>
+</ModalDialog>
 @code
 {
     List<Refugio> refugios { get; set; }
@@ -145,10 +151,12 @@ else
     ModalDonaciones modalDonaciones{ get; set; }
     ModalDialog avisoEnvio { get; set; }
     ModalNoDescuento avisoNoDescuento{ get; set; }
+    ModalDialog modalConexion{ get; set; }
 
     private string userId;
     private string mostrar;
     public int refId;
+    private bool conexion = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -157,6 +165,7 @@ else
         await cargarRefugios();
         await cargarTarjetas();
         await cargarUsuarios();
+        conexion = false;
     }
 
     public async Task cargarRefugios()
@@ -225,50 +234,58 @@ else
 
     public async Task donar()
     {
-        tarjeta = tarjetasValidas.FirstOrDefault(t => t.Numero.Equals(donacionFormulario.Numero));
-        Usuario usuario = usuarios.FirstOrDefault(u => u.Id.Equals(userId));
-        if (tarjeta != null)
+        if (conexion)
         {
-            modalDonaciones.errorNumero = "";
-            if (!(tarjeta.CodigoDeSeguridad.Equals(donacionFormulario.CodigoDeSeguridad))||!(tarjeta.NombreTitular.ToLower().Equals(donacionFormulario.NombreTitular.ToLower()))||!(tarjeta.FechaVencimiento.ToString("mm-YY").Equals(donacionFormulario.FechaVencimiento.ToString("mm-YY"))))
+            tarjeta = tarjetasValidas.FirstOrDefault(t => t.Numero.Equals(donacionFormulario.Numero));
+            Usuario usuario = usuarios.FirstOrDefault(u => u.Id.Equals(userId));
+            if (tarjeta != null)
             {
-                modalDonaciones.errorDatos = "Hay problemas con los datos ingresados";
-            }
-            else
-            {
-                modalDonaciones.errorDatos = "";
-                if (tarjeta.Monto >= donacionFormulario.MontoADonar)
+                modalDonaciones.errorNumero = "";
+                if (!(tarjeta.CodigoDeSeguridad.Equals(donacionFormulario.CodigoDeSeguridad)) || !(tarjeta.NombreTitular.ToLower().Equals(donacionFormulario.NombreTitular.ToLower())) || !(tarjeta.FechaVencimiento.ToString("mm-YY").Equals(donacionFormulario.FechaVencimiento.ToString("mm-YY"))))
                 {
-                    modalDonaciones.errorSaldo = "";
-                    modalDonaciones.errorDatos = "";
-                    modalDonaciones.errorNumero = "";
-                    modalDonaciones.Close();
-
-                    donacion.Donado = donacionFormulario.MontoADonar;
-                    donacion.RefugioId = modalDonaciones.idRefugio;
-                    if (usuario != null)
-                    {
-                        donacion.Nombre = usuario.Nombre;
-                        donacion.Apellido = usuario.Apellido;
-                        var res = await http.PostAsJsonAsync<Donacion>("api/donaciones", donacion);
-                        mandarMail(usuario.Nombre,usuario.Email, donacionFormulario.MontoADonar);
-                    }
-                    else
-                    {
-                        donacion.Nombre = "Anónimo";
-                        donacion.Apellido = "Anónimo";
-                        var res = await http.PostAsJsonAsync<Donacion>("api/donaciones", donacion);
-                    }
+                    modalDonaciones.errorDatos = "Hay problemas con los datos ingresados";
                 }
                 else
                 {
-                    modalDonaciones.errorSaldo = "La tarjeta ingresada no tiene saldo suficiente";
+                    modalDonaciones.errorDatos = "";
+                    if (tarjeta.Monto >= donacionFormulario.MontoADonar)
+                    {
+                        modalDonaciones.errorSaldo = "";
+                        modalDonaciones.errorDatos = "";
+                        modalDonaciones.errorNumero = "";
+                        modalDonaciones.Close();
+
+                        donacion.Donado = donacionFormulario.MontoADonar;
+                        donacion.RefugioId = modalDonaciones.idRefugio;
+                        if (usuario != null)
+                        {
+                            donacion.Nombre = usuario.Nombre;
+                            donacion.Apellido = usuario.Apellido;
+                            var res = await http.PostAsJsonAsync<Donacion>("api/donaciones", donacion);
+                            mandarMail(usuario.Nombre, usuario.Email, donacionFormulario.MontoADonar);
+                        }
+                        else
+                        {
+                            donacion.Nombre = "Anónimo";
+                            donacion.Apellido = "Anónimo";
+                            var res = await http.PostAsJsonAsync<Donacion>("api/donaciones", donacion);
+                        }
+                    }
+                    else
+                    {
+                        modalDonaciones.errorSaldo = "La tarjeta ingresada no tiene saldo suficiente";
+                    }
                 }
+            }
+            else
+            {
+                modalDonaciones.errorNumero = "El numero de tarjeta es inválido";
             }
         }
         else
         {
-            modalDonaciones.errorNumero = "El numero de tarjeta es inválido";
+            modalConexion.Open();
+            conexion = true;
         }
     }
 
