@@ -236,7 +236,7 @@ else
     public async Task cargarCruzasUsuario()
     {
         string usuarioId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
-        cruzas = await http.GetFromJsonAsync<List<Cruza>>($"api/cruzas/{usuarioId}");
+        cruzas = await http.GetFromJsonAsync<List<Cruza>>($"api/cruzas/byUser/{usuarioId}");
     }
 
     public async Task filtrarPublicaciones()
@@ -295,8 +295,8 @@ else
         Usuario to = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{id}");
 
         string mensaje = $"Hola {to.Nombre}! Este es un correo automatico de Oh My Dog!\n" +
-        $"Mi nombre es {from.Nombre} y creo haber visto a {nombrePerro}.\n" +
-        $"Por favor contactame al siguiente correo: {from.Email}\n" +
+        $"Mi nombre es {from.Nombre} y creo que a mi perro le gustaría {nombrePerro}.\n" +
+        $"Por favor contactame al siguiente correo si estas interesado/a en que se conozcan: {from.Email}\n" +
         "Espero tu respuesta con ansias.\n " +
         "Saludos!";
 
