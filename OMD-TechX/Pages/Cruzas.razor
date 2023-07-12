@@ -225,7 +225,7 @@ else
 
     async Task cargarPerros()
     {
-        perros = await http.GetFromJsonAsync<List<Perro>>("https://localhost:7083/api/perros");
+        perros = await http.GetFromJsonAsync<List<Perro>>("https://localhost:7083/api/perros/todos");
     }
 
     public async Task cargarCruzas()

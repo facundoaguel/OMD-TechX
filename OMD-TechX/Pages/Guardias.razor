@@ -98,16 +98,8 @@
 
     public async Task cargarDatosBd()
     {
-        Calendario cal = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
-        if (cal == null)
-        {
-            await randomCalendario();
-            calendario = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
-        }
-        else
-        {
-            calendario = cal;
-        }
+        //await randomCalendario();
+        calendario = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
     }
 
     /*public async Task CargarCalendario(ChangeEventArgs e)
