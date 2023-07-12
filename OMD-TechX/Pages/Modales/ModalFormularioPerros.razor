@@ -293,10 +293,13 @@
         Perro.Comentarios = "";
         Perro.Sexo = "";  
         imagenBase64 = "/imagenes/perrito.jpg";
-        
+
         //C:/Users/juana/Source/Repos/facundoaguel/OMD-TechX/OMD-TechX/wwwroot/imagenes/perrito.jpg
         //C:/Users/aguel/source/repos/OMD-TechX/OMD-TechX/wwwroot/imagenes/perrito.jpg
-        Perro.Foto = convertirImagen("C:/Users/aguel/source/repos/OMD-TechX/OMD-TechX/wwwroot/imagenes/perrito.jpg");
+        string projectPath = getProjectPath();
+        Console.WriteLine("PATH DEL PROYECTO: " + projectPath);
+        Perro.Foto = convertirImagen( projectPath + "/wwwroot/imagenes/perrito.jpg");
+
         Perro.Id = 0;
         ClearInputFile();
 
@@ -330,5 +333,16 @@
             }
         }
         return imageBytes;
+    }
+
+    private string getProjectPath()
+    {
+        // This will get the current WORKING directory (i.e. \bin\Debug)
+        string workingDirectory = Environment.CurrentDirectory;
+        // or: Directory.GetCurrentDirectory() gives the same result
+
+
+        string projectDirectoryInvertido = workingDirectory.Replace(@"\", "/");
+        return projectDirectoryInvertido;
     }
 }
