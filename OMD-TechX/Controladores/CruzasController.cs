@@ -27,6 +27,11 @@ namespace OMD_TechX.Controladores
         {
             return await context.Cruzas.Where(c => c.UsuarioId == id).ToListAsync();
         }
+        [HttpGet("byPerro/{id}")]
+        public async Task<ActionResult<List<Cruza>>> GetPerroId(int id)
+        {
+            return await context.Cruzas.Where(c => c.PerroId == id).ToListAsync();
+        }
 
         [HttpGet("{id}", Name = "getCruza")]
         public async Task<ActionResult<Cruza>> Get(int id)

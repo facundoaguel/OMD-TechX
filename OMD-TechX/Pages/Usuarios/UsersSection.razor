@@ -104,11 +104,15 @@ else
         if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
         {
             List<Publicacion> publicaciones = await http.GetFromJsonAsync<List<Publicacion>>($"https://localhost:7083/api/publicaciones/usuario/{usuario.Id}");
+            List<Cruza> cruzas = await http.GetFromJsonAsync<List<Cruza>>($"https://localhost:7083/api/cruzas/byUser/{usuario.Id}");
             foreach (Publicacion publicacion in publicaciones)
             {
                 await publicacion.borrar();
             }
-
+            foreach (Cruza cruza in cruzas)
+            {
+                await cruza.borrar();
+            }
             foreach (Perro perro in usuario.Perros)
             {
                 if (!perro.eliminado)

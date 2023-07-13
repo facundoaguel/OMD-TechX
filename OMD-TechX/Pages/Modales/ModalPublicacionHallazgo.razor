@@ -252,7 +252,7 @@
 
             //C:/Users/juana/Source/Repos/facundoaguel/OMD-TechX/OMD-TechX/wwwroot/imagenes/perrito.jpg
             //C:/Users/aguel/source/repos/OMD-TechX/OMD-TechX/wwwroot/imagenes/perrito.jpg
-            Hallazgo.Foto = convertirImagen("C:/Users/juana/Source/Repos/facundoaguel/OMD-TechX/OMD-TechX/wwwroot/imagenes/perrito.jpg");
+            Hallazgo.Foto = convertirImagen(getProjectPath() + "/wwwroot/imagenes/perrito.jpg");
             textoFoto = "El formato del archivo debe ser una imagen en formato JPG, se restablecio a la imagen por defecto.";
             ClearInputFile();
             Console.WriteLine("El archivo seleccionado debe tener la extensión .jpg o .jpeg");

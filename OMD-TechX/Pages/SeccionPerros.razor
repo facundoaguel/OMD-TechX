@@ -247,6 +247,11 @@ else
             {
                 await http.DeleteAsync($"https://localhost:7083/api/turnos/{turno.Id}");
             }
+            List<Cruza> cruzas = await http.GetFromJsonAsync<List<Cruza>>($"https://localhost:7083/api/cruzas/byPerro/{perro.Id}");
+            foreach(Cruza cruza in cruzas)
+            {
+                await cruza.borrar();
+            }
             perro.eliminado = true;
             await http.PutAsJsonAsync<Perro>("https://localhost:7083/api/perros", perro);
             await cargarPerros();

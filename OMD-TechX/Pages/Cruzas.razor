@@ -220,12 +220,12 @@ else
 
     async Task cargarUsuarios()
     {
-        usuarios = await http.GetFromJsonAsync<List<Usuario>>($"https://localhost:7083/api/usuarios");
+        usuarios = await http.GetFromJsonAsync<List<Usuario>>($"https://localhost:7083/api/usuarios/actuales");
     }
 
     async Task cargarPerros()
     {
-        perros = await http.GetFromJsonAsync<List<Perro>>("https://localhost:7083/api/perros/todos");
+        perros = await http.GetFromJsonAsync<List<Perro>>("https://localhost:7083/api/perros");
     }
 
     public async Task cargarCruzas()

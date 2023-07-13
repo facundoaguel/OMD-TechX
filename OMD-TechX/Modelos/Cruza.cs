@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using static System.Net.WebRequestMethods;
 
 namespace OMD_TechX.Modelos
 {
@@ -12,6 +13,7 @@ namespace OMD_TechX.Modelos
         [Range(1, 35000, ErrorMessage = "Por favor, seleccione un perro")]
         public int PerroId { get; set; }
 
+        HttpClient http { get; set; } = new HttpClient();
         public Cruza()
         {
 
@@ -20,6 +22,11 @@ namespace OMD_TechX.Modelos
         {
             UsuarioId = usuarioId;
             PerroId = perroId;
+        }
+
+        public async Task borrar()
+        {
+            await http.DeleteAsync($"https://localhost:7083/api/cruzas/{this.Id}");
         }
     }
 }
