@@ -270,7 +270,7 @@ else
                 modalAnuncioCruza.Close();
 
                 await cargarCruzas();
-                recomendar(cruza.PerroId); //ni bien lo cargo le muestro sus recomendados(tal vez deberia ir desp de cargar las cruzas)
+                await recomendar(cruza.PerroId); //ni bien lo cargo le muestro sus recomendados(tal vez deberia ir desp de cargar las cruzas)
             }
             else
             {

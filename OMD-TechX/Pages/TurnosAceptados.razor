@@ -72,7 +72,7 @@ else
 
     async Task noRealizado(int turnoId)
     {
-        string mensajeconfirmacion = "¿Está seguro que desea marcar este turno como no realizado y pasarlo al historial de turnos rechazados?";
+        string mensajeconfirmacion = "¿Está seguro que desea marcar este turno como no realizado y pasarlo al historial de turnos inasistidos?";
         if (await JS.InvokeAsync<bool>("confirm", mensajeconfirmacion))
         {
             Turno turno = await http.GetFromJsonAsync<Turno>($"https://localhost:7083/api/turnos/{turnoId}");
