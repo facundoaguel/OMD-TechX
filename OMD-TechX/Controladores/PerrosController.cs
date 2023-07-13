@@ -28,7 +28,7 @@ namespace OMD_TechX.Controladores
         [HttpGet("todos")]
         public async Task<ActionResult<List<Perro>>> GetTodos()
         {
-            return await context.Perros.Include(p => p.Turnos).Include(p => p.PerroAtencion).ToListAsync();
+            return await context.Perros.ToListAsync();
         }
 
         [HttpGet("{id}", Name = "getPerro")]

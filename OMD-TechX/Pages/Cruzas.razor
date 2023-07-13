@@ -220,7 +220,7 @@ else
 
     async Task cargarUsuarios()
     {
-        usuarios = await http.GetFromJsonAsync<List<Usuario>>($"https://localhost:7083/api/usuarios/actuales");
+        usuarios = await http.GetFromJsonAsync<List<Usuario>>($"https://localhost:7083/api/usuarios");
     }
 
     async Task cargarPerros()
@@ -311,8 +311,8 @@ else
         Usuario to = await http.GetFromJsonAsync<Usuario>($"https://localhost:7083/api/usuarios/{idUsuarioMail}");
 
         string mensaje = $"Hola {to.Nombre}! Este es un correo automatico de Oh My Dog!\n" +
-        $"Creo haber visto a {nombrePerro}.\n" +
-        $"Por favor contactame al siguiente correo: {userMail.Email}\n" +
+        $"Creo que a mi perro le gustaría {nombrePerro}.\n" +
+        $"Por favor contactame al siguiente correo si estas interesado/a en que se conozcan: {userMail.Email}\n" +
         "Espero tu respuesta con ansias.\n " +
         "Saludos!";
 
