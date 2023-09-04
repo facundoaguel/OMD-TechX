@@ -1,0 +1,261 @@
+﻿@page "/guardias"
+
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Identity.UI.Services;
+@inject HttpClient http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject UserManager<IdentityUser> UserManager
+@using OMD_TechX.Helpers;
+@inject IJSRuntime JS
+@using System.Globalization
+
+<div class="row align-items-center">
+    <div class="col-8">
+        <h1>Guardias</h1>
+        
+    </div>
+    <!--<div class="col" style="margin-right:10px">
+        <select class="form-select" style="width:200px" aria-label="Default select example" @onchange="CargarCalendario">
+            @foreach (string nombreMes in mesesNames)
+            {
+                <option>@nombreMes</option>
+            }
+        </select>
+    </div>-->
+    <div class="col" style="text-align:right">
+        <input type="button" class="btn btn-success" style="background-color: #28567A" value="Actualizar" @onclick ="() => ActualizarCalendario()">
+    </div>
+</div>
+<hr />
+
+<table class="table table-bordered table-striped"> 
+    <thead>
+        <tr>
+            @for (var indexDia = 0; indexDia < dias.Count(); indexDia++)
+            {
+                <th>
+                    @dias[indexDia]
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @for(var indexSemana = 0; indexSemana < semanas.Count; indexSemana++)
+        {
+            <tr>
+                @for (var indexDia = 0; indexDia < semanas[indexSemana].Dias.Count; indexDia++)
+                {
+                    var semIndex = indexSemana;
+                    var diaIndex = indexDia;
+
+                    <td>
+                        @semanas[semIndex].Dias[diaIndex].FechaValue
+                        <br /><br />
+
+                        <label style="color:#C00;font-weight:bold">@semanas[indexSemana].Dias[indexDia].VetDeTurno</label>
+                        <br /><br />
+
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<ModalDialog @ref="@actualizacion" Titulo="Error">
+    <h4>No se puede actualizar el calendario mas de una vez al mes.</h4>
+</ModalDialog>
+
+@code{
+    ModalDialog actualizacion { get; set; }
+    Calendario calendario { get; set; } = new Calendario();
+    List<string> veterinarias = new List<string>();
+    List<string> mesesNames = new List<string>();
+    List<string> dias = new List<string>();
+    List<Semana> semanas = new List<Semana>();
+    DateTime fechaInicio = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+    DateTime fechaFin = (new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1)).AddMonths(1).AddDays(-1);
+
+    protected override async Task OnInitializedAsync()
+    {
+        mesesNames = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.MonthGenitiveNames.ToList();
+        await cargarDatosBd();
+        await CargarCalendarioHead();
+        await CargarCalendarioBody();
+    }
+
+    public async Task cargarDatosBd()
+    {
+        Calendario cal = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
+        if(cal == null)
+        {
+            await randomCalendario();
+            calendario = await http.GetFromJsonAsync<Calendario>("https://localhost:7083/api/calendario");
+        }
+        else
+        {
+            calendario = cal;
+        }
+    }
+
+    /*public async Task CargarCalendario(ChangeEventArgs e)
+        {
+        var mes = e.Value.ToString();
+        int indexMes = DateTime.ParseExact(mes, "MMMM", System.Globalization.CultureInfo.CreateSpecificCulture("es-GB")).Month;
+        fechaInicio = new DateTime(DateTime.Now.Year, indexMes, 1);
+        fechaFin = (new DateTime(DateTime.Now.Year, indexMes, 1)).AddMonths(1).AddDays(-1);
+
+        await CargarCalendarioHead();
+        await CargarCalendarioBody();
+    }*/
+
+    public async Task CargarCalendarioHead()
+    {
+        var dia1 = new List<string>();
+
+        for(var dt = fechaInicio; dt <= fechaFin; dt = dt.AddDays(1))
+        {
+            dia1.Add(dt.ToString("dddd"));
+            dias = dia1.Distinct().ToList();
+        }
+    }
+
+    public async Task randomCalendario()
+    {
+        crearVeterinarias();
+        Calendario nuevo = new Calendario();
+        for(var i = 0; i< 7; i++)
+        {
+            Random random = new Random();
+            int randomNumber = random.Next(0, veterinarias.Count);
+            switch (i)
+            {
+                case 0:
+                    nuevo.lunes = veterinarias[randomNumber];
+                    veterinarias.RemoveAt(randomNumber);
+                    break;
+                case 1:
+                    nuevo.martes = veterinarias[randomNumber];
+                    veterinarias.RemoveAt(randomNumber);
+                    break;
+                case 2:
+                    nuevo.miércoles = veterinarias[randomNumber];
+                    veterinarias.RemoveAt(randomNumber);
+                    break;
+                case 3:
+                    nuevo.jueves = veterinarias[randomNumber];
+                    veterinarias.RemoveAt(randomNumber);
+                    break;
+                case 4:
+                    nuevo.viernes = veterinarias[randomNumber];
+                    veterinarias.RemoveAt(randomNumber);
+                    break;
+                case 5:
+                    nuevo.sábado = veterinarias[randomNumber];
+                    veterinarias.RemoveAt(randomNumber);
+                    break;
+                case 6:
+                    nuevo.domingo = veterinarias[randomNumber];
+                    veterinarias.RemoveAt(randomNumber);
+                    break;
+            }
+        }
+        nuevo.Mes = DateTime.Now.ToString("MMMM");
+        await http.PostAsJsonAsync<Calendario>("https://localhost:7083/api/calendario", nuevo);
+    }
+
+    public async Task CargarCalendarioBody()
+    {
+        semanas = new List<Semana>();
+
+        int flag = 0;
+        Semana semana = new Semana();
+
+        List<Dia> fechas = new List<Dia>();
+        var diasTotales = (int)(fechaFin - fechaInicio).TotalDays;
+        int coundays = 0;
+
+        for(var dt = fechaInicio; dt <= fechaFin; dt = dt.AddDays(1))
+        {
+            flag++;
+
+            Dia dia = new Dia()
+                {
+                    FechaValue = dt.ToString("dd-MMM-yyyy"),
+                    DiaName = dt.ToString("dddd")
+                };
+            switch (dia.DiaName)
+            {
+                case "lunes":
+                    dia.VetDeTurno = calendario.lunes;
+                    break;
+                case "martes":
+                    dia.VetDeTurno = calendario.martes;
+                    break;
+                case "miércoles":
+                    dia.VetDeTurno = calendario.miércoles;
+                    break;
+                case "jueves":
+                    dia.VetDeTurno = calendario.jueves;
+                    break;
+                case "viernes":
+                    dia.VetDeTurno = calendario.viernes;
+                    break;
+                case "sábado":
+                    dia.VetDeTurno = calendario.sábado;
+                    break;
+                case "domingo":
+                    dia.VetDeTurno = calendario.domingo;
+                    break;       
+            }
+            fechas.Add(dia);
+
+            if(flag == 7)
+            {
+                semana = new Semana();
+                semana.Dias = fechas;
+                semanas.Add(semana);
+
+                fechas = new List<Dia>();
+                flag = 0;
+            }
+            if(coundays == diasTotales)
+            {
+                semana = new Semana();
+                semana.Dias = fechas;
+                semanas.Add(semana);
+                break;
+            }
+            coundays++;
+        }
+    }
+
+    public void crearVeterinarias()
+    {
+        veterinarias.Add("Oh My Dog! \n Dirección: 15 y 60");
+        veterinarias.Add("Perritos Love \n Dirección: 70 y 24");
+        veterinarias.Add("Pets home \n Dirección: 44 entre 1 y 2");
+        veterinarias.Add("Doggy \n Dirección: 54 y 12");
+        veterinarias.Add("Patitas suaves \n Dirección: 1 y 50");
+        veterinarias.Add("Madagascar \n Dirección: 32 y 7");
+        veterinarias.Add("Perritos anonimos \n Dirección: Diag. 80 y 7");
+    }
+
+    public async Task ActualizarCalendario()
+    {
+        Console.WriteLine("mes calendario:" + calendario.Mes);
+        Console.WriteLine("mes actual:" + DateTime.Now.ToString("MMMM"));
+        if (calendario.Mes.Equals(DateTime.Now.ToString("MMMM")))
+        {
+            actualizacion.Open();
+        }
+        else
+        {
+            await http.DeleteAsync($"https://localhost:7083/api/calendario/{calendario.Id}");
+            await randomCalendario();
+            await CargarCalendarioHead();
+            await CargarCalendarioBody();
+        }
+    }
+}
