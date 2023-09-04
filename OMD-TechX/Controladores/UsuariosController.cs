@@ -51,7 +51,11 @@ namespace OMD_TechX.Controladores
         [HttpPut]
         public async Task<ActionResult> Put(Usuario user)
         {
-            user.primerInicio = false;
+            if (user.primerInicio == true)
+            {
+                user.primerInicio = false;
+            }
+            
             context.Entry(user).State = EntityState.Modified;
             await context.SaveChangesAsync();
             return NoContent();
